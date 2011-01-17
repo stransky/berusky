@@ -68,8 +68,8 @@ void help(bool error)
   printf(_("Using: berusky [-e [level.lv3]] [-u level.lv3]\n\n"));
   printf(_("  -e [level.lv3]       -run level editor\n"));
   printf(_("  -u  level.lv3        -run level\n"));
-/* TODO - not implemented yet
   printf(_("Using: berusky [-e [level.lv3]] [-u level.lv3] [-d level.dm]\n\n"));
+/* TODO - not implemented yet
   printf(_("  -d  level.dm         -run demo.dm\n"));
 */  
   exit(0);
