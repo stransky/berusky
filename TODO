@@ -1,0 +1,112 @@
+Bugs:
+
+Berusky V1.1 crashes sometimes with this error:
+berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*): Assertion `surface_last < surface_num' failed.
+
+-> kdyz se prepina mezi hrou/editorem?
+
+Game:
+
+  TODO (in CZ):
+
+  - hudba a zvuky
+
+  - parser - setridit to podle pocatecnich pismen at to nemusim prohledavat cele
+  - prohledavani klavesovych eventu - take setridit
+  - process_events - prepsat to vsechno na process_events a vyhodit ty 
+    event_process (v tech tridach)
+  - udelat nejakou jednotnou alokaci eventu (misto toho new/delete)
+  
+  - pri nahravani -> nastavit p_ground pro ty co nemaji zadnou grafiku
+  - naplnit tu tabulku itemu nejakych spritu ktere se nekresli (NO_SPRIT)
+  
+  - uvolnovani surfacu z pameti!!
+  - flag SPRITE_NO_BACK - pod tim to spritem se nic nekresli
+            
+  - skontrolovat to pretaceni animaci - jestli se to dobre uvolnuje a tak...
+  
+  - problem -> pokud smazu tu animaci v enginu a ma zaznam v levelu -> jak se to ten level dozvi?
+            -> pridat udalost -> smaz animaci!!! -> pro level
+            -> nastavit animace na -1 nebo nechat 0 jako nepouzitou?
+            -> dat ty animace dveri do toho dat souboru??
+
+  - int ber::configure(void) - predelat, lip vyuzivat ini soubor
+  - udelat oci aby blikali - v tom menu
+  - napoveda -> pohyb i na sipky, ne jen na mys (pridat event)
+  
+  - predelat nahravani grafiky spritu z berusky do berusky_gui??
+     
+  - nejake efekty pri vypisovani tech napisu? konecnych/startovnich obrazovek?
+  
+  - klavesy v memu -> enter na zadani hesla
+  
+  - udelat nejake uvodni uvitani a skonceni
+  
+  - uvolnovani pameti po dohrani kola?
+  
+  - dema!!
+  
+  - kredity -> Anjuta IDE
+  
+  - opravit konecne a vypustit do sveta!!!
+  
+  - vypnout aplikaci kdyz je deaktivovana (na pozadi, bez focusu)
+
+  - preklad textu hint/end texty
+
+Editor:
+
+ - aby se to vkladani neopakovalo?? 
+ 
+ - vykresleni aktualne vybraneho prvku a jeho rotace
+ 
+ - nejaky store na levely (pro lidi aby tam mohli prihravat svoje levely)? 
+  
+ - udelat to vyplnovani/mazani ctvercu 
+ 
+ - undo - aby fungovalo uz to prvni
+
+ - osetrit nejak ten vstup z klaves/mysi -> cist to jen 1x za kolo, aby mi
+   to neprehlcovalo vstupni frontu (mozna nepirdavat dalsi zpravy pokud to je preplneny?)     
+
+ - kapatko -> vyber prvku z levelu
+ 
+Editor keys:
+
+  CTRL+1  - on/off grid/background image
+  CTRL+2  - on/off floor layer
+  CTRL+3  - on/off items layer
+  CTRL+4  - on/off players layer
+
+  1       - select floor layer
+  2       - select items layer
+  3       - select players layer
+  4       - select all layer
+
+  CTRL+N  - new level
+  
+  F2      - save
+  CTRL+F2 - save as
+  F3      - load
+  F9      - run level
+  ESC     - end
+   
+  CTRL+U  - undo
+  CTRL+R  - redo
+
+  SHIFT+R - rotation of selected item
+  CTRL+S  - level shader
+  
+Mouse:
+  
+  first mouse button      - insert selected item
+  third mouse button      - clear selected cell
+  
+  R + mouse wheel         - rotation of item in level
+  V + mouse wheel         - variation of item in level
+
+  F + first mouse button  - fill rectangle with selected item
+  D + first mouse button  - draw rectangle with selected item
+  
+  F + third mouse button  - clear solid rectangle with selected item
+  D + third mouse button  - clear empty rectangle with selected item
