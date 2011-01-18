@@ -668,7 +668,7 @@ which can be controlled by these keys:"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("Tab"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("N"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("D"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("ALT+X"));
+        p_font->print(NULL, 20,  start_y += Y_DIFF, _("CTRL+X"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("F1"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("F2"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("F3"));
