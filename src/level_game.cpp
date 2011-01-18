@@ -25,6 +25,12 @@
  *
  */
 
+#include "portability.h"
+
+#ifdef LINUX
+#include <endian.h>
+#endif // LINUX
+
 #include "berusky.h"
 
 /**************************************************************** 
@@ -173,6 +179,17 @@ bool level_generic::level_exists(const char *p_file)
   return(file_exists(NULL, p_file));
 }
 
+//Fix by Benoît Dejean <benoit@placenet.org>.
+//Fixes bug deb#431906.
+static inline word translate_level_word(word w)
+{
+#if BYTE_ORDER == BIG_ENDIAN
+  return static_cast<word>(w >> 8) | static_cast<word>(w << 8);
+#else
+  return w;
+#endif
+}
+
 void level_generic::level_import(LEVEL_DISK *p_lev)
 {
   item_handle item;
@@ -185,27 +202,36 @@ void level_generic::level_import(LEVEL_DISK *p_lev)
      for(y = 0; y < LEVEL_CELLS_Y; y++) {
      
         // Import correction for floor
-        item = p_lev->floor[y][x][0];
-        if(item)
+        item = translate_level_word(p_lev->floor[y][x][0]);
+        if(item) {
           item = NO_ITEM;
+        }
      
-        if(p_repo->item_valid(item))
-          cell_set(x, y, LAYER_FLOOR, item, p_lev->floor[y][x][1], p_lev->floor[y][x][2], true);
-        else
+        if(p_repo->item_valid(item)) {
+          item_handle variation = translate_level_word(p_lev->floor[y][x][1]);
+          item_handle rotation = translate_level_word(p_lev->floor[y][x][2]);
+          cell_set(x, y, LAYER_FLOOR, item, variation, rotation, true);
+        }
+        else {
           cell_clear(x, y, LAYER_FLOOR, true);
+        }
 
         // Import correction for items
-        item = p_lev->level[y][x][0];
+        item = translate_level_word(p_lev->level[y][x][0]);
         if(!item)
           item = NO_ITEM;
       
-        if(p_repo->item_valid(item))
-          cell_set(x, y, LAYER_ITEMS, item, p_lev->level[y][x][1], p_lev->level[y][x][2], true);
-        else
+        if(p_repo->item_valid(item)) {
+          item_handle variation = translate_level_word(p_lev->level[y][x][1]);
+          item_handle rotation = translate_level_word(p_lev->level[y][x][2]);
+          cell_set(x, y, LAYER_ITEMS, item, variation, rotation, true);
+        }
+        else {
           cell_clear(x, y, LAYER_ITEMS, true);
+        }
         
         // Import correction for players
-        player = p_lev->players[y][x];
+        player = translate_level_word(p_lev->players[y][x]);
         if(player == NO_PLAYER)
           item = NO_ITEM;
         else {          
