@@ -656,7 +656,7 @@ void game_gui::menu_help_keys(MENU_STATE state, int data, int data1)
         p_font->print(NULL, 220, 100, _("Game Controls"));
       
         p_font->alignment_set(LEFT);
-        p_font->print(NULL, 20,  140, _("Up to five bugs are available,\
+        p_font->print(NULL, 20,  140, _("Up to five bugs are available,\n\
 which can be controlled by these keys:"));
       
         #define Y_DIFF  25
