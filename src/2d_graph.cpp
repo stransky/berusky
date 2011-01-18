@@ -28,15 +28,6 @@
 /*
   2D Graphics library
 */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <unistd.h>
-#include <ctype.h>
-
-#include <SDL/SDL.h>
-
 #include "2d_graph.h"
 
 // -------------------------------------------------------

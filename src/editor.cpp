@@ -29,9 +29,18 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <error.h>
 #include <errno.h>
+#include <stdio.h>
+
+#include "portability.h"
+
+#ifdef LINUX
+#include <sys/wait.h>
+#elif WINDOWS
+#include <stdio.h>
+#include <process.h>
+#endif
 
 #include "berusky.h"
 #include "berusky_gui.h"
@@ -1103,7 +1112,7 @@ void editor_gui::editor_run_level(void)
   return_path(p_dir->tmp_get(), TMP_LEVEL, filename, MAX_FILENAME);
 
   if(level.level_save(filename)) {
-    bprintf("Saved as %s",filename);
+#ifdef LINUX
     int pid = fork();
     if(!pid) {
       char level_name[MAX_FILENAME];
@@ -1120,6 +1129,16 @@ void editor_gui::editor_run_level(void)
       waitpid(pid,&status,0);
       bprintf("Pid %d done",pid);
     }
+#elif WINDOWS  
+    bprintf("Saved as %s",filename);
+    char level_name[MAX_FILENAME];
+    return_path(p_dir->tmp_get(), TMP_LEVEL, level_name, MAX_FILENAME);
+    bprintf("%s -u %s",p_dir->game_binary_get(),level_name);    
+    int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(),p_dir->game_binary_get(),"-u",level_name,NULL);
+    if(ret == -1) {
+      bprintf("Error: %s",strerror(errno));
+    }
+#endif  
   }
 }
 

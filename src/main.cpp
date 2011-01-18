@@ -68,7 +68,6 @@ void help(bool error)
   printf(_("Using: berusky [-e [level.lv3]] [-u level.lv3]\n\n"));
   printf(_("  -e [level.lv3]       -run level editor\n"));
   printf(_("  -u  level.lv3        -run level\n"));
-  printf(_("Using: berusky [-e [level.lv3]] [-u level.lv3] [-d level.dm]\n\n"));
 /* TODO - not implemented yet
   printf(_("  -d  level.dm         -run demo.dm\n"));
 */  
@@ -345,6 +344,7 @@ int main(int argc, char *argv[])
   } else {
     run_game(gmode, p_garg, &dir);
   }  
+  return 0;
 }
 
 void start_logo_draw(GAME_MODE mode)

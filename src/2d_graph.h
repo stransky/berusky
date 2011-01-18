@@ -42,6 +42,20 @@
 
 #include <assert.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <memory.h>
+#include <ctype.h>
+
+#include "portability.h"
+
+#ifdef LINUX
+#include <SDL/SDL.h>
+#endif
+
+#ifdef WINDOWS
+#include "SDL.h"
+#endif
 
 #include "ini.h"
 #include "utils.h"

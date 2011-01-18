@@ -130,7 +130,11 @@ bool level_store::levelset_search(char *p_passwd, int *p_level)
   if(levelnum) {
     int i;
     for(i = 0; i < levelnum; i++) {
-      if(!strcasecmp(p_list[i].password, p_passwd)) {
+#ifdef LINUX
+      if(!strncasecmp(p_list[i].password, p_passwd, MAX_PASSWORD)) {
+#elif WINDOWS
+      if(!_strnicmp(p_list[i].password, p_passwd, MAX_PASSWORD)) {
+#endif
         *p_level = i;
         return(TRUE);
       }

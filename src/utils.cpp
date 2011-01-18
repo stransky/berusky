@@ -1,4 +1,31 @@
 /*
+ *        .þÛÛþ þ    þ þÛÛþ.     þ    þ þÛÛÛþ.  þÛÛÛþ .þÛÛþ. þ    þ
+ *       .þ   Û Ûþ.  Û Û   þ.    Û    Û Û    þ  Û.    Û.   Û Ûþ.  Û
+ *       Û    Û Û Û  Û Û    Û    Û   þ. Û.   Û  Û     Û    Û Û Û  Û
+ *     .þþÛÛÛÛþ Û  Û Û þÛÛÛÛþþ.  þþÛÛ.  þþÛÛþ.  þÛ    Û    Û Û  Û Û
+ *    .Û      Û Û  .þÛ Û      Û. Û   Û  Û    Û  Û.    þ.   Û Û  .þÛ
+ *    þ.      þ þ    þ þ      .þ þ   .þ þ    .þ þÛÛÛþ .þÛÛþ. þ    þ
+ *
+ * Berusky (C) AnakreoN
+ * Martin Stransky <stransky@anakreon.cz> 
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+
+/*
   Utility
 */
 #include <stdio.h>
@@ -6,6 +33,12 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include "portability.h"
+
+#ifdef WINDOWS
+#include <direct.h>
+#endif
 
 #include "ini.h"
 #include "utils.h"
@@ -109,6 +142,7 @@ int  get_colors(const char *p_ini_file, int default_color_depth)
   return(ini_read_int_file(p_ini_file, INI_COLOR, default_color_depth));
 }
 
+#ifdef LINUX
 void itoa(int base, char *buf, int d)
 {
   char *p = buf;
@@ -147,6 +181,7 @@ void itoa(int base, char *buf, int d)
     p2--;
   }
 }
+#endif // LINUX
 
 /* Create a path */
 char * return_path(const char *p_dir, const char *p_file, char *p_buffer, int max_lenght)
@@ -361,7 +396,7 @@ bool dir_create(const char *p_dir)
   bprintfnl("Checking %s...",tmp_dir);
   if(stat(tmp_dir,&st) == -1 && errno == ENOENT) {
     bprintfnl("missing, try to create it...");
-    if(mkdir(tmp_dir,DEFAULT_DIR_MASK) != -1) {
+    if(mkdir(tmp_dir) != -1) {
       bprintf("ok");
       return(TRUE);
     } else {

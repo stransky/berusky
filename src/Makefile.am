@@ -54,7 +54,8 @@ berusky_SOURCES = \
 	main.h\
 	stack.h\
 	gui.cpp\
-	gui.h
+	gui.h\
+	portability.h
 
 berusky_LDFLAGS = 
 

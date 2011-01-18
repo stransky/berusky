@@ -28,10 +28,10 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <limits.h>
 #include <stdio.h>
 
+#include "portability.h"
 #include "ini.h"
 #include "utils.h"
 #include "data_parser.h"
@@ -56,7 +56,7 @@ char * data_parser::token_translate(char *p_token, int *p_sum, int *p_base = NUL
   
     p_token = token_get_next(p_token);
   
-    if(!p_token || *p_token == '#' || *p_token == '\n') {
+    if(!p_token || *p_token == '#' || *p_token == '\n' || *p_token == '\r') {
       p_token = NULL;
       break;
     
@@ -143,6 +143,7 @@ void data_parser::get_indexes(int *p_indexes, int index_num)
   memset(p_indexes, 0, sizeof(p_indexes[0])*index_num);
 
   while(fgets(record, MAX_RECORD_LEN, datafile)) {
+    fprintf(stderr, "record = '%s'",record);
     char *p_tmp = token_translate(record, &num, &base);
     if(!p_tmp) {
       continue;

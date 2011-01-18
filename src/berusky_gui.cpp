@@ -25,8 +25,18 @@
  *
  */
 
-#include <sys/wait.h>
 #include <errno.h>
+
+#include "portability.h"
+
+#ifdef LINUX
+#include <sys/wait.h>
+#endif
+
+#ifdef WINDOWS
+#include <stdio.h>
+#include <process.h>
+#endif
 
 #include "berusky.h"
 #include "berusky_gui.h"
@@ -1430,7 +1440,8 @@ void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
 }
 
 void game_gui::run_editor(void)
-{    
+{ 
+#ifdef LINUX
   int pid = fork();
   if(!pid) {
     bprintf("%s -e",p_dir->game_binary_get());
@@ -1445,6 +1456,13 @@ void game_gui::run_editor(void)
     waitpid(pid,&status,0);
     bprintf("Pid %d done",pid);
   }
+#elif WINDOWS
+  bprintf("%s -e",p_dir->game_binary_get());  
+  int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(),p_dir->game_binary_get(),"-e",NULL);
+  if(ret == -1) {
+    bprintf("Error: %s",strerror(errno));
+  }
+#endif
 }
 
 bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)

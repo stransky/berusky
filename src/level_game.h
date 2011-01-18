@@ -201,7 +201,12 @@ typedef unsigned short int word;
 
 #define H_LEVEL  "Level 3 (C) Anakreon 1999"
 
+#ifdef LINUX
 typedef struct __attribute__ ((__packed__)) {
+#elif WINDOWS
+#pragma pack(push,1)
+typedef struct {
+#endif
 
    char signum[30];               // -> retezec "Berusky (C) Anakreon 1998"
    char back;                     // -> cislo pozadi
@@ -213,6 +218,10 @@ typedef struct __attribute__ ((__packed__)) {
    word players[LEVEL_CELLS_Y][LEVEL_CELLS_X];    //-> mapa hracu (dneska sou hraci n levelu)
 
 } LEVEL_DISK;
+
+#ifdef WINDOWS
+#pragma pack(pop)
+#endif
 
 typedef struct level_cell {
 

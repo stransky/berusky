@@ -28,7 +28,11 @@
 #ifndef __EVENTS_H__
 #define __EVENTS_H__
 
+#include "portability.h"
+
+#ifdef LINUX
 #include <sys/time.h>
+#endif
 
 /****************************************************************
   Level events - for game level

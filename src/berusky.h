@@ -43,15 +43,25 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <syslog.h>
 #include <string.h>
-
-#include <libintl.h>
 #include <locale.h>
 
+#include "portability.h"
+
+#ifdef LINUX
+
+#include <syslog.h>
+#include <libintl.h>
 #include <SDL/SDL.h>
 
 #define _(string) gettext (string)
+
+#elif WINDOWS
+
+#include "SDL.h"
+#define _(string) (string)
+
+#endif
 
 /* Basic header files
 */

@@ -111,7 +111,8 @@ module.source.files=\
 	main.h\
 	stack.h\
 	gui.cpp\
-	gui.h
+	gui.h\
+	portability.h
 
 module.pixmap.name=pixmaps
 module.pixmap.type=
