@@ -258,7 +258,7 @@ void game_gui::menu_password(MENU_STATE state, int data, int data1)
         bool character = key_to_ascii(data,&ascii_char);
         int  len = strlen(password);
       
-        if(character) {
+        if(character && ascii_char >= ' ') {
           if(len < MAX_PASSWORD-2) {
             password[len] = ascii_char;
             password[len+1] = '\0';
