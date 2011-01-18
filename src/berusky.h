@@ -152,7 +152,8 @@ public:
   bool   level_load(char *p_level);
   bool   levelset_load(int set);
   bool   levelset_is_custom(void);
-  
+
+  void   levelset_set_level(int level);
   int    levelset_get_level(void);
   int    levelset_get_set(void);
   int    levelset_get_levelnum(void);

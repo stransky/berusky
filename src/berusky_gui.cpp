@@ -884,6 +884,7 @@ void game_gui::menu_level_run(MENU_STATE state, int data, int data1)
       
         bool ret = p_ber->levelset_load(set);
         assert(ret);
+        p_ber->levelset_set_level(level);
       
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
         p_font->alignment_set(CENTER);

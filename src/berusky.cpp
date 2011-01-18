@@ -120,6 +120,11 @@ bool berusky::levelset_search(char *p_passwd, int *p_set, int *p_level)
   return(FALSE);
 }
 
+void berusky::levelset_set_level( int level )
+{
+  state.level_num = level;
+}
+
 int  berusky::levelset_get_level(void)
 {
   return(state.level_num);

@@ -1,5 +1,9 @@
 Bugs:
 
+- na zacatku (pred startem) se furt ukazuje jen hint pro prvni level!!
+  (v napovede to je ok)
+- udelat vice pozadi pro levely? (a pridat extra levely?)
+
 Berusky V1.1 crashes sometimes with this error:
 berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*): Assertion `surface_last < surface_num' failed.
 
