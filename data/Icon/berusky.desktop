@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Berusky
+Comment=Logic game based on Sokoban(TM)
+Exec=berusky
+StartupNotify=false
+Terminal=false
+Type=Application
+Icon=berusky.png
+Categories=Game;LogicGame;
