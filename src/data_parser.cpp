@@ -142,8 +142,7 @@ void data_parser::get_indexes(int *p_indexes, int index_num)
 
   memset(p_indexes, 0, sizeof(p_indexes[0])*index_num);
 
-  while(fgets(record, MAX_RECORD_LEN, datafile)) {
-    fprintf(stderr, "record = '%s'",record);
+  while(fgets(record, MAX_RECORD_LEN, datafile)) {    
     char *p_tmp = token_translate(record, &num, &base);
     if(!p_tmp) {
       continue;

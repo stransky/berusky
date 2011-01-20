@@ -193,7 +193,11 @@ char * return_path(const char *p_dir, const char *p_file, char *p_buffer, int ma
     } else {      
       strncpy(p_buffer,p_dir,max_lenght-1);
     }
+#ifdef LINUX
     strcat(p_buffer,"/");
+#elif WINDOWS
+    strcat(p_buffer,"\\");
+#endif
     strncat(p_buffer,p_file,max_lenght-strlen(p_buffer));
   } else {
     if(p_file[0] == '~') {

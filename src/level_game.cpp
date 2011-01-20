@@ -183,9 +183,13 @@ bool level_generic::level_exists(const char *p_file)
 //Fixes bug deb#431906.
 static inline word translate_level_word(word w)
 {
+#ifdef LINXU
 #if BYTE_ORDER == BIG_ENDIAN
   return static_cast<word>(w >> 8) | static_cast<word>(w << 8);
 #else
+  return w;
+#endif
+#elif WINDOWS
   return w;
 #endif
 }
@@ -289,25 +293,25 @@ LEVEL_DISK * level_generic::level_export(LEVEL_DISK *p_lev)
     for(y = 0; y < LEVEL_CELLS_Y; y++) {
     
       if(cell_is_full(x, y, LAYER_FLOOR)) {
-        p_lev->floor[y][x][0] = P_GROUND;
-        p_lev->floor[y][x][1] = cell_get_variation(x,y,LAYER_FLOOR);
-        p_lev->floor[y][x][2] = cell_get_rotation(x,y,LAYER_FLOOR);
+        p_lev->floor[y][x][0] = translate_level_word(P_GROUND);
+        p_lev->floor[y][x][1] = translate_level_word(cell_get_variation(x,y,LAYER_FLOOR));
+        p_lev->floor[y][x][2] = translate_level_word(cell_get_rotation(x,y,LAYER_FLOOR));
       } else {
-        p_lev->floor[y][x][0] = NO_ITEM;
+        p_lev->floor[y][x][0] = translate_level_word(NO_ITEM);
       }
     
       if(cell_is_full(x, y, LAYER_ITEMS)) {
-        p_lev->level[y][x][0] = cell_get_item(x,y,LAYER_ITEMS);
-        p_lev->level[y][x][1] = cell_get_variation(x,y,LAYER_ITEMS);
-        p_lev->level[y][x][2] = cell_get_rotation(x,y,LAYER_ITEMS);
+        p_lev->level[y][x][0] = translate_level_word(cell_get_item(x,y,LAYER_ITEMS));
+        p_lev->level[y][x][1] = translate_level_word(cell_get_variation(x,y,LAYER_ITEMS));
+        p_lev->level[y][x][2] = translate_level_word(cell_get_rotation(x,y,LAYER_ITEMS));
       } else {
-        p_lev->level[y][x][0] = P_GROUND;
+        p_lev->level[y][x][0] = translate_level_word(P_GROUND);
       }
     
       if(cell_is_full(x, y, LAYER_PLAYER)) {
-        p_lev->players[y][x] = cell_get_item(x,y,LAYER_ITEMS) - P_PLAYER_1;        
+        p_lev->players[y][x] = translate_level_word(cell_get_item(x,y,LAYER_PLAYER) - P_PLAYER_1);
       } else {
-        p_lev->players[y][x] = NO_PLAYER;
+        p_lev->players[y][x] = translate_level_word(NO_PLAYER);
       }
     
     }

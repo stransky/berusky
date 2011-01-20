@@ -759,7 +759,7 @@ void editor_gui::level_new_callback(void)
   }
 }
 
-void editor_gui::level_load(char *p_file, bool force)
+void editor_gui::level_load(char *p_file, int force)
 {
   static char file[MAX_FILENAME] = "";
 
@@ -814,7 +814,7 @@ void editor_gui::level_load_callback(void)
   }
 }
 
-void editor_gui::level_save_as(char *p_file, bool force)
+void editor_gui::level_save_as(char *p_file, int force)
 {
   static char file[MAX_FILENAME] = "";
   static int  force_saved = BOOL_UNDEFINED;
@@ -866,7 +866,7 @@ void editor_gui::level_save_as_callback(void)
   }  
 }
 
-void editor_gui::level_save(bool force)
+void editor_gui::level_save(int force)
 {
   level_save_as(level_name,force);
 }

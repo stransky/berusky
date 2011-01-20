@@ -208,14 +208,14 @@ typedef struct __attribute__ ((__packed__)) {
 typedef struct {
 #endif
 
-   char signum[30];               // -> retezec "Berusky (C) Anakreon 1998"
-   char back;                     // -> cislo pozadi
-   char music;                    // -> cislo hudby k tomuto levelu
-   char rot[5];                   // -> natoceni hracu
-   char rezerved[100];            // -> pro pozdejsi pouziti
-   word floor[LEVEL_CELLS_Y][LEVEL_CELLS_X][10];// -> podlaha
-   word level[LEVEL_CELLS_Y][LEVEL_CELLS_X][10];  //-> herni plocha (dnesni level)
-   word players[LEVEL_CELLS_Y][LEVEL_CELLS_X];    //-> mapa hracu (dneska sou hraci n levelu)
+   char signum[30];               // -> "Berusky (C) Anakreon 1998"
+   char back;                     // -> background number
+   char music;                    // -> track number
+   char rot[5];                   // -> players rotation
+   char rezerved[100];            // -> reserved
+   word floor[LEVEL_CELLS_Y][LEVEL_CELLS_X][10];  //-> floor cells
+   word level[LEVEL_CELLS_Y][LEVEL_CELLS_X][10];  //-> level items
+   word players[LEVEL_CELLS_Y][LEVEL_CELLS_X];    //-> players
 
 } LEVEL_DISK;
 

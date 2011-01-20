@@ -230,6 +230,11 @@ public:
     item_unselect();
   }  
 
+  item_panel()
+  {
+    memset(this,0,sizeof(*this));
+  }
+
 } ITEM_PANEL;
 
 typedef class editor_layer_config {
@@ -361,6 +366,11 @@ public:
     return(input_boolean);
   }
 
+  editor_console()
+  {
+    memset(this,0,sizeof(*this));
+  }
+
 } EDITOR_CONSOLE;
 
 class editor_gui;
@@ -462,11 +472,11 @@ public:
   void level_new(bool force = FALSE);
   void level_new_callback(void);
 
-  void level_load(char *p_file, bool force = FALSE);
+  void level_load(char *p_file, int force = FALSE);
   void level_load_callback(void);
 
-  void level_save(bool force = TRUE);
-  void level_save_as(char *p_file = NULL, bool force = FALSE);
+  void level_save(int force = TRUE);
+  void level_save_as(char *p_file = NULL, int force = FALSE);
   void level_save_as_callback(void);
 
 public:
