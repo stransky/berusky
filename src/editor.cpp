@@ -503,7 +503,7 @@ void editor_gui::selection_cursor_update(void)
 */
 
 #define SIDE_MENU_X       (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
-#define SIDE_MENU_Y       (EDITOR_SCREEN_START_Y+100)
+#define SIDE_MENU_Y       (EDITOR_SCREEN_START_Y+60)
 #define SIDE_MENU_DX      (EDITOR_RESOLUTION_X-SIDE_MENU_X)
 #define SIDE_MENU_DY      (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
 #define SIDE_MENU_X_DIFF   0
@@ -512,23 +512,37 @@ void editor_gui::selection_cursor_update(void)
 
 static char *side_menu[] = 
 { 
-  _("(1) floor"),
-  _("(2) items"),
-  _("(3) players"),
-  _("(4) all")
+  _("help (f1)"),
+  _("new level"),
+  _("save (f2)"),
+  _("save as (ct+f2)"),
+  _("load (f3)"),
+  _("quit (esc)"),
+  _("run level (f9)"),
+  _("undo (ctrl+u)"),
+  _("redo (ctrl+r)"),
+  _("rotate (shft+r)"),  
+  _("shade floor"),
 };
 
 void editor_gui::side_menu_create(void)
 {
-  p_font->print(NULL,SIDE_MENU_X, SIDE_MENU_Y, "Select layer:");
+  p_font->print(NULL,SIDE_MENU_X, SIDE_MENU_Y, "Editor menu:");
 
   menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
   menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
 
-  menu_item_draw(side_menu[0], LEFT_NO_ARROW, TRUE, LEVEL_EVENT(ED_LEVEL_SELECT_LAYER,LAYER_FLOOR));
-  menu_item_draw(side_menu[1], LEFT_NO_ARROW, TRUE, LEVEL_EVENT(ED_LEVEL_SELECT_LAYER,LAYER_ITEMS));
-  menu_item_draw(side_menu[2], LEFT_NO_ARROW, TRUE, LEVEL_EVENT(ED_LEVEL_SELECT_LAYER,LAYER_PLAYER));
-  menu_item_draw(side_menu[3], LEFT_NO_ARROW, TRUE, LEVEL_EVENT(ED_LEVEL_SELECT_LAYER,ALL_LEVEL_LAYERS));
+  menu_item_draw(side_menu[0], LEFT, TRUE, LEVEL_EVENT(ED_HELP));
+  menu_item_draw(side_menu[1], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_NEW));
+  menu_item_draw(side_menu[2], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SAVE));
+  menu_item_draw(side_menu[3], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SAVE_AS));
+  menu_item_draw(side_menu[4], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_LOAD));
+  menu_item_draw(side_menu[5], LEFT, TRUE, LEVEL_EVENT(ED_QUIT));
+  menu_item_draw(side_menu[6], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_RUN));
+  menu_item_draw(side_menu[7], LEFT, TRUE, LEVEL_EVENT(ED_UNDO));
+  //menu_item_draw(side_menu[8], LEFT, TRUE, LEVEL_EVENT(ED_REDO));
+  menu_item_draw(side_menu[9], LEFT, TRUE, LEVEL_EVENT(ED_ROTATE_SELECTION));
+  menu_item_draw(side_menu[10], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SHADER));
 
   p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
@@ -536,7 +550,7 @@ void editor_gui::side_menu_create(void)
 #define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
 #define SIDE_STATUS_Y     (EDITOR_SCREEN_START_Y)
 #define SIDE_STATUS_DX    (EDITOR_RESOLUTION_X-SIDE_STATUS_X)
-#define SIDE_STATUS_DY    100
+#define SIDE_STATUS_DY    40
 
 void editor_gui::side_menu_update(void)
 {
@@ -566,7 +580,7 @@ void editor_gui::side_menu_update(void)
       break;
   }
   if(p_act)
-    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("active layer:\n\n%s"),p_act);
+    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("edited layer:\n%s"),p_act);
   p_grf->redraw_add(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY);
 }
 
@@ -587,10 +601,10 @@ void editor_gui::layer_menu_draw(void)
 
   static char *layer_names[ALL_LEVEL_LAYERS] = 
   {   
-    _("(1)Grid:"),
-    _("(2)Floor:"),
-    _("(3)Items:"),
-    _("(4)Players:")
+    _("Grid:"),
+    _("Floor:"),
+    _("Items:"),
+    _("Players:")
   };
 
   static int layer_handle[] = 
@@ -759,6 +773,17 @@ void editor_gui::level_new_callback(void)
   }
 }
 
+char *editor_gui::level_name_get(void)
+{
+  return(level_name);
+}
+
+void editor_gui::level_name_set(char *p_name)
+{
+  strncpy(level_name,p_name,MAX_FILENAME);  
+  level_caption_update();
+}
+
 void editor_gui::level_load(char *p_file, int force)
 {
   static char file[MAX_FILENAME] = "";
@@ -780,16 +805,15 @@ void editor_gui::level_load(char *p_file, int force)
   }
 
   // Save undo
-  undo_store();  
+  undo_store();
 
   // Load given level
   const char *p_paths[] = { p_dir->levels_user_get(), p_dir->cwd_get(), NULL };
 
   bool loaded = level.level_load(p_file,p_paths,sizeof(p_paths)/sizeof(p_paths[0]));
   if(loaded) {
-    strncpy(level_name,p_file,MAX_FILENAME);
+    level_name_set(p_file);
     level_edited_clear();
-    level_caption_update();
   } else {
     console.print(_("Unable to load level %s"),p_file);
   }
@@ -834,12 +858,13 @@ void editor_gui::level_save_as(char *p_file, int force)
   }
 
   if(!force && level.level_exists(p_file)) {
-    input_start(&editor_gui::level_save_as_callback, HANDLE_2, INPUT_BOOLEAN, _("file %s exists! overwrite?:"));
+    input_start(&editor_gui::level_save_as_callback, HANDLE_2, INPUT_BOOLEAN, _("file %s exists! overwrite?:"),p_file);
     return;
-  }  
+  }
 
   if(level.level_save(p_file)) {
     level_edited_clear();
+    level_name_set(p_file);
   }
   else {
     console.print(_("Unable to save level %s"),p_file);

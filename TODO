@@ -1,5 +1,11 @@
 Bugs:
 
+- nefunguji klavesy!! save as nejede
+
+- draw a fill je to same (D,F) -> furt jen fill
+- menu - pada to pro load/save as
+- redo -> vyhodit z dokumentace, popr. implementovat?
+
 - na zacatku (pred startem) se furt ukazuje jen hint pro prvni level!!
   (v napovede to je ok)
 - udelat vice pozadi pro levely? (a pridat extra levely?)

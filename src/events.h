@@ -439,6 +439,8 @@ public:
   void clear(void)
   {
     action = EV_NONE;
+    depend_events = 0;
+    memset(params,0,sizeof(params));
   }
 
   const char * translate(void)
@@ -448,18 +450,13 @@ public:
 
 public:
   
-  level_event(void)
-  : action(EV_NONE), depend_events(0)
+  level_event(void)  
   {
-  }
-
-  level_event(EVENT_TYPE  ev)
-  : action(ev), depend_events(0)
-  {
+    clear();
   }
 
   level_event(EVENT_TYPE  ev,
-              EVENT_PARAM_TYPE p0,
+              EVENT_PARAM_TYPE p0 = EVENT_TYPE_NONE,
               EVENT_PARAM_TYPE p1 = EVENT_TYPE_NONE,
               EVENT_PARAM_TYPE p2 = EVENT_TYPE_NONE,
               EVENT_PARAM_TYPE p3 = EVENT_TYPE_NONE, 

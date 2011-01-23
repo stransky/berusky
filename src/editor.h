@@ -463,6 +463,9 @@ public:
   char level_name[MAX_FILENAME];
   bool level_edited;
 
+  char *level_name_get(void);
+  void level_name_set(char *p_name);
+
   void level_caption_update(void);
   
   void level_edited_set(void);

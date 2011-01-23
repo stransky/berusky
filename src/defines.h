@@ -99,7 +99,7 @@
 */
 #define CONSOLE_X                 (EDITOR_LAYER_STATUS_X)
 #define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+ITEM_SIZE_Y+5)
-#define CONSOLE_DX                (EDITOR_RESOLUTION_X-CONSOLE_X)
+#define CONSOLE_DX                (EDITOR_RESOLUTION_X-CONSOLE_X-200)
 #define CONSOLE_LINES             2
 
 #define LEVELSET_NUM              5
