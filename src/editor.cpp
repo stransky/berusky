@@ -804,22 +804,25 @@ void editor_gui::level_load(char *p_file, int force)
     }
   }
 
-  // Save undo
-  undo_store();
-
-  // Load given level
-  const char *p_paths[] = { p_dir->levels_user_get(), p_dir->cwd_get(), NULL };
-
-  bool loaded = level.level_load(p_file,p_paths,sizeof(p_paths)/sizeof(p_paths[0]));
-  if(loaded) {
-    level_name_set(p_file);
-    level_edited_clear();
-  } else {
-    console.print(_("Unable to load level %s"),p_file);
+  // Do we have a valid filename?
+  if(p_file[0]) {
+    // Save undo
+    undo_store();
+  
+    // Load given level
+    const char *p_paths[] = { p_dir->levels_user_get(), p_dir->cwd_get(), NULL };
+  
+    bool loaded = level.level_load(p_file,p_paths,sizeof(p_paths)/sizeof(p_paths[0]));
+    if(loaded) {
+      level_name_set(p_file);
+      level_edited_clear();
+    } else {
+      console.print(_("Unable to load level %s"),p_file);
+    }
+  
+    // Clear internal name
+    file[0] = '\0';
   }
-
-  // Clear internal name
-  file[0] = '\0';
 }
 
 void editor_gui::level_load_callback(void)
@@ -862,15 +865,17 @@ void editor_gui::level_save_as(char *p_file, int force)
     return;
   }
 
-  if(level.level_save(p_file)) {
-    level_edited_clear();
-    level_name_set(p_file);
+  // Do we have a corect filename?
+  if(p_file[0]) {
+    if(level.level_save(p_file)) {
+      level_edited_clear();
+      level_name_set(p_file);
+    }
+    else {
+      console.print(_("Unable to save level %s"),p_file);
+    }
+    console.print(_("Saved as %s"),p_file);
   }
-  else {
-    console.print(_("Unable to save level %s"),p_file);
-  }
-
-  console.print(_("Saved as %s"),p_file);
   file[0] = '\0';
   force_saved = BOOL_UNDEFINED;
 }
