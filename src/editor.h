@@ -472,6 +472,8 @@ public:
   bool level_edited_get(void);
   void level_edited_clear(void);
 
+  void help(void);
+
   void level_new(bool force = FALSE);
   void level_new_callback(void);
 
@@ -541,6 +543,8 @@ public:
   void editor_shader(tpos sx, tpos sy, tpos dx, tpos dy);
 
   void level_change_backgroud(void);
+
+  void help_print_line(tpos x_pos, tpos &y_pos, char *p_key, char *p_name);
 
 public:  
   // An Undo interface

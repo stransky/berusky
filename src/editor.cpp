@@ -523,6 +523,7 @@ static char *side_menu[] =
   _("redo (ctrl+r)"),
   _("rotate (shft+r)"),  
   _("shade floor"),
+  _("background (b)"),
 };
 
 void editor_gui::side_menu_create(void)
@@ -540,9 +541,9 @@ void editor_gui::side_menu_create(void)
   menu_item_draw(side_menu[5], LEFT, TRUE, LEVEL_EVENT(ED_QUIT));
   menu_item_draw(side_menu[6], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_RUN));
   menu_item_draw(side_menu[7], LEFT, TRUE, LEVEL_EVENT(ED_UNDO));
-  //menu_item_draw(side_menu[8], LEFT, TRUE, LEVEL_EVENT(ED_REDO));
   menu_item_draw(side_menu[9], LEFT, TRUE, LEVEL_EVENT(ED_ROTATE_SELECTION));
-  menu_item_draw(side_menu[10], LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SHADER));
+  menu_item_draw(side_menu[10],LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SHADER));
+  menu_item_draw(side_menu[11],LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
 
   p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
@@ -896,6 +897,70 @@ void editor_gui::level_save_as_callback(void)
   }  
 }
 
+void editor_gui::help_print_line(tpos x_pos, tpos &y_pos, char *p_key, char *p_name = NULL)
+{
+  p_font->print(NULL,x_pos,y_pos,p_key);
+  if(p_name) {
+    p_font->print(NULL,x_pos+EDIT_HELP_KEY_DX,y_pos,p_name);
+  }
+  y_pos += p_font->height_get();
+  y_pos += EDIT_HELP_DY;
+}
+
+void editor_gui::help(void)
+{
+  p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);  
+
+  tpos x_pos = EDIT_HELP_KEY_X;
+  tpos y_pos = EDIT_HELP_START_Y;
+  help_print_line(x_pos,y_pos,_("Keyboard control:"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("F1"),_("- Help"));
+  help_print_line(x_pos,y_pos,_("ESC"),_("- Quit"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("CTRL+N"),_("- New level"));
+  help_print_line(x_pos,y_pos,_("f2"),_("- Save level"));
+  help_print_line(x_pos,y_pos,_("CTRL+F2"),_("- Save level as"));
+  help_print_line(x_pos,y_pos,_("F3"),_("- Load level"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("F9"),_("- Run level"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("SHIFT+R"),_("- Rotate item"));
+  help_print_line(x_pos,y_pos,_("CTRL+U"),_("- Undo"));
+  help_print_line(x_pos,y_pos,_("CTRL+S"),_("- Shade level"));
+  help_print_line(x_pos,y_pos,_("B"),_("- Change background"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("1"),_("- Select floor layer"));
+  help_print_line(x_pos,y_pos,_("2"),_("- Select items layer"));
+  help_print_line(x_pos,y_pos,_("3"),_("- Select players layer"));
+  help_print_line(x_pos,y_pos,_("4"),_("- Select all layer"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("CTRL+1"),_("- on/off grid/background image"));
+  help_print_line(x_pos,y_pos,_("CTRL+2"),_("- on/off floor layer"));
+  help_print_line(x_pos,y_pos,_("CTRL+3"),_("- on/off items layer"));
+  help_print_line(x_pos,y_pos,_("CTRL+4"),_("- on/off players layer"));
+
+  x_pos = EDIT_HELP_MOUSE_X;
+  y_pos = EDIT_HELP_START_Y;
+  help_print_line(x_pos,y_pos,_("Mouse control:"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("first"),_("- insert selected item"));
+  help_print_line(x_pos,y_pos,_("third"),_("- clear selected cell"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("R+wheel"),_("- in place rotation"));
+  help_print_line(x_pos,y_pos,_("V+wheel"),_("- in place variation"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("F+first"),_("- fill rect with item"));
+  help_print_line(x_pos,y_pos,_("D+first"),_("- draw rect with item"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("F+third"),_("- clear solid rect"));
+  help_print_line(x_pos,y_pos,_("D+third"),_("- clear empty rect"));
+
+
+
+  p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
+}
+
 void editor_gui::level_save(int force)
 {
   level_save_as(level_name,force);
@@ -903,8 +968,7 @@ void editor_gui::level_save(int force)
 
 void editor_gui::level_cursor_set(tpos x, tpos y)
 {
-  bool state;
-  
+  bool state;  
 
   if((state = level.coord_in_level(x,y))) {
     level.coord_to_cell(&x,&y);
@@ -1276,7 +1340,11 @@ bool editor_gui::event_handler(void)
         case EV_TEST:
           test();
           break;
-      
+
+        case ED_HELP:
+          help();
+          break;
+        
         case ED_LEVEL_NEW:
           level_new(ev.param_int_get(PARAM_0));
           break;

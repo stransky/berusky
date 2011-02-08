@@ -1,10 +1,22 @@
+Nove prvky:
+
+- Nove pozadi
+
+- lehka bedna
+- dira v zemi
+  - muze tam spadnout bedna nebo vybusnina
+
 Bugs:
 
+- udelat full-screen napovedu (v editoru)
+  - input block, popr. sezrat jakoukoliv klavesu/mys?
+
+- editor - skrolovani listou o vice prvku (cela obrazovka = page up/down)
 - mazani -> pokud kurzor je na prazdnem policku, nesmaze se to!
-- udelat vice pozadi pro levely? (a pridat extra levely?)
 
 Berusky V1.1 crashes sometimes with this error:
-berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*): Assertion `surface_last < surface_num' failed.
+berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*):
+Assertion `surface_last < surface_num' failed.
 
 -> kdyz se prepina mezi hrou/editorem?
 

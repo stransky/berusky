@@ -91,6 +91,14 @@
 
 #define EDIT_ITEM_PICT_START_X    (EDIT_ITEM_START_X)
 #define EDIT_ITEM_PICT_START_Y    (EDIT_ITEM_START_Y+EDIT_ITEM_DY+10)
+
+#define EDIT_HELP_KEY_X           40
+#define EDIT_HELP_KEY_DX          120
+#define EDIT_HELP_START_Y         40
+#define EDIT_HELP_DY              10
+
+#define EDIT_HELP_MOUSE_X         460
+
 /*
 #define ITEM_MENU_X               (EDIT_ITEM_START_X)
 #define ITEM_MENU_Y               (EDIT_ITEM_PICT_START_Y+80)
