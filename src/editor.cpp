@@ -89,7 +89,7 @@ void item_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redra
       item_return(item_selected,p_sel,direction);
     }
     if(redraw)
-      publish();
+      draw_panel();
   }
 }
 
@@ -159,7 +159,7 @@ int  item_panel::item_return(int selected_item, EDITOR_SELECTION *p_sel, int cor
   return(NO_SELECTION);
 }
 
-void item_panel::publish(void)
+void item_panel::draw_panel(void)
 {
   RECT r;
 
@@ -219,10 +219,29 @@ void item_panel::publish(void)
   }
 
   p_grf->redraw_add(&r);
+
+  if(dx) { // Panel is horizontal
+    {
+      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
+      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
+    }
+    {
+      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
+      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
+    }
+  } else { // Panel is vertical
+    {
+      p_grf->draw(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
+      p_grf->redraw_add(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
+    }
+    {
+      p_grf->draw(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
+      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
+    }
+  }  
 }
 
-// draws controls for a panel
-void item_panel::publish_controls(INPUT *p_input)
+void item_panel::register_controls_events(INPUT *p_input)
 {
   RECT r;
 
@@ -268,16 +287,12 @@ void item_panel::publish_controls(INPUT *p_input)
 
   if(dx) { // Panel is horizontal
     {
-      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
       RECT t = {start_x, start_y+CELL_SIZE_Y, EDIT_ARROW_DX, EDIT_ARROW_DY};
       p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
                           MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
                           panel_handle,-1)));
     }
     {
-      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
       RECT t = {r.x+r.w,r.y+CELL_SIZE_Y, EDIT_ARROW_DX, EDIT_ARROW_DY};
       p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
                           MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
@@ -285,16 +300,12 @@ void item_panel::publish_controls(INPUT *p_input)
     }
   } else { // Panel is vertical
     {
-      p_grf->draw(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
-      p_grf->redraw_add(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
       RECT t = {start_x+CELL_SIZE_X, start_y, EDIT_ARROW_DX, EDIT_ARROW_DY};
       p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
                           MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
                           panel_handle,-1)));
     }
     {
-      p_grf->draw(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
-      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
       RECT t = {r.x+CELL_SIZE_X, r.y+r.h, EDIT_ARROW_DX, EDIT_ARROW_DY};
       p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
                           MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
@@ -316,6 +327,16 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   console(&input,CONSOLE_X,CONSOLE_Y,CONSOLE_DX,CONSOLE_LINES),
   sel(&level)
 {
+  editor_reset();
+}
+
+editor_gui::~editor_gui(void)
+{
+
+}
+
+void editor_gui::editor_reset(void)
+{
   input.mevent_clear();
   input.events_wait(TRUE);
 
@@ -325,20 +346,16 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   // TODO -- predelat vsechno draw -> na konfigy (reset)
   level_config();  
   panel_reset();
+  panel_draw();
   selection_draw();
   layer_menu_draw();
   layer_status_draw();
   level_draw();
   layer_active_set(ALL_LEVEL_LAYERS);
   side_menu_create();
-  side_menu_update();
+  side_menu_draw();
 
   level.back_max_set(background_num(p_dir));
-}
-
-editor_gui::~editor_gui(void)
-{
-
 }
 
 // Panel interface
@@ -352,7 +369,7 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
     if(i == panel)
       ipanel[i].item_select(x,y,&sel);
     else
-      ipanel[i].item_unselect();    
+      ipanel[i].item_unselect();
   }
   // Draw the current selection
   selection_draw();
@@ -393,9 +410,16 @@ void editor_gui::panel_reset(void)
   ipanel[3].variant_increment = 1;
 
   int i;
+  for(i = 0; i < PANELS; i++) {    
+    ipanel[i].register_controls_events(&input);
+  }
+}
+
+void editor_gui::panel_draw(void)
+{
+  int i;
   for(i = 0; i < PANELS; i++) {
-    ipanel[i].publish();
-    ipanel[i].publish_controls(&input);
+    ipanel[i].draw_panel();
   }
 }
 
@@ -501,14 +525,12 @@ void editor_gui::selection_cursor_update(void)
 
 /* Side menu - general
 */
-
-#define SIDE_MENU_X       (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
-#define SIDE_MENU_Y       (EDITOR_SCREEN_START_Y+60)
-#define SIDE_MENU_DX      (EDITOR_RESOLUTION_X-SIDE_MENU_X)
-#define SIDE_MENU_DY      (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
-#define SIDE_MENU_X_DIFF   0
-#define SIDE_MENU_Y_DIFF   35
-
+#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
+#define SIDE_MENU_Y         (EDITOR_SCREEN_START_Y+60)
+#define SIDE_MENU_DX        (EDITOR_RESOLUTION_X-SIDE_MENU_X)
+#define SIDE_MENU_DY        (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
+#define SIDE_MENU_X_DIFF    0
+#define SIDE_MENU_Y_DIFF    35
 
 static char *side_menu[] = 
 { 
@@ -521,7 +543,7 @@ static char *side_menu[] =
   _("run level (f9)"),
   _("undo (ctrl+u)"),
   _("redo (ctrl+r)"),
-  _("rotate (shft+r)"),  
+  _("rotate (shft+r)"),
   _("shade floor"),
   _("background (b)"),
 };
@@ -553,7 +575,7 @@ void editor_gui::side_menu_create(void)
 #define SIDE_STATUS_DX    (EDITOR_RESOLUTION_X-SIDE_STATUS_X)
 #define SIDE_STATUS_DY    40
 
-void editor_gui::side_menu_update(void)
+void editor_gui::side_menu_draw(void)
 {
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(LEFT);
@@ -681,7 +703,7 @@ void editor_gui::layer_status_switch(int layer, LAYER_STATE state)
 void editor_gui::layer_active_set(int layer)
 {
   config.lc.set_active(layer);  
-  side_menu_update();
+  side_menu_draw();
 }
 
 int editor_gui::layer_active_get(void)
@@ -909,7 +931,7 @@ void editor_gui::help_print_line(tpos x_pos, tpos &y_pos, char *p_key, char *p_n
 
 void editor_gui::help(void)
 {
-  p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);  
+  p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
 
   tpos x_pos = EDIT_HELP_KEY_X;
   tpos y_pos = EDIT_HELP_START_Y;
@@ -956,9 +978,28 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("F+third"),_("- clear solid rect"));
   help_print_line(x_pos,y_pos,_("D+third"),_("- clear empty rect"));
 
-
-
   p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
+
+  menu_key_input.set((GUI_BASE *)this,(GUI_BASE_FUNC)&editor_gui::console_wait);
+  console.input_start(INPUT_WAIT, NULL);  
+}
+
+void editor_gui::help_quit(void)
+{
+  editor_reset();
+/*
+  // Redraw the whole scene
+  p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
+  p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
+
+  panel_draw();
+  selection_draw();
+  layer_menu_draw();
+  layer_status_draw();
+  level_draw();
+  side_menu_draw();
+  selection_cursor_update();
+*/
 }
 
 void editor_gui::level_save(int force)
@@ -1066,7 +1107,7 @@ void editor_gui::level_item_variate(CHANGE_TYPE type, int variant)
       if(type == ITEM_MODIFY) {
         level.cell_modify_variation(x,y, layer, variant, TRUE, TRUE);
         console.print(_("[Modify] Variating item at %dx%d layer %d"),x,y,layer);
-      } 
+      }
       else if(type == ITEM_SET) {
         level.cell_set_variation(x,y, layer, variant, TRUE, TRUE);
         console.print(_("[Set] Variating item at %dx%d layer %d"),x,y,layer);
@@ -1135,7 +1176,7 @@ void editor_gui::mouse_handler(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT ev)
   switch(ev.param_int_get(PARAM_0)) {
     case SCREEN_HANDLE_IN:
       p_queue->add(LEVEL_EVENT(ED_LEVEL_SET_CURSOR,ev.param_get(PARAM_1),ev.param_get(PARAM_2),ET(TRUE)));
-      p_queue->commit();  
+      p_queue->commit();
       break;
     case SCREEN_HANDLE_OUT:
       p_queue->add(LEVEL_EVENT(ED_LEVEL_SET_CURSOR,-1,-1,TRUE));
@@ -1342,7 +1383,12 @@ bool editor_gui::event_handler(void)
           break;
 
         case ED_HELP:
-          help();
+          // Clear all waiting events
+          queue.clear();
+          tmp_queue.clear();
+        
+          // Print help page
+          help();        
           break;
         
         case ED_LEVEL_NEW:
@@ -1561,7 +1607,21 @@ void editor_gui::input_stop(bool success)
 {
   menu_key_input.clear();
   console.input_stop();
-  (this->*console_callback)();
+  if(console_callback) {
+    (this->*console_callback)();
+  }
+}
+
+/* Wait for a key
+*/
+void editor_gui::console_wait(MENU_STATE state, int data, int data1)
+{ 
+  switch(data) {
+    default:
+      help_quit();
+      input_stop(TRUE);
+      break;
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -1606,8 +1666,11 @@ void editor_console::input_start(INPUT_TYPE type, char *p_text)
   if(itype == INPUT_BOOLEAN) {
     sprintf(input_line_title+strlen(input_line_title)," (%s/%s) ",
             boolean_yes,boolean_no);
-  } else {
+  } 
+  else if(itype == INPUT_STRING) {
     sprintf(input_line_title+strlen(input_line_title)," ");
+  }
+  else if(type == INPUT_WAIT) {
   }
 
   p_input->block(TRUE);
@@ -1619,7 +1682,7 @@ void editor_console::input_start(INPUT_TYPE type, char *p_text)
 void editor_console::input_stop(bool redraw)
 {  
   p_input->block(FALSE);
-  p_input->key_repeat(FALSE);  
+  p_input->key_repeat(FALSE);
 
   istate = INPUT_NONE;
   input_redraw();
@@ -1660,7 +1723,7 @@ void editor_console::input_add_char(char c, bool redraw)
       case INPUT_BOOLEAN:
         if(c == boolean_yes[0]) {
           input_boolean = TRUE;
-        }
+        }      
         else if(c == boolean_no[0]) {
           input_boolean = FALSE;
         }
@@ -1682,7 +1745,10 @@ void editor_console::input_add_char(char c, bool redraw)
 
 void editor_console::input_redraw(void)
 { 
-  if(istate == INPUT_READY) {  
+  if(itype == INPUT_WAIT) {
+    // nothing here...
+  } 
+  else if(istate == INPUT_READY) {  
     p_grf->fill(ix_title,iy_title,w,CONSOLE_INPUT_LINE_HEIGHT,COLOR_MAP(0,0,255));
 
     p_font->select(FONT_DEFAULT);

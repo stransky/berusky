@@ -101,14 +101,13 @@ public:
 
 public:
 
-  /* Draws item(s) in panel
+  /* Draws controls and panel item(s)
   */
-  void publish(void);
+  void draw_panel(void);
 
-  /* Draws controls for a panel
+  /* Register control events
   */
-  void publish_controls(INPUT *p_input);
-
+  void register_controls_events(INPUT *p_input);
 
   /* Items in panel
   */
@@ -117,13 +116,13 @@ public:
   {
     item_first = item_first_;
     if(redraw)
-      publish();
+      draw_panel();
   }
   void items_increment_set(int variant_increment_, bool redraw = TRUE)
   {
     variant_increment = variant_increment_;
     if(redraw)
-      publish();
+      draw_panel();
   }
 
 
@@ -131,13 +130,13 @@ public:
   {
     variant_first = variant_first_;
     if(redraw)
-      publish();
+      draw_panel();
   }
   void variant_increment_set(int variant_increment_, bool redraw = TRUE)
   {
     variant_increment = variant_increment_;
     if(redraw)
-      publish();
+      draw_panel();
   }
 
 
@@ -146,14 +145,14 @@ public:
     item_first = item_first_;
     item_increment = item_increment_;
     if(redraw)
-      publish();
+      draw_panel();
   }
   void variant_set(int variant_first_, int variant_increment_, bool redraw = TRUE)
   {
     variant_first = variant_first_;
     variant_increment = variant_increment_;
     if(redraw)
-      publish();
+      draw_panel();
   }
 
   int  item_return(tpos x, tpos y, EDITOR_SELECTION *p_sel = NULL);
@@ -163,13 +162,13 @@ public:
   {
     item_highlighted = item_return(x,y);
     if(redraw)
-      publish();
+      draw_panel();
   }
   void item_unhighlight(bool redraw = TRUE)
   {
     item_highlighted = NO_SELECTION;
     if(redraw)
-      publish();
+      draw_panel();
   }
   
   void item_select(tpos x, tpos y, EDITOR_SELECTION *p_sel, bool redraw = TRUE)
@@ -179,13 +178,13 @@ public:
       p_slave->items_first_set(p_sel->item);
     }
     if(redraw)
-      publish();
+      draw_panel();
   }
   void item_unselect(bool redraw = TRUE)
   {
     item_selected = NO_SELECTION;
     if(redraw)
-      publish();
+      draw_panel();
   }
 
   bool panel_scroll_check(int direction);
@@ -259,7 +258,8 @@ public:
 typedef enum {
   
   INPUT_BOOLEAN,
-  INPUT_STRING
+  INPUT_STRING,
+  INPUT_WAIT,
 
 } INPUT_TYPE;
 
@@ -320,7 +320,7 @@ public:
   void  input_clear(bool redraw = TRUE);
   void  input_clear_last(bool redraw = TRUE);
   void  input_add_char(char c, bool redraw = TRUE);
-  void  input_redraw(void);  
+  void  input_redraw(void);    
   
   char * input_string_get(void)
   {
@@ -361,9 +361,9 @@ public:
       input_redraw();
     }
   }
-  bool  input_bool_get(void)
+  bool input_bool_get(void)
   {
-    return(input_boolean);
+    return(input_boolean != CONSOLE_BOOLEAN_NO_INPUT && input_boolean);
   }
 
   editor_console()
@@ -401,12 +401,13 @@ public:
   #define HANDLE_3        (NO_HANDLE+3)
   #define HANDLE_4        (NO_HANDLE+4)
 
-  void   input_start(EDITOR_CONSOLE_CALLBACK callback,  int callback_id, INPUT_TYPE type, char *p_text,...);
-  void   console_input(MENU_STATE state, int data, int data1);
-  void   input_stop(bool success);  
+  void  input_start(EDITOR_CONSOLE_CALLBACK callback,  int callback_id, INPUT_TYPE type, char *p_text,...);
+  void  console_input(MENU_STATE state, int data, int data1);  
+  void  console_wait(MENU_STATE state, int data, int data1);
+  void  input_stop(bool success);  
 
 
-  bool   input_get_bool(void)
+  bool  input_get_bool(void)
   {
     return(console.input_bool_get());
   }
@@ -432,6 +433,7 @@ public:
   void panel_item_select(int panel, tpos x, tpos y);
   void panel_item_highlight(int panel, tpos x, tpos y);
   void panel_reset(void);
+  void panel_draw(void);
   void panel_scroll(int panel, int direction);
 
 private:
@@ -451,7 +453,7 @@ public:
 private:
 
   void side_menu_create(void);
-  void side_menu_update(void);
+  void side_menu_draw(void);
 
 private:
 
@@ -473,6 +475,7 @@ public:
   void level_edited_clear(void);
 
   void help(void);
+  void help_quit(void);
 
   void level_new(bool force = FALSE);
   void level_new_callback(void);
@@ -489,6 +492,8 @@ public:
   editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_);
   ~editor_gui(void);
   
+  void editor_reset(void);
+
   bool editor_quit(bool force);
   void editor_quit_callback(void);
 

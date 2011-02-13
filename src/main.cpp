@@ -285,7 +285,6 @@ void user_directory_create(void)
   bprintf(" ");
 }
 
-
 /*
  * Let's begin
  */
