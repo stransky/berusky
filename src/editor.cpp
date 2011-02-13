@@ -337,6 +337,8 @@ editor_gui::~editor_gui(void)
 
 void editor_gui::editor_reset(void)
 {
+  draw_level = TRUE;
+
   input.mevent_clear();
   input.events_wait(TRUE);
 
@@ -932,9 +934,12 @@ void editor_gui::help_print_line(tpos x_pos, tpos &y_pos, char *p_key, char *p_n
 void editor_gui::help(void)
 {
   p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
+  
+  p_font->select(FONT_DEFAULT);
 
   tpos x_pos = EDIT_HELP_KEY_X;
   tpos y_pos = EDIT_HELP_START_Y;
+
   help_print_line(x_pos,y_pos,_("Keyboard control:"));
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("F1"),_("- Help"));
@@ -982,6 +987,8 @@ void editor_gui::help(void)
 
   menu_key_input.set((GUI_BASE *)this,(GUI_BASE_FUNC)&editor_gui::console_wait);
   console.input_start(INPUT_WAIT, NULL);  
+  
+  draw_level = FALSE;
 }
 
 void editor_gui::help_quit(void)
@@ -1449,7 +1456,7 @@ bool editor_gui::event_handler(void)
           undo_restore();
           break;
         case ED_REDO:
-          break;        
+          break;
         
         case ED_LEVEL_RUN:
           editor_run_level();
@@ -1501,8 +1508,10 @@ bool editor_gui::event_handler(void)
   
   } while(!queue.empty());
 
-  // Draw all changes    
-  level.draw();
+  // Draw all changes in level
+  if(draw_level) {
+    level.draw();
+  }
   level.flip();
 
   return(TRUE);

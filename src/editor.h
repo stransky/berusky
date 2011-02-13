@@ -384,6 +384,7 @@ typedef class editor_gui : public gui_base {
 
   ITEM_REPOSITORY        *p_repo;
   LEVEL_EDITOR            level;
+  bool                    draw_level; // Draw the level?
 
   LEVEL_EVENT_QUEUE       queue;
 
