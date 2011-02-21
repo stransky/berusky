@@ -56,37 +56,101 @@ ITEM_REPOSITORY *item_panel::p_repo = NULL;
   start_x;
   start_y;
 
-  dx = dx*item_num;
-  dy = dy*item_num;
+  dx = dx*panel_item_num;
+  dy = dy*panel_item_num;
 */
 
-bool item_panel::panel_scroll_check(int direction)
+bool item_panel::panel_scroll_calc(int direction)
 {
-  int tmp_item    = item_first    + item_increment * direction;
-  int tmp_variant = variant_first + variant_increment * direction;
-
-  if(tmp_item < 0 || tmp_variant < 0)
-    return(FALSE);
-
-  int i;
-  for(i = 0; i < item_num; i++) {
-    int item =    tmp_item + item_increment * i;
-    int variant = tmp_variant + variant_increment * i;
-  
-    if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
-      break;
+  if(direction == ITEMS_START) {
+    if(panel_item_increment) {
+      panel_item_first = 0;
+    }
+    else {
+      panel_variant_first = 0;
+    }
+    return(TRUE);
   }
+  else if(direction == ITEMS_END) {
+    if(panel_item_increment) {
+      panel_item_first = p_repo->item_num_get() - panel_item_num;
+      if(panel_item_first < 0)
+        panel_item_first = 0;
+    }
+    else {
+      panel_variant_first = p_repo->variants_get(panel_item_first) - panel_item_num;
+      if(panel_variant_first < 0)
+        panel_variant_first = 0;
+    }
+    return(TRUE);
+  }
+  else {
+    int item_new    = panel_item_first + panel_item_increment * direction;
+    int variant_new = panel_variant_first + panel_variant_increment * direction;
   
-  return(i == item_num);
+    if(item_new < 0) {
+      item_new = 0;
+    }
+    if(variant_new < 0) {
+      variant_new = 0;
+    }
+  
+    if(item_new == panel_item_first && variant_new == panel_variant_first) {
+      // no scroll - don't change it
+      return(FALSE);
+    }
+  
+    // Item panel scroll
+    if(panel_item_increment) {
+      // a number of all game items
+      int item_num = p_repo->item_num_get();
+      
+      // Do we need to scroll anyway?
+      if(item_num > panel_item_num) {
+        if(item_new + panel_item_num < item_num) {
+          panel_item_first = item_new;
+          return(TRUE);
+        }
+        else {
+          item_new = item_num - panel_item_num;
+          assert(item_new >= panel_item_first);
+          if(item_new > panel_item_first) {
+            panel_item_first = item_new;
+            return(TRUE);
+          }      
+        }
+      }
+    }
+    // Variant panel scroll
+    else if(panel_variant_increment) {
+      int variant_num = p_repo->variants_get(panel_item_first);
+      
+      // Do we need to scroll anyway?
+      if(variant_num > panel_item_num) {
+        if(variant_new + panel_item_num < variant_num) {
+          panel_variant_first = variant_new;
+          return(TRUE);
+        }
+        else {
+          variant_new = variant_num - panel_item_num;
+          assert(variant_new >= panel_variant_first);
+          if(variant_new > panel_variant_first) {
+            panel_variant_first = variant_new;
+            return(TRUE);
+          }      
+        }
+      }
+    }
+  }
+
+  return(FALSE);
 }
 
 void item_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw)
 {
-  if(panel_scroll_check(direction)) {
-    item_first    += item_increment * direction;
-    variant_first += variant_increment * direction;
-    if(item_selected != NO_SELECTION) {
-      item_return(item_selected,p_sel,direction);
+  if(panel_scroll_calc(direction)) {
+    if(panel_item_selected != NO_SELECTION) {
+      item_return(panel_item_selected,p_sel,direction);
     }
     if(redraw)
       draw_panel();
@@ -106,13 +170,13 @@ int  item_panel::item_return(tpos x, tpos y, EDITOR_SELECTION *p_sel)
   }  
 
   int i;
-  for(i = 0; i < item_num; i++) {
+  for(i = 0; i < panel_item_num; i++) {
   
     tpos tx = sx + dx*i;
     tpos ty = sy + dy*i;
   
-    int item =    item_first + item_increment*i;
-    int variant = variant_first + variant_increment*i;
+    int item =    panel_item_first + panel_item_increment*i;
+    int variant = panel_variant_first + panel_variant_increment*i;
   
     if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
       return(NO_SELECTION);
@@ -136,13 +200,13 @@ int  item_panel::item_return(int selected_item, EDITOR_SELECTION *p_sel, int cor
   selected_item += correction;
   if(selected_item < 0)
     selected_item = 0;
-  if(selected_item >= item_num)
-    selected_item = item_num-1;
+  if(selected_item >= panel_item_num)
+    selected_item = panel_item_num-1;
 
-  for(i = 0; i < item_num; i++) {
+  for(i = 0; i < panel_item_num; i++) {
   
-    int item =    item_first + item_increment*i;
-    int variant = variant_first + variant_increment*i;
+    int item =    panel_item_first + panel_item_increment*i;
+    int variant = panel_variant_first + panel_variant_increment*i;
   
     if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant)) {
       return(i > 0 && i == selected_item ? i-1 : NO_SELECTION);
@@ -172,7 +236,7 @@ void item_panel::draw_panel(void)
   
     r.x = sx;
     r.y = sy;
-    r.w = dx*item_num;
+    r.w = dx*panel_item_num;
     r.h = ITEM_SIZE_Y;  
   } else {
     // Panel is vertical
@@ -181,19 +245,19 @@ void item_panel::draw_panel(void)
     r.x = sx;
     r.y = sy;
     r.w = ITEM_SIZE_X;
-    r.h = dy*item_num;
+    r.h = dy*panel_item_num;
   }
 
   p_grf->fill(&r,0);
 
   int i;
-  for(i = 0; i < item_num; i++) {
+  for(i = 0; i < panel_item_num; i++) {
   
     tpos x = sx + dx*i;
     tpos y = sy + dy*i;
   
-    int item =    item_first + item_increment*i;
-    int variant = variant_first + variant_increment*i;
+    int item =    panel_item_first + panel_item_increment*i;
+    int variant = panel_variant_first + panel_variant_increment*i;
   
     if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
       break;
@@ -206,11 +270,11 @@ void item_panel::draw_panel(void)
     #define COLOR_SELECTED_G      0
     #define COLOR_SELECTED_B      0
     
-    if(i == item_highlighted) {
+    if(i == panel_item_highlighted) {
       p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y,p_grf->color_map(COLOR_HIGHLIGHTED_R,
                   COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
     }
-    if(i == item_selected) {
+    if(i == panel_item_selected) {
       p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y, p_grf->color_map(COLOR_SELECTED_R,
                   COLOR_SELECTED_G, COLOR_SELECTED_B));
     }
@@ -241,7 +305,7 @@ void item_panel::draw_panel(void)
   }  
 }
 
-void item_panel::register_controls_events(INPUT *p_input)
+RECT item_panel::boundary_get(void)
 {
   RECT r;
 
@@ -254,7 +318,7 @@ void item_panel::register_controls_events(INPUT *p_input)
   
     r.x = sx;
     r.y = sy;
-    r.w = dx*item_num;
+    r.w = dx*panel_item_num;
     r.h = ITEM_SIZE_Y;
   } else {
     // Panel is vertical
@@ -263,8 +327,15 @@ void item_panel::register_controls_events(INPUT *p_input)
     r.x = sx;
     r.y = sy;
     r.w = ITEM_SIZE_X;
-    r.h = dy*item_num;
+    r.h = dy*panel_item_num;
   }
+
+  return r;
+}
+
+void item_panel::register_controls_events(INPUT *p_input)
+{
+  RECT r = boundary_get();
 
   /* Scrolling (by mouse wheel) */
   p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_UP),
@@ -273,7 +344,7 @@ void item_panel::register_controls_events(INPUT *p_input)
   p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_DOWN),
                       MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS,
                       LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL, panel_handle, 1)));
-
+                      
   /* Highlight of items in panel */
   p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r),
                       MEVENT_MOUSE_EXTERNAL|MEVENT_MOUSE_IN, 
@@ -389,27 +460,17 @@ void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
 
 void editor_gui::panel_reset(void)
 {
-  #define ITEMS_X_START   0
-  #define ITEMS_Y_START   0
-  #define ITEMS_X_DIFF    0
-  #define ITEMS_Y_DIFF    35
-  #define ITEMS_DX        (EDITOR_RESOLUTION_X-ITEMS_X_START)
-  #define ITEMS_DY        (EDITOR_RESOLUTION_Y-ITEMS_Y_START)
-
-  //-- dodelat tu listu
-  #define ITEMS_IN_PANEL  12
-
   item_panel::set_up(p_repo);
 
   ipanel[0].set_up(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1,ipanel+1);
-  ipanel[0].item_increment = 1;
+  ipanel[0].panel_item_increment = 1;
   ipanel[1].set_up(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_2);
-  ipanel[1].variant_increment = 1;
+  ipanel[1].panel_variant_increment = 1;
 
   ipanel[2].set_up(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3, ipanel+3);
-  ipanel[2].item_increment = 1;
+  ipanel[2].panel_item_increment = 1;
   ipanel[3].set_up(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
-  ipanel[3].variant_increment = 1;
+  ipanel[3].panel_variant_increment = 1;
 
   int i;
   for(i = 0; i < PANELS; i++) {    
@@ -431,6 +492,25 @@ void editor_gui::panel_scroll(int panel, int direction)
   assert(panel >= 0 && panel < PANELS);
   ipanel[panel].panel_scroll(direction,&sel); 
   selection_draw();
+}
+
+void editor_gui::panel_scroll_mouse(int direction)
+{
+  MOUSE_STATE *p_state = input.mouse_state_get();
+  int panel = -1;
+
+  int i;
+  for(i = 0; i < PANELS; i++) {
+    RECT r = ipanel[i].boundary_get();
+    if(p_state->in_rect(r)) {
+      panel = i;
+      break;
+    }
+  }
+
+  if(panel != -1) {  
+    panel_scroll(PANEL_HANDLE_1+panel, direction);
+  }
 }
 
 /*
@@ -955,14 +1035,14 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("SHIFT+R"),_("- Rotate item"));
   help_print_line(x_pos,y_pos,_("CTRL+U"),_("- Undo"));
   help_print_line(x_pos,y_pos,_("CTRL+S"),_("- Shade level"));
-  help_print_line(x_pos,y_pos,_("B"),_("- Change background"));
+  help_print_line(x_pos,y_pos,_("B"),_("- Background"));
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("1"),_("- Select floor layer"));
   help_print_line(x_pos,y_pos,_("2"),_("- Select items layer"));
   help_print_line(x_pos,y_pos,_("3"),_("- Select players layer"));
   help_print_line(x_pos,y_pos,_("4"),_("- Select all layer"));
   y_pos += EDIT_HELP_DY;
-  help_print_line(x_pos,y_pos,_("CTRL+1"),_("- on/off grid/background image"));
+  help_print_line(x_pos,y_pos,_("CTRL+1"),_("- on/off background"));
   help_print_line(x_pos,y_pos,_("CTRL+2"),_("- on/off floor layer"));
   help_print_line(x_pos,y_pos,_("CTRL+3"),_("- on/off items layer"));
   help_print_line(x_pos,y_pos,_("CTRL+4"),_("- on/off players layer"));
@@ -983,6 +1063,18 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("F+third"),_("- clear solid rect"));
   help_print_line(x_pos,y_pos,_("D+third"),_("- clear empty rect"));
 
+  x_pos = EDIT_HELP_MOUSE_X+70;
+  y_pos += EDIT_HELP_DY*6;
+  help_print_line(x_pos,y_pos,_("item panel mouse control:"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("wheel"),_("- scroll by one"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("PgUp"),_("- scroll page up"));
+  help_print_line(x_pos,y_pos,_("PgDown"),_("- scroll page down"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("Home"),_("- first item"));
+  help_print_line(x_pos,y_pos,_("End"),_("- last item"));
+
   p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
 
   menu_key_input.set((GUI_BASE *)this,(GUI_BASE_FUNC)&editor_gui::console_wait);
@@ -994,19 +1086,6 @@ void editor_gui::help(void)
 void editor_gui::help_quit(void)
 {
   editor_reset();
-/*
-  // Redraw the whole scene
-  p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
-  p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
-
-  panel_draw();
-  selection_draw();
-  layer_menu_draw();
-  layer_status_draw();
-  level_draw();
-  side_menu_draw();
-  selection_cursor_update();
-*/
 }
 
 void editor_gui::level_save(int force)
@@ -1438,6 +1517,10 @@ bool editor_gui::event_handler(void)
 
         case ED_LEVEL_IPANEL_SCROLL:
           panel_scroll(ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+          break;
+        
+        case ED_LEVEL_MOUSE_PANEL_SCROLL:
+          panel_scroll_mouse(ev.param_int_get(PARAM_0));
           break;
   
         case ED_LEVEL_LAYER:        

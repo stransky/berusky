@@ -1,22 +1,19 @@
+panel:
 
-- ondra -> varianta - 20, pak se prepne na prvek co ma 
-posledni variantu 3
+  - lista - zvyrazneni zakladniho prvku + zvyrazneni i varianty
+  - pokud neni varianta vybrana -> reset?
+  
+- automaticky prepinat varianty pri skrolovani
+- nechat tam ten vyber!
 
 Nove prvky:
 
 - Nove pozadi
-
 - lehka bedna
 - dira v zemi
   - muze tam spadnout bedna nebo vybusnina
 
 Bugs:
-
-- udelat full-screen napovedu (v editoru)
-  - input block, popr. sezrat jakoukoliv klavesu/mys?
-
-- editor - skrolovani listou o vice prvku (cela obrazovka = page up/down)
-- mazani -> pokud kurzor je na prazdnem policku, nesmaze se to!
 
 Berusky V1.1 crashes sometimes with this error:
 berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*):

@@ -76,14 +76,14 @@ typedef class data_parser {
   char * token_get_next(char *p_line)
   {
     while(*p_line && isblank(*p_line))
-      *p_line++;
+      p_line++;
     return(p_line);
   }
   char * token_get_next_end(char *p_line)
   {
     while(*p_line && !isblank(*p_line) && *p_line != '+' && *p_line != '|' && 
           *p_line != '\n' && *p_line != '\r')
-      *p_line++;
+      p_line++;
     return(p_line);
   }
 

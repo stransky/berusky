@@ -123,6 +123,11 @@ public:
     return(item != NO_ITEM && item < GAME_ITEMS);
   }
 
+  int item_num_get(void)
+  {
+    return(GAME_ITEMS);
+  }
+
   char * item_get_name(int item)
   {
     assert(item_valid(item));

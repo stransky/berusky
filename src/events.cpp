@@ -91,6 +91,7 @@ const char * level_event::translation_table[] =
   "ED_LEVEL_SHADER",
   "ED_LEVEL_LAYER",
   "ED_LEVEL_IPANEL_SCROLL",
+  "ED_LEVEL_MOUSE_PANEL_SCROLL",
   "ED_LEVEL_IPANEL_SELECT",
   "ED_LEVEL_IPANEL_SELECT_LOCK",
   "ED_UNDO",

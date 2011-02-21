@@ -300,6 +300,10 @@ typedef enum {
   // format: [ED_LEVEL_IPANEL_SCROLL, panel_handle, direction]
   ED_LEVEL_IPANEL_SCROLL,
   
+  // scroll a panel selected by mouse cursor
+  // format: [ED_LEVEL_MOUSE_PANEL_SCROLL, direction]
+  ED_LEVEL_MOUSE_PANEL_SCROLL,
+  
   // highlight an item in panel
   // format: [ED_LEVEL_IPANEL_SELECT, panel_handle, direction]
   ED_LEVEL_IPANEL_SELECT,

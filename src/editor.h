@@ -70,6 +70,18 @@ typedef enum {
 
 } CHANGE_TYPE;
 
+#define ITEMS_X_START   0
+#define ITEMS_Y_START   0
+#define ITEMS_X_DIFF    0
+#define ITEMS_Y_DIFF    35
+#define ITEMS_DX        (EDITOR_RESOLUTION_X-ITEMS_X_START)
+#define ITEMS_DY        (EDITOR_RESOLUTION_Y-ITEMS_Y_START)
+
+//-- finish the pannel
+#define ITEMS_IN_PANEL  12
+#define ITEMS_START     -1
+#define ITEMS_END       -2
+
 typedef class item_panel {
 
   static ITEM_REPOSITORY *p_repo;
@@ -83,21 +95,21 @@ typedef class item_panel {
   tpos start_y, dy;
 
   // Number of visible items
-  int item_num;
-  int item_highlighted;
-  int item_selected;
+  int panel_item_num;
+  int panel_item_highlighted;
+  int panel_item_selected;
 
   int panel_handle;
 
 public:
   
   // Items in the panel
-  int item_first;
-  int item_increment;
+  int panel_item_first;
+  int panel_item_increment;
 
   // Variants in the panel
-  int variant_first;
-  int variant_increment;
+  int panel_variant_first;
+  int panel_variant_increment;
 
 public:
 
@@ -112,45 +124,45 @@ public:
   /* Items in panel
   */
 
-  void items_first_set(int item_first_, bool redraw = TRUE)
+  void items_first_set(int panel_item_first_, bool redraw = TRUE)
   {
-    item_first = item_first_;
+    panel_item_first = panel_item_first_;
     if(redraw)
       draw_panel();
   }
-  void items_increment_set(int variant_increment_, bool redraw = TRUE)
+  void items_increment_set(int panel_variant_increment_, bool redraw = TRUE)
   {
-    variant_increment = variant_increment_;
-    if(redraw)
-      draw_panel();
-  }
-
-
-  void variant_first_set(int variant_first_, bool redraw = TRUE)
-  {
-    variant_first = variant_first_;
-    if(redraw)
-      draw_panel();
-  }
-  void variant_increment_set(int variant_increment_, bool redraw = TRUE)
-  {
-    variant_increment = variant_increment_;
+    panel_variant_increment = panel_variant_increment_;
     if(redraw)
       draw_panel();
   }
 
 
-  void items_set(int item_first_, int item_increment_, bool redraw = TRUE)
+  void variant_first_set(int panel_variant_first_, bool redraw = TRUE)
   {
-    item_first = item_first_;
-    item_increment = item_increment_;
+    panel_variant_first = panel_variant_first_;
     if(redraw)
       draw_panel();
   }
-  void variant_set(int variant_first_, int variant_increment_, bool redraw = TRUE)
+  void variant_increment_set(int panel_variant_increment_, bool redraw = TRUE)
   {
-    variant_first = variant_first_;
-    variant_increment = variant_increment_;
+    panel_variant_increment = panel_variant_increment_;
+    if(redraw)
+      draw_panel();
+  }
+
+
+  void items_set(int panel_item_first_, int panel_item_increment_, bool redraw = TRUE)
+  {
+    panel_item_first = panel_item_first_;
+    panel_item_increment = panel_item_increment_;
+    if(redraw)
+      draw_panel();
+  }
+  void variant_set(int panel_variant_first_, int panel_variant_increment_, bool redraw = TRUE)
+  {
+    panel_variant_first = panel_variant_first_;
+    panel_variant_increment = panel_variant_increment_;
     if(redraw)
       draw_panel();
   }
@@ -160,40 +172,41 @@ public:
 
   void item_highlight(tpos x, tpos y, bool redraw = TRUE)
   {
-    item_highlighted = item_return(x,y);
+    panel_item_highlighted = item_return(x,y);
     if(redraw)
       draw_panel();
   }
   void item_unhighlight(bool redraw = TRUE)
   {
-    item_highlighted = NO_SELECTION;
+    panel_item_highlighted = NO_SELECTION;
     if(redraw)
       draw_panel();
   }
   
   void item_select(tpos x, tpos y, EDITOR_SELECTION *p_sel, bool redraw = TRUE)
   {
-    item_selected = item_return(x,y,p_sel);
+    panel_item_selected = item_return(x,y,p_sel);
     if(p_slave) {
-      p_slave->items_first_set(p_sel->item);
+      p_slave->items_first_set(p_sel->item, FALSE);
+      p_slave->variant_first_set(p_sel->variant);
     }
     if(redraw)
       draw_panel();
   }
   void item_unselect(bool redraw = TRUE)
   {
-    item_selected = NO_SELECTION;
+    panel_item_selected = NO_SELECTION;
     if(redraw)
       draw_panel();
   }
 
-  bool panel_scroll_check(int direction);
+  bool panel_scroll_calc(int direction);
   void panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw = TRUE);
 
   // return size of panel tool (number of items)
   int  items_get(void)
   {
-    return(item_num);
+    return(panel_item_num);
   }
 
   /* Setting up
@@ -203,7 +216,7 @@ public:
     p_repo = p_repo_;
   }
   
-  void set_up(int item_num_, DIRECTION direction, tpos start_x_, tpos start_y_, 
+  void set_up(int panel_item_num_, DIRECTION direction, tpos start_x_, tpos start_y_, 
               int panel_handle_, class item_panel *p_slave_ = NULL)
   {
     switch(direction) {
@@ -217,7 +230,7 @@ public:
         break;
     }
 
-    item_num = item_num_;
+    panel_item_num = panel_item_num_;
   
     start_x = start_x_;
     start_y = start_y_;
@@ -228,6 +241,8 @@ public:
     item_unhighlight(FALSE);
     item_unselect();
   }  
+
+  RECT boundary_get(void);
 
   item_panel()
   {
@@ -436,6 +451,7 @@ public:
   void panel_reset(void);
   void panel_draw(void);
   void panel_scroll(int panel, int direction);
+  void panel_scroll_mouse(int direction);
 
 private:
 

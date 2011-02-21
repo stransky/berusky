@@ -243,6 +243,16 @@ typedef  SDLMod       KEYMOD;
 
 #define  KEY_GROUP_BLOCK_MOVE   0x100
 
+inline bool in_rect(RECT &dst, tpos x, tpos y)
+{
+  return(x >= dst.x && y >= dst.y && x < dst.x+dst.w && y < dst.y+dst.h);
+}
+
+inline bool in_rect(RECT &dst, RECT &src)
+{
+  return(src.x >= dst.x && src.y >= dst.y && 
+         src.x < dst.x+dst.w && src.y < dst.y+dst.h);
+}
 
 // ------------------------------------------------------------
 // Game input info
@@ -297,6 +307,13 @@ public:
   RECT rect;
   int  button[MOUSE_BUTTONS];
   int  key;
+
+public:
+  
+  bool in_rect(RECT &dst)
+  {
+    return(::in_rect(dst, rect.x, rect.y));
+  }
 
 public:
 
@@ -450,6 +467,11 @@ public:
   void mevent_state_clear(int first = 0);
   void mevent_clear(void);
   void mevent_add(MOUSE_EVENT *p_event, int num);
+  
+  MOUSE_STATE * mouse_state_get(void)
+  {
+    return(&mstate);
+  }
 
   void mevent_add(MOUSE_EVENT event)
   {
