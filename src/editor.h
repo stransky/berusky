@@ -79,135 +79,131 @@ typedef enum {
 
 //-- finish the pannel
 #define ITEMS_IN_PANEL  12
-#define ITEMS_START     -1
-#define ITEMS_END       -2
+#define ITEMS_START     0xffff
+#define ITEMS_END       0xfffe
 
-typedef class item_panel {
-
-  static ITEM_REPOSITORY *p_repo;
-
-  // A slave panel
-  // Will be updated by selection of this panel
-  class item_panel *p_slave;
+typedef class editor_panel {
 
   // Location and appearance of the panel
   tpos start_x, dx;
   tpos start_y, dy;
 
-  // Number of visible items
-  int panel_item_num;
-  int panel_item_highlighted;
-  int panel_item_selected;
+  // Number of visible cells
+  int panel_slot_num;
+  int panel_slot_highlighted;
+  int panel_slot_selected;
 
   int panel_handle;
 
+protected:
+
+  static ITEM_REPOSITORY *p_repo;
+
 public:
+
+  /* Return size of panel tool (number of slots which can be displayed)
+  */
+  int panel_size_get(void)
+  {
+    return(panel_slot_num);
+  }
+
+  /* Return index of slot at x,y coordinates
+  */
+  bool slot_return(tpos x, tpos y, int &slot);
+
+  /* Return index of slot at x,y coordinates 
+     or NO_SELECTION
+  */
+  int slot_return(tpos x, tpos y)
+  {
+    int slot;
+    return(slot_return(x, y, slot) ? slot : NO_SELECTION);
+  }  
+
+  /* Draw one slot of the panel
+  */
+  void slot_draw(int slot, int item, int variant);
+
+  /* Draw panel controls
+  */
+  void controls_draw(void);
   
-  // Items in the panel
-  int panel_item_first;
-  int panel_item_increment;
+  /* Panel highlight routines
+  */
+  void slot_highlight(int slot, bool redraw = TRUE)
+  {
+    panel_slot_highlighted = slot;
+    if(redraw)
+      panel_draw();
+  }
+  void slot_highlight(tpos x, tpos y, bool redraw = TRUE)
+  {
+    slot_highlight(slot_return(x,y),redraw);
+  }
+  void slot_unhighlight(bool redraw = TRUE)
+  {
+    slot_highlight(NO_SELECTION,redraw);
+  }
 
-  // Variants in the panel
-  int panel_variant_first;
-  int panel_variant_increment;
+  /* Panel selection routines
+  */
+  void slot_select(int slot, bool redraw = TRUE)
+  {
+    panel_slot_selected = slot;
+    if(redraw) {
+      panel_draw();
+    }
+  }
+  void slot_select(tpos x, tpos y, bool redraw = TRUE)
+  {
+    slot_select(slot_return(x,y),redraw);
+  }
+  void slot_unselect(bool redraw = TRUE)
+  {
+    slot_select(NO_SELECTION,redraw);
+  }
 
-public:
+  void slot_selection_fix(int last_valid_slot, bool redraw = TRUE)
+  {
+    if(panel_slot_selected != NO_SELECTION) {
+      if(panel_slot_selected > last_valid_slot)
+        panel_slot_selected = last_valid_slot;
+    }
+    if(panel_slot_highlighted != NO_SELECTION) {
+      if(panel_slot_highlighted > last_valid_slot)
+        panel_slot_highlighted = last_valid_slot;
+    }
+    if(redraw) {
+      panel_draw();
+    }
+  }
+
+  /* Is the panel slot valid?
+     It's a relative slot positition, from 0 to panel_item_num
+  */
+  virtual bool slot_valid(int slot) = 0;
+
+  /* Return first item on the panel
+  */
+  virtual int item_firts_get(void) = 0;
+  
+  /* Return last valid item (0 is the first one)
+  */
+  virtual int item_last_get(void) = 0;
+  
+  /* Set an item for first slot
+  */
+  virtual void panel_set(int first, bool redraw = TRUE) = 0;
 
   /* Draws controls and panel item(s)
   */
-  void draw_panel(void);
+  virtual void panel_draw(void) = 0;
 
-  /* Register control events
+  /* Scroll the pannel with given direction
+     and preserve selected item
   */
-  void register_controls_events(INPUT *p_input);
-
-  /* Items in panel
-  */
-
-  void items_first_set(int panel_item_first_, bool redraw = TRUE)
-  {
-    panel_item_first = panel_item_first_;
-    if(redraw)
-      draw_panel();
-  }
-  void items_increment_set(int panel_variant_increment_, bool redraw = TRUE)
-  {
-    panel_variant_increment = panel_variant_increment_;
-    if(redraw)
-      draw_panel();
-  }
-
-
-  void variant_first_set(int panel_variant_first_, bool redraw = TRUE)
-  {
-    panel_variant_first = panel_variant_first_;
-    if(redraw)
-      draw_panel();
-  }
-  void variant_increment_set(int panel_variant_increment_, bool redraw = TRUE)
-  {
-    panel_variant_increment = panel_variant_increment_;
-    if(redraw)
-      draw_panel();
-  }
-
-
-  void items_set(int panel_item_first_, int panel_item_increment_, bool redraw = TRUE)
-  {
-    panel_item_first = panel_item_first_;
-    panel_item_increment = panel_item_increment_;
-    if(redraw)
-      draw_panel();
-  }
-  void variant_set(int panel_variant_first_, int panel_variant_increment_, bool redraw = TRUE)
-  {
-    panel_variant_first = panel_variant_first_;
-    panel_variant_increment = panel_variant_increment_;
-    if(redraw)
-      draw_panel();
-  }
-
-  int  item_return(tpos x, tpos y, EDITOR_SELECTION *p_sel = NULL);
-  int  item_return(int selected_item, EDITOR_SELECTION *p_sel = NULL, int correction = 0);
-
-  void item_highlight(tpos x, tpos y, bool redraw = TRUE)
-  {
-    panel_item_highlighted = item_return(x,y);
-    if(redraw)
-      draw_panel();
-  }
-  void item_unhighlight(bool redraw = TRUE)
-  {
-    panel_item_highlighted = NO_SELECTION;
-    if(redraw)
-      draw_panel();
-  }
-  
-  void item_select(tpos x, tpos y, EDITOR_SELECTION *p_sel, bool redraw = TRUE)
-  {
-    panel_item_selected = item_return(x,y,p_sel);
-    if(p_slave) {
-      p_slave->items_first_set(p_sel->item, FALSE);
-      p_slave->variant_first_set(p_sel->variant);
-    }
-    if(redraw)
-      draw_panel();
-  }
-  void item_unselect(bool redraw = TRUE)
-  {
-    panel_item_selected = NO_SELECTION;
-    if(redraw)
-      draw_panel();
-  }
-
-  bool panel_scroll_calc(int direction);
-  void panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw = TRUE);
-
-  // return size of panel tool (number of items)
-  int  items_get(void)
-  {
-    return(panel_item_num);
-  }
+  void panel_scroll(int direction, bool redraw = TRUE);
 
   /* Setting up
   */
@@ -216,8 +212,13 @@ public:
     p_repo = p_repo_;
   }
   
-  void set_up(int panel_item_num_, DIRECTION direction, tpos start_x_, tpos start_y_, 
-              int panel_handle_, class item_panel *p_slave_ = NULL)
+  void register_controls_events(INPUT *p_input);
+
+  // Get pannel size, without control buttons
+  RECT boundary_get(void);
+
+  void set_up(int panel_size, DIRECTION direction, 
+              tpos sx, tpos sy, int handle)
   {
     switch(direction) {
       case HORIZONTAL:
@@ -230,26 +231,167 @@ public:
         break;
     }
 
-    panel_item_num = panel_item_num_;
+    panel_slot_num = panel_size;
   
-    start_x = start_x_;
-    start_y = start_y_;
+    start_x = sx;
+    start_y = sy;
   
-    panel_handle = panel_handle_;
-    p_slave = p_slave_;
+    panel_handle = handle;
       
-    item_unhighlight(FALSE);
-    item_unselect();
+    slot_unhighlight(FALSE);
+    slot_unselect(FALSE);
   }  
 
-  RECT boundary_get(void);
-
-  item_panel()
+  editor_panel(int panel_item_num, DIRECTION direction, 
+              tpos start_x, tpos start_y,
+              int handle)
   {
     memset(this,0,sizeof(*this));
+    set_up(panel_item_num, direction, start_x, start_y, handle);
+  }
+
+} EDITOR_PANEL;
+
+/* Derived panel for items
+*/
+typedef class item_panel : public editor_panel {
+
+  // Items in the panel
+  int panel_item_first;
+
+public:
+  
+  /* Items in panel
+  */  
+  void panel_set(int first, bool redraw = TRUE)
+  {
+    panel_item_first = first;
+    if(item_last_get() < panel_size_get()) {  
+      slot_selection_fix(item_last_get(), redraw);
+    }
+    else {
+      slot_selection_fix(panel_size_get(), redraw);
+    }
+  }
+
+  /* Return first item on the panel
+  */
+  int item_firts_get(void)
+  {
+    return(panel_item_first);
+  }
+  
+  /* Return last valid item (0 is the first one)
+  */
+  int item_last_get(void)
+  {
+    return(p_repo->item_num_get());
+  }
+
+  bool slot_valid(int slot)
+  {
+    if(slot >= 0 && slot < panel_size_get()) {
+      return(item_firts_get() + slot <= item_last_get());
+    }
+    return(FALSE);
+  }
+
+public:
+  
+  void panel_draw(void);
+
+public:
+
+  item_panel(int panel_item_num, DIRECTION direction, 
+             tpos start_x, tpos start_y, int handle)
+  : editor_panel(panel_item_num, direction, start_x, start_y, handle)
+  {  
   }
 
 } ITEM_PANEL;
+
+/* Derived panel for variants
+*/
+typedef class variant_panel : public editor_panel {
+
+  // Item which variants are published
+  int panel_item;
+
+  // Variants in the panel
+  int panel_variant_first;
+
+public:
+  
+  void panel_item_set(int item, bool redraw = TRUE)
+  {
+    panel_item = item;
+    if(redraw)
+      panel_draw();
+  }
+
+  /* Items in panel
+  */  
+  void panel_set(int first, bool redraw = TRUE)
+  {
+    panel_variant_first = first;
+    if(variant_last_get() < panel_size_get()) {  
+      slot_selection_fix(item_last_get(), redraw);
+    }
+    else {
+      slot_selection_fix(panel_size_get(), redraw);
+    }
+  }
+
+  /* Return first variant on the panel
+  */
+  int variant_firts_get(void)
+  {
+    return(panel_variant_first);
+  }
+  
+  /* Return last valid item (0 is the first one)
+  */
+  int variant_last_get(void)
+  {
+    return(p_repo->variants_get(panel_item));
+  }
+
+  /* Return first item on the panel
+  */
+  int item_firts_get(void)
+  {
+    return(variant_firts_get());
+  }
+  
+  /* Return last valid item (0 is the first one)
+  */
+  int item_last_get(void)
+  {
+    return(variant_last_get());
+  }
+
+  bool slot_valid(int slot)
+  {
+    if(slot >= 0 && slot < panel_size_get()) {
+      return(variant_firts_get() + slot <= variant_last_get());
+    }
+    return(FALSE);
+  }
+
+
+public:
+  
+  void panel_draw(void);
+
+public:
+
+  variant_panel(int panel_size, DIRECTION direction,
+                tpos start_x, tpos start_y, int handle)
+  : editor_panel(panel_size, direction, start_x, start_y, handle)
+  {  
+  }
+
+} VARIANT_PANEL;
 
 typedef class editor_layer_config {
 
@@ -441,21 +583,21 @@ public:
 public:
 
   #define                 PANELS        4
-  ITEM_PANEL              ipanel[PANELS];
+  EDITOR_PANEL           *ipanel[PANELS];
 
 public:
   
   // Panel interface
   void panel_item_select(int panel, tpos x, tpos y);
   void panel_item_highlight(int panel, tpos x, tpos y);
-  void panel_reset(void);
   void panel_draw(void);
   void panel_scroll(int panel, int direction);
   void panel_scroll_mouse(int direction);
 
 private:
 
-  EDITOR_SELECTION        sel;
+  // Recent selected item (in editor)
+  EDITOR_SELECTION        selected_editor_item;
 
 public:
   

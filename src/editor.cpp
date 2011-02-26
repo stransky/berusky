@@ -47,122 +47,14 @@
 #include "main.h"
 #include "editor.h"
 
-ITEM_REPOSITORY *item_panel::p_repo = NULL;
+ITEM_REPOSITORY *editor_panel::p_repo = NULL;
 
-// draws item panel, writes records to item_array and 
-// returns number of written items
-
-/* Rect is
-  start_x;
-  start_y;
-
-  dx = dx*panel_item_num;
-  dy = dy*panel_item_num;
-*/
-
-bool item_panel::panel_scroll_calc(int direction)
-{
-  if(direction == ITEMS_START) {
-    if(panel_item_increment) {
-      panel_item_first = 0;
-    }
-    else {
-      panel_variant_first = 0;
-    }
-    return(TRUE);
-  }
-  else if(direction == ITEMS_END) {
-    if(panel_item_increment) {
-      panel_item_first = p_repo->item_num_get() - panel_item_num;
-      if(panel_item_first < 0)
-        panel_item_first = 0;
-    }
-    else {
-      panel_variant_first = p_repo->variants_get(panel_item_first) - panel_item_num;
-      if(panel_variant_first < 0)
-        panel_variant_first = 0;
-    }
-    return(TRUE);
-  }
-  else {
-    int item_new    = panel_item_first + panel_item_increment * direction;
-    int variant_new = panel_variant_first + panel_variant_increment * direction;
-  
-    if(item_new < 0) {
-      item_new = 0;
-    }
-    if(variant_new < 0) {
-      variant_new = 0;
-    }
-  
-    if(item_new == panel_item_first && variant_new == panel_variant_first) {
-      // no scroll - don't change it
-      return(FALSE);
-    }
-  
-    // Item panel scroll
-    if(panel_item_increment) {
-      // a number of all game items
-      int item_num = p_repo->item_num_get();
-      
-      // Do we need to scroll anyway?
-      if(item_num > panel_item_num) {
-        if(item_new + panel_item_num < item_num) {
-          panel_item_first = item_new;
-          return(TRUE);
-        }
-        else {
-          item_new = item_num - panel_item_num;
-          assert(item_new >= panel_item_first);
-          if(item_new > panel_item_first) {
-            panel_item_first = item_new;
-            return(TRUE);
-          }      
-        }
-      }
-    }
-    // Variant panel scroll
-    else if(panel_variant_increment) {
-      int variant_num = p_repo->variants_get(panel_item_first);
-      
-      // Do we need to scroll anyway?
-      if(variant_num > panel_item_num) {
-        if(variant_new + panel_item_num < variant_num) {
-          panel_variant_first = variant_new;
-          return(TRUE);
-        }
-        else {
-          variant_new = variant_num - panel_item_num;
-          assert(variant_new >= panel_variant_first);
-          if(variant_new > panel_variant_first) {
-            panel_variant_first = variant_new;
-            return(TRUE);
-          }      
-        }
-      }
-    }
-  }
-
-  return(FALSE);
-}
-
-void item_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw)
-{
-  if(panel_scroll_calc(direction)) {
-    if(panel_item_selected != NO_SELECTION) {
-      item_return(panel_item_selected,p_sel,direction);
-    }
-    if(redraw)
-      draw_panel();
-  }
-}
-
-int  item_panel::item_return(tpos x, tpos y, EDITOR_SELECTION *p_sel)
+bool editor_panel::slot_return(tpos x, tpos y, int &slot)
 {
   tpos sx = start_x;
   tpos sy = start_y;
 
-  /* Panel is horizontal/vertical? */
+  // Panel is horizontal/vertical?
   if(dx) { 
     sx += EDIT_ARROW_DX;
   } else {
@@ -170,142 +62,58 @@ int  item_panel::item_return(tpos x, tpos y, EDITOR_SELECTION *p_sel)
   }  
 
   int i;
-  for(i = 0; i < panel_item_num; i++) {
-  
+  for(i = 0; i < panel_size_get(); i++) {    
+    if(!slot_valid(i))
+      return(FALSE);
+    
     tpos tx = sx + dx*i;
     tpos ty = sy + dy*i;
-  
-    int item =    panel_item_first + panel_item_increment*i;
-    int variant = panel_variant_first + panel_variant_increment*i;
-  
-    if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
-      return(NO_SELECTION);
     
     if(INSIDE(tx, x, ITEM_SIZE_X) && INSIDE(ty, y, ITEM_SIZE_Y)) {
-      if(p_sel) {
-        p_sel->item = item;
-        p_sel->variant = variant;      
-      }
-      return(i);
+      slot = i;
+      return(TRUE);
     }
   }
   
-  return(NO_SELECTION);
+  return(FALSE);
 }
 
-int  item_panel::item_return(int selected_item, EDITOR_SELECTION *p_sel, int correction)
-{
-  int i;
+void editor_panel::panel_scroll(int direction, bool redraw)
+{  
+  int panel_item_first = item_firts_get();  
+  int panel_item_num = item_last_get()+1;
+  int item_new;
 
-  selected_item += correction;
-  if(selected_item < 0)
-    selected_item = 0;
-  if(selected_item >= panel_item_num)
-    selected_item = panel_item_num-1;
-
-  for(i = 0; i < panel_item_num; i++) {
-  
-    int item =    panel_item_first + panel_item_increment*i;
-    int variant = panel_variant_first + panel_variant_increment*i;
-  
-    if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant)) {
-      return(i > 0 && i == selected_item ? i-1 : NO_SELECTION);
-    }
-    if(i == selected_item) {
-      if(p_sel) {
-        p_sel->item = item;
-        p_sel->variant = variant;      
-      }
-      return(i);
-    }
+  if(direction == ITEMS_START) {
+    item_new = 0;
   }
-
-  return(NO_SELECTION);
+  else if(direction == ITEMS_END) {
+    item_new = panel_item_num - panel_size_get();
+  }
+  else {  
+    item_new = panel_item_first + direction;
+  }
+  
+  if(item_new < 0) {
+    item_new = 0;
+  }
+  
+  if(item_new == panel_item_first) {
+    // no scroll - don't change it
+    return;
+  }
+  
+  // Do we scroll the panel?
+  if(panel_item_num > panel_size_get()) {
+    if(item_new + panel_size_get() > panel_item_num) {
+      item_new = panel_item_num - panel_size_get();
+      assert(item_new >= panel_item_first);
+    }
+    panel_set(item_new, redraw);
+  }
 }
 
-void item_panel::draw_panel(void)
-{
-  RECT r;
-
-  tpos sx = start_x;
-  tpos sy = start_y;
-
-  if(dx) {
-    // Panel is horizontal
-    sx += EDIT_ARROW_DX;
-  
-    r.x = sx;
-    r.y = sy;
-    r.w = dx*panel_item_num;
-    r.h = ITEM_SIZE_Y;  
-  } else {
-    // Panel is vertical
-    sy += EDIT_ARROW_DY;
-  
-    r.x = sx;
-    r.y = sy;
-    r.w = ITEM_SIZE_X;
-    r.h = dy*panel_item_num;
-  }
-
-  p_grf->fill(&r,0);
-
-  int i;
-  for(i = 0; i < panel_item_num; i++) {
-  
-    tpos x = sx + dx*i;
-    tpos y = sy + dy*i;
-  
-    int item =    panel_item_first + panel_item_increment*i;
-    int variant = panel_variant_first + panel_variant_increment*i;
-  
-    if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
-      break;
-
-    #define COLOR_HIGHLIGHTED_R   0
-    #define COLOR_HIGHLIGHTED_G   0
-    #define COLOR_HIGHLIGHTED_B   200
-    
-    #define COLOR_SELECTED_R      175
-    #define COLOR_SELECTED_G      0
-    #define COLOR_SELECTED_B      0
-    
-    if(i == panel_item_highlighted) {
-      p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y,p_grf->color_map(COLOR_HIGHLIGHTED_R,
-                  COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
-    }
-    if(i == panel_item_selected) {
-      p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y, p_grf->color_map(COLOR_SELECTED_R,
-                  COLOR_SELECTED_G, COLOR_SELECTED_B));
-    }
-    
-    p_repo->draw(x+CELL_SIZE_X,y+CELL_SIZE_X,item,variant,0);
-  }
-
-  p_grf->redraw_add(&r);
-
-  if(dx) { // Panel is horizontal
-    {
-      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
-    }
-    {
-      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
-    }
-  } else { // Panel is vertical
-    {
-      p_grf->draw(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
-      p_grf->redraw_add(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
-    }
-    {
-      p_grf->draw(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
-      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
-    }
-  }  
-}
-
-RECT item_panel::boundary_get(void)
+RECT editor_panel::boundary_get(void)
 {
   RECT r;
 
@@ -318,7 +126,7 @@ RECT item_panel::boundary_get(void)
   
     r.x = sx;
     r.y = sy;
-    r.w = dx*panel_item_num;
+    r.w = dx*panel_size_get();
     r.h = ITEM_SIZE_Y;
   } else {
     // Panel is vertical
@@ -327,13 +135,13 @@ RECT item_panel::boundary_get(void)
     r.x = sx;
     r.y = sy;
     r.w = ITEM_SIZE_X;
-    r.h = dy*panel_item_num;
+    r.h = dy*panel_size_get();
   }
 
   return r;
 }
 
-void item_panel::register_controls_events(INPUT *p_input)
+void editor_panel::register_controls_events(INPUT *p_input)
 {
   RECT r = boundary_get();
 
@@ -385,6 +193,82 @@ void item_panel::register_controls_events(INPUT *p_input)
   }  
 }
 
+void editor_panel::slot_draw(int slot, int item, int variant)
+{
+  RECT r = boundary_get();
+
+  tpos x = r.x + dx*slot;
+  tpos y = r.y + dy*slot;
+
+  p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y,0);
+
+  if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
+    return;
+  
+  #define COLOR_HIGHLIGHTED_R   0
+  #define COLOR_HIGHLIGHTED_G   0
+  #define COLOR_HIGHLIGHTED_B   200
+  
+  #define COLOR_SELECTED_R      175
+  #define COLOR_SELECTED_G      0
+  #define COLOR_SELECTED_B      0
+  
+  if(slot == panel_slot_highlighted) {
+    p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y,p_grf->color_map(COLOR_HIGHLIGHTED_R,
+                COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
+  } else if(slot == panel_slot_selected) {
+    p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y, p_grf->color_map(COLOR_SELECTED_R,
+                COLOR_SELECTED_G, COLOR_SELECTED_B));
+  }
+  
+  p_repo->draw(x+CELL_SIZE_X,y+CELL_SIZE_X,item,variant,0);
+}
+
+void editor_panel::controls_draw(void)
+{
+  RECT r = boundary_get();
+
+  if(dx) { // Panel is horizontal
+    {
+      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
+      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
+    }
+    {
+      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
+      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
+    }
+  } else { // Panel is vertical
+    {
+      p_grf->draw(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
+      p_grf->redraw_add(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
+    }
+    {
+      p_grf->draw(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
+      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
+    }
+  }  
+}
+
+void item_panel::panel_draw(void)
+{
+  RECT r = boundary_get();
+
+  p_grf->fill(&r,0);
+  int i;
+  for(i = 0; i < panel_size_get(); i++) {
+    int item = panel_item_first + i;    
+    slot_draw(i, item, 0);
+  }
+  p_grf->redraw_add(&r);
+
+  controls_draw();
+}
+
+void variant_panel::panel_draw(void)
+{
+
+}
+
 editor_layer_config::editor_layer_config(void)
 {
   
@@ -396,14 +280,28 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   p_repo(p_repo_),
   level(p_repo_), 
   console(&input,CONSOLE_X,CONSOLE_Y,CONSOLE_DX,CONSOLE_LINES),
-  sel(&level)
+  selected_editor_item(&level)
 {
+  editor_panel::set_up(p_repo_);
+
+  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_1);
+  ipanel[1] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_2);
+  ipanel[2] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_3);
+  ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_4);
+
+  int i;
+  for(i = 0; i < PANELS; i++) {    
+    ipanel[i]->register_controls_events(&input);
+  }
   editor_reset();
 }
 
 editor_gui::~editor_gui(void)
 {
-
+  int i;
+  for(i = 0; i < PANELS; i++) {    
+    delete ipanel[i];
+  }
 }
 
 void editor_gui::editor_reset(void)
@@ -417,8 +315,7 @@ void editor_gui::editor_reset(void)
   p_grf->clear();
   
   // TODO -- predelat vsechno draw -> na konfigy (reset)
-  level_config();  
-  panel_reset();
+  level_config();
   panel_draw();
   selection_draw();
   layer_menu_draw();
@@ -438,51 +335,33 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
   assert(panel >= 0 && panel < PANELS);
 
   int i;
+  for(i = 0; i < PANELS; i++)
+    ipanel[i]->slot_unselect();
+
   for(i = 0; i < PANELS; i++) {
-    if(i == panel)
-      ipanel[i].item_select(x,y,&sel);
-    else
-      ipanel[i].item_unselect();
+    if(i == panel) {
+      ipanel[i]->slot_select(x,y,&selected_editor_item);
+    }
   }
   // Draw the current selection
   selection_draw();
 
   // Set active layer
-  layer_active_set(p_repo->item_get_layer(sel.item));
+  layer_active_set(p_repo->item_get_layer(selected_editor_item.item));
 }
 
 void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
 {
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
-  ipanel[panel].item_highlight(x,y);
-}
-
-void editor_gui::panel_reset(void)
-{
-  item_panel::set_up(p_repo);
-
-  ipanel[0].set_up(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1,ipanel+1);
-  ipanel[0].panel_item_increment = 1;
-  ipanel[1].set_up(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_2);
-  ipanel[1].panel_variant_increment = 1;
-
-  ipanel[2].set_up(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3, ipanel+3);
-  ipanel[2].panel_item_increment = 1;
-  ipanel[3].set_up(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
-  ipanel[3].panel_variant_increment = 1;
-
-  int i;
-  for(i = 0; i < PANELS; i++) {    
-    ipanel[i].register_controls_events(&input);
-  }
+  ipanel[panel]->slot_highlight(x,y);
 }
 
 void editor_gui::panel_draw(void)
 {
   int i;
   for(i = 0; i < PANELS; i++) {
-    ipanel[i].draw_panel();
+    ipanel[i]->panel_draw();
   }
 }
 
@@ -490,7 +369,7 @@ void editor_gui::panel_scroll(int panel, int direction)
 {
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
-  ipanel[panel].panel_scroll(direction,&sel); 
+  ipanel[panel]->panel_scroll(direction,&selected_editor_item);
   selection_draw();
 }
 
@@ -501,7 +380,7 @@ void editor_gui::panel_scroll_mouse(int direction)
 
   int i;
   for(i = 0; i < PANELS; i++) {
-    RECT r = ipanel[i].boundary_get();
+    RECT r = ipanel[i]->boundary_get();
     if(p_state->in_rect(r)) {
       panel = i;
       break;
@@ -529,8 +408,10 @@ void editor_gui::selection_draw(void)
   p_font->alignment_set(LEFT);
   p_grf->fill(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,EDIT_ITEM_DX,EDIT_ITEM_DY,0);
   p_font->print(NULL,EDIT_ITEM_START_X,EDIT_ITEM_START_Y,_("I:%d V:%d R:%d L:%d"),
-                sel.item, sel.variant, sel.rotation, 
-                p_repo->item_get_layer(sel.item));
+                selected_editor_item.item, 
+                selected_editor_item.variant, 
+                selected_editor_item.rotation, 
+                p_repo->item_get_layer(selected_editor_item.item));
   p_grf->redraw_add(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,EDIT_ITEM_DX,EDIT_ITEM_DY);
 
   {
@@ -545,7 +426,9 @@ void editor_gui::selection_draw(void)
   
     p_grf->fill(&r,p_grf->color_map(COLOR_BACK_R, COLOR_BACK_G, COLOR_BACK_B));
     p_repo->draw(EDIT_ITEM_PICT_START_X+CELL_SIZE_X,EDIT_ITEM_PICT_START_Y+CELL_SIZE_Y,
-                 sel.item, sel.variant, sel.rotation);
+                 selected_editor_item.item,
+                 selected_editor_item.variant,
+                 selected_editor_item.rotation);
     p_grf->redraw_add(&r);
   }
   {
@@ -557,9 +440,9 @@ void editor_gui::selection_draw(void)
   
     p_grf->fill(&r,0);
     p_font->print(&dr,r.x,r.y,_("Item: %s\nVariation: %d\nRotation: %s"),
-            p_repo->item_get_name(sel.item),
-            sel.variant,
-            p_repo->item_get_rotation(sel.rotation));
+            p_repo->item_get_name(selected_editor_item.item),
+            selected_editor_item.variant,
+            p_repo->item_get_rotation(selected_editor_item.rotation));
     r.h = dr.h;
     p_grf->redraw_add(&r);
   }  
@@ -1111,7 +994,7 @@ void editor_gui::level_item_insert(void)
   if(level.selection_get()) {
     undo_store();
   
-    tpos layer = p_repo->item_get_layer(sel.item);
+    tpos layer = p_repo->item_get_layer(selected_editor_item.item);
   
     bool rect = level.selection_rectangle_get();  
     if(rect) {
@@ -1119,18 +1002,27 @@ void editor_gui::level_item_insert(void)
       tpos sx,sy,dx,dy;
     
       level.selection_rectangle_get(&sx,&sy,&dx,&dy);
-      level.cell_set(sx, sy, dx, dy, layer, sel.item, sel.variant, sel.rotation, TRUE, fill);
+      level.cell_set(sx, sy, dx, dy, layer, 
+                     selected_editor_item.item, 
+                     selected_editor_item.variant, 
+                     selected_editor_item.rotation, 
+                     TRUE, fill);
     
       level.selection_rectangle_set(FALSE);
-      console.print(_("Inserted item %d at %dx%d - %dx%d layer %d"),sel.item,sx,sy,dx,dy,layer);
+      console.print(_("Inserted item %d at %dx%d - %dx%d layer %d"),
+                    selected_editor_item.item,sx,sy,dx,dy,layer);
     }
     else {
       tpos x, y;
     
       level.selection_get(&x, &y);
-      level.cell_set(x, y, layer, sel.item, sel.variant, sel.rotation, TRUE);
+      level.cell_set(x, y, layer, 
+                     selected_editor_item.item, 
+                     selected_editor_item.variant, 
+                     selected_editor_item.rotation, TRUE);
     
-      console.print(_("Inserted item %d at %dx%d layer %d"),sel.item,x,y,layer);
+      console.print(_("Inserted item %d at %dx%d layer %d"),
+                    selected_editor_item.item,x,y,layer);
     }
   
     level_edited_set();
@@ -1246,11 +1138,11 @@ void editor_gui::level_item_clear_rectangle(bool filled)
 
 void editor_gui::selection_rotate(int direction)
 {
-  if(p_repo->item_can_rotate(sel.item)) {
-    ROTATE_ITEM(sel.rotation, direction);
+  if(p_repo->item_can_rotate(selected_editor_item.item)) {
+    ROTATE_ITEM(selected_editor_item.rotation, direction);
     selection_draw();
   } else {
-    console.print(_("Can't rotate item %d"),sel.item);
+    console.print(_("Can't rotate item %d"),selected_editor_item.item);
   }
 }
 
@@ -1277,16 +1169,16 @@ void editor_gui::mouse_handler(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT ev)
         ;        
       else if(button == BUTTON_RIGHT)
         p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_CLEAR_ITEM));        
-      p_queue->commit();      
+      p_queue->commit();
       break;
     case SCREEN_HANDLE_ROTATE:
-      direction = (ev.param_int_get(PARAM_4) == WHEEL_UP) ? -1 : 1;  
+      direction = (ev.param_int_get(PARAM_4) == WHEEL_UP) ? -1 : 1;
       p_queue->add(LEVEL_EVENT(ED_LEVEL_SET_CURSOR,ev.param_get(PARAM_1),ev.param_get(PARAM_2)));
       p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_ROTATE_ITEM, ITEM_MODIFY, direction));
       p_queue->commit();
       break;
     case SCREEN_HANDLE_VARIATE:
-      direction = (ev.param_int_get(PARAM_4) == WHEEL_UP) ? -1 : 1;    
+      direction = (ev.param_int_get(PARAM_4) == WHEEL_UP) ? -1 : 1;
       p_queue->add(LEVEL_EVENT(ED_LEVEL_SET_CURSOR,ev.param_get(PARAM_1),ev.param_get(PARAM_2)));
       p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_VARIATE_ITEM,ITEM_MODIFY,direction));
       p_queue->commit();
