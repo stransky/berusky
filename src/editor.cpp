@@ -263,9 +263,9 @@ void item_panel::item_select(EDITOR_SELECTION *p_sel)
   int selected_item = panel_item_first+slot;
   
   // Propagate the selected item to variant panel
-  ((VARIANT_PANEL*)p_panel_variants)->panel_item_set(selected_item, FALSE);
-  ((VARIANT_PANEL*)p_panel_variants)->panel_set(0, p_sel, FALSE, TRUE);
-  ((VARIANT_PANEL*)p_panel_variants)->slot_select(0, p_sel, TRUE, TRUE);
+  ((VARIANT_PANEL*)attached_panel_get())->panel_item_set(selected_item, FALSE);
+  ((VARIANT_PANEL*)attached_panel_get())->panel_set(0, p_sel, FALSE, TRUE);
+  ((VARIANT_PANEL*)attached_panel_get())->slot_select(0, p_sel, TRUE, TRUE);
 }
 
 void item_panel::panel_draw(void)
@@ -316,11 +316,11 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   ipanel[2] = new ITEM_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3);
   ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
 
-  ((ITEM_PANEL*)ipanel[0])->variants_panel_set(ipanel[1]);
-  ((ITEM_PANEL*)ipanel[2])->variants_panel_set(ipanel[3]);
+  ipanel[0]->attached_panel_set(ipanel[1]);
+  ipanel[2]->attached_panel_set(ipanel[3]);
 
-  ((VARIANT_PANEL*)ipanel[1])->items_panel_set(ipanel[0]);
-  ((VARIANT_PANEL*)ipanel[3])->items_panel_set(ipanel[2]);
+  ipanel[1]->attached_panel_set(ipanel[0]);
+  ipanel[3]->attached_panel_set(ipanel[2]);
 
   editor_reset();
 }
@@ -367,9 +367,14 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
 
+  EDITOR_PANEL *p_attached = ipanel[panel]->attached_panel_get();
+
   int i;
-  for(i = 0; i < PANELS; i++)
-    ipanel[i]->slot_unselect(TRUE,TRUE);
+  for(i = 0; i < PANELS; i++) {
+    if(p_attached != ipanel[i]) {
+      ipanel[i]->slot_unselect(TRUE,TRUE);
+    }
+  }
 
   // Select the selection
   ipanel[panel]->slot_select(x,y,&selected_editor_item,TRUE,TRUE);

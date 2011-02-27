@@ -84,6 +84,9 @@ typedef enum {
 
 typedef class editor_panel {
 
+  // Attached panel with items
+  class editor_panel *p_attached_panel;
+
   // Location and appearance of the panel
   tpos start_x, dx;
   tpos start_y, dy;
@@ -100,6 +103,16 @@ protected:
   static ITEM_REPOSITORY *p_repo;
 
 public:
+
+  void attached_panel_set(class editor_panel *p_panel)
+  {
+    p_attached_panel = p_panel;
+  }
+
+  class editor_panel * attached_panel_get(void)
+  {
+    return(p_attached_panel);
+  }
 
   /* Return size of panel tool (number of slots which can be displayed)
   */
@@ -119,7 +132,7 @@ public:
   {
     int slot;
     return(slot_return(x, y, slot) ? slot : NO_SELECTION);
-  }  
+  }
 
   /* Draw one slot of the panel
   */
@@ -279,9 +292,6 @@ public:
 */
 typedef class item_panel : public editor_panel {
 
-  // Attached panel with varients
-  EDITOR_PANEL *p_panel_variants;
-
   // Items in the panel
   int panel_item_first;
 
@@ -330,11 +340,6 @@ public:
     return(FALSE);
   }
 
-  void variants_panel_set(EDITOR_PANEL *p_variants)
-  {
-    p_panel_variants = p_variants;
-  }
-
 public:
   
   void panel_draw(void);
@@ -343,8 +348,7 @@ public:
 
   item_panel(int panel_item_num, DIRECTION direction,
              tpos start_x, tpos start_y, int handle)
-  : editor_panel(panel_item_num, direction, start_x, start_y, handle),
-    p_panel_variants(NULL),
+  : editor_panel(panel_item_num, direction, start_x, start_y, handle),    
     panel_item_first(0)
   {  
   }
@@ -354,9 +358,6 @@ public:
 /* Derived panel for variants
 */
 typedef class variant_panel : public editor_panel {
-
-  // Attached panel with items
-  EDITOR_PANEL *p_panel_items;
 
   // Item which variants are published
   int panel_item;
@@ -435,11 +436,6 @@ public:
     return(FALSE);
   }
 
-  void items_panel_set(EDITOR_PANEL *p_items)
-  {
-    p_panel_items = p_items;
-  }
-
 public:
   
   void panel_draw(void);
@@ -448,8 +444,7 @@ public:
 
   variant_panel(int panel_size, DIRECTION direction,
                 tpos start_x, tpos start_y, int handle)
-  : editor_panel(panel_size, direction, start_x, start_y, handle),
-    p_panel_items(NULL),
+  : editor_panel(panel_size, direction, start_x, start_y, handle),    
     panel_item(0),
     panel_variant_first(0)
   {  
