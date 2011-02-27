@@ -81,7 +81,7 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
 void editor_panel::panel_scroll(int direction, bool redraw)
 {  
   int panel_item_first = item_firts_get();  
-  int panel_item_num = item_last_get()+1;
+  int panel_item_num = items_num_get();
   int item_new;
 
   if(direction == ITEMS_START) {
@@ -256,8 +256,7 @@ void item_panel::panel_draw(void)
   p_grf->fill(&r,0);
   int i;
   for(i = 0; i < panel_size_get(); i++) {
-    int item = panel_item_first + i;    
-    slot_draw(i, item, 0);
+    slot_draw(i, panel_item_first + i, 0);
   }
   p_grf->redraw_add(&r);
 
@@ -266,12 +265,21 @@ void item_panel::panel_draw(void)
 
 void variant_panel::panel_draw(void)
 {
+  RECT r = boundary_get();
 
+  p_grf->fill(&r,0);
+  int i;
+  for(i = 0; i < panel_size_get(); i++) {
+    slot_draw(i, panel_item, panel_variant_first + i);
+  }
+  p_grf->redraw_add(&r);
+
+  controls_draw();
 }
 
 editor_layer_config::editor_layer_config(void)
 {
-  
+
 }
 
 editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
@@ -284,15 +292,11 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
 {
   editor_panel::set_up(p_repo_);
 
-  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_1);
-  ipanel[1] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_2);
-  ipanel[2] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_3);
-  ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_4);
+  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1);
+  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_2);
+  ipanel[2] = new ITEM_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3);
+  ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
 
-  int i;
-  for(i = 0; i < PANELS; i++) {    
-    ipanel[i]->register_controls_events(&input);
-  }
   editor_reset();
 }
 
@@ -306,16 +310,20 @@ editor_gui::~editor_gui(void)
 
 void editor_gui::editor_reset(void)
 {
-  draw_level = TRUE;
-
   input.mevent_clear();
   input.events_wait(TRUE);
 
+  draw_level = TRUE;
+
   // Clear whole screen
   p_grf->clear();
-  
-  // TODO -- predelat vsechno draw -> na konfigy (reset)
+
+  int i;
+  for(i = 0; i < PANELS; i++) {
+    ipanel[i]->register_controls_events(&input);
+  }
   level_config();
+  
   panel_draw();
   selection_draw();
   layer_menu_draw();
@@ -1166,9 +1174,9 @@ void editor_gui::mouse_handler(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT ev)
       if(button == BUTTON_LEFT)
         p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_INSERT_ITEM));
       else if(button == BUTTON_MIDDLE)
-        ;        
+        ;
       else if(button == BUTTON_RIGHT)
-        p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_CLEAR_ITEM));        
+        p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_CLEAR_ITEM));
       p_queue->commit();
       break;
     case SCREEN_HANDLE_ROTATE:

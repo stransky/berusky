@@ -190,7 +190,7 @@ public:
   
   /* Return last valid item (0 is the first one)
   */
-  virtual int item_last_get(void) = 0;
+  virtual int items_num_get(void) = 0;
   
   /* Set an item for first slot
   */
@@ -266,8 +266,8 @@ public:
   void panel_set(int first, bool redraw = TRUE)
   {
     panel_item_first = first;
-    if(item_last_get() < panel_size_get()) {  
-      slot_selection_fix(item_last_get(), redraw);
+    if(items_num_get() <= panel_size_get()) {  
+      slot_selection_fix(items_num_get()-1, redraw);
     }
     else {
       slot_selection_fix(panel_size_get(), redraw);
@@ -283,7 +283,7 @@ public:
   
   /* Return last valid item (0 is the first one)
   */
-  int item_last_get(void)
+  int items_num_get(void)
   {
     return(p_repo->item_num_get());
   }
@@ -291,7 +291,7 @@ public:
   bool slot_valid(int slot)
   {
     if(slot >= 0 && slot < panel_size_get()) {
-      return(item_firts_get() + slot <= item_last_get());
+      return(item_firts_get() + slot < items_num_get());
     }
     return(FALSE);
   }
@@ -304,7 +304,8 @@ public:
 
   item_panel(int panel_item_num, DIRECTION direction, 
              tpos start_x, tpos start_y, int handle)
-  : editor_panel(panel_item_num, direction, start_x, start_y, handle)
+  : editor_panel(panel_item_num, direction, start_x, start_y, handle),
+    panel_item_first(0)
   {  
   }
 
@@ -335,7 +336,7 @@ public:
   {
     panel_variant_first = first;
     if(variant_last_get() < panel_size_get()) {  
-      slot_selection_fix(item_last_get(), redraw);
+      slot_selection_fix(items_num_get()-1, redraw);
     }
     else {
       slot_selection_fix(panel_size_get(), redraw);
@@ -365,7 +366,7 @@ public:
   
   /* Return last valid item (0 is the first one)
   */
-  int item_last_get(void)
+  int items_num_get(void)
   {
     return(variant_last_get());
   }
@@ -387,7 +388,9 @@ public:
 
   variant_panel(int panel_size, DIRECTION direction,
                 tpos start_x, tpos start_y, int handle)
-  : editor_panel(panel_size, direction, start_x, start_y, handle)
+  : editor_panel(panel_size, direction, start_x, start_y, handle),
+    panel_item(0),
+    panel_variant_first(0)
   {  
   }
 
