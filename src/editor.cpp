@@ -62,7 +62,7 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
   }  
 
   int i;
-  for(i = 0; i < panel_size_get(); i++) {    
+  for(i = 0; i < panel_size_get(); i++) {
     if(!slot_valid(i))
       return(FALSE);
     
@@ -78,7 +78,7 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
   return(FALSE);
 }
 
-void editor_panel::panel_scroll(int direction, bool redraw)
+void editor_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw)
 {  
   int panel_item_first = item_firts_get();  
   int panel_item_num = items_num_get();
@@ -109,8 +109,10 @@ void editor_panel::panel_scroll(int direction, bool redraw)
       item_new = panel_item_num - panel_size_get();
       assert(item_new >= panel_item_first);
     }
-    panel_set(item_new, redraw);
   }
+
+  if(item_new != panel_item_first)
+    panel_set(item_new, p_sel, TRUE, redraw);
 }
 
 RECT editor_panel::boundary_get(void)
@@ -216,7 +218,8 @@ void editor_panel::slot_draw(int slot, int item, int variant)
   if(slot == panel_slot_highlighted) {
     p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y,p_grf->color_map(COLOR_HIGHLIGHTED_R,
                 COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
-  } else if(slot == panel_slot_selected) {
+  }
+  if(slot == panel_slot_selected) {
     p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y, p_grf->color_map(COLOR_SELECTED_R,
                 COLOR_SELECTED_G, COLOR_SELECTED_B));
   }
@@ -247,6 +250,22 @@ void editor_panel::controls_draw(void)
       p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
     }
   }  
+}
+
+/* Select the select item by variant panel
+*/
+void item_panel::item_select(EDITOR_SELECTION *p_sel)
+{
+  int slot = selected_slot_get();
+  if(slot == NO_SELECTION)
+    return;
+  
+  int selected_item = panel_item_first+slot;
+  
+  // Propagate the selected item to variant panel
+  ((VARIANT_PANEL*)p_panel_variants)->panel_item_set(selected_item, FALSE);
+  ((VARIANT_PANEL*)p_panel_variants)->panel_set(0, p_sel, FALSE, TRUE);
+  ((VARIANT_PANEL*)p_panel_variants)->slot_select(0, p_sel, TRUE, TRUE);
 }
 
 void item_panel::panel_draw(void)
@@ -297,6 +316,12 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   ipanel[2] = new ITEM_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3);
   ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
 
+  ((ITEM_PANEL*)ipanel[0])->variants_panel_set(ipanel[1]);
+  ((ITEM_PANEL*)ipanel[2])->variants_panel_set(ipanel[3]);
+
+  ((VARIANT_PANEL*)ipanel[1])->items_panel_set(ipanel[0]);
+  ((VARIANT_PANEL*)ipanel[3])->items_panel_set(ipanel[2]);
+
   editor_reset();
 }
 
@@ -344,13 +369,11 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
 
   int i;
   for(i = 0; i < PANELS; i++)
-    ipanel[i]->slot_unselect();
+    ipanel[i]->slot_unselect(TRUE,TRUE);
 
-  for(i = 0; i < PANELS; i++) {
-    if(i == panel) {
-      ipanel[i]->slot_select(x,y,&selected_editor_item);
-    }
-  }
+  // Select the selection
+  ipanel[panel]->slot_select(x,y,&selected_editor_item,TRUE,TRUE);
+  
   // Draw the current selection
   selection_draw();
 
@@ -362,7 +385,7 @@ void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
 {
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
-  ipanel[panel]->slot_highlight(x,y);
+  ipanel[panel]->slot_highlight(x,y,TRUE);
 }
 
 void editor_gui::panel_draw(void)
@@ -377,7 +400,7 @@ void editor_gui::panel_scroll(int panel, int direction)
 {
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
-  ipanel[panel]->panel_scroll(direction,&selected_editor_item);
+  ipanel[panel]->panel_scroll(direction,&selected_editor_item,TRUE);
   selection_draw();
 }
 
