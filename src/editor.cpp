@@ -109,10 +109,9 @@ void editor_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool red
       item_new = panel_item_num - panel_size_get();
       assert(item_new >= panel_item_first);
     }
+    if(item_new != panel_item_first)
+      panel_set(item_new, p_sel, TRUE, redraw);
   }
-
-  if(item_new != panel_item_first)
-    panel_set(item_new, p_sel, TRUE, redraw);
 }
 
 RECT editor_panel::boundary_get(void)
