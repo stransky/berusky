@@ -1,15 +1,3 @@
-item_panel::panel_scroll
-
-- predelat to na panel s variantama a panel s prvkama?
-
-panel:
-
-  - lista - zvyrazneni zakladniho prvku + zvyrazneni i varianty
-  - pokud neni varianta vybrana -> reset?
-
-- automaticky prepinat varianty pri skrolovani
-- nechat tam ten vyber!
-
 Nove prvky:
 
 - Nove pozadi
