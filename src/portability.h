@@ -32,6 +32,8 @@
 #ifndef __PORTABILITY_H__
 #define __PORTABILITY_H__
 
+#define BERUSKY_VERSION   "1.2"
+
 /*
  * Defines for windows
  */
@@ -40,8 +42,7 @@
 #define WINDOWS   1
 #undef  LINUX
  
-#define PATH_MAX  128
-#define VERSION   "w.1.2"
+#define PATH_MAX          128
 
 #define random()                      rand()
 #define snprintf                      _snprintf

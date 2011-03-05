@@ -54,7 +54,7 @@ Uint32 time_left(void)
 
 void banner(void)
 {
-  printf(_("Berusky v.%s (C) Anakreon 2006, http://www.anakreon.cz/\n"),VERSION);
+  printf(_("Berusky v.%s (C) Anakreon 2006, http://www.anakreon.cz/\n"),BERUSKY_VERSION);
   printf(_("This is free software; see the source for copying conditions.\n"));
   printf(_("There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"));
   printf(_("Built %s, %s\n\n"),__DATE__,__TIME__);

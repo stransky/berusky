@@ -1,0 +1,16 @@
+1.2
+    * Windows port
+    * Fixed broken hints rendering
+    * Fixed hint translation
+    * Big Endian fixes
+    * Level editor fixes:
+        - new side menu
+        - editor help
+        - panel fixes and fast scroll keys
+        - level load/save fixes
+
+1.1
+    * Some minor fixes
+
+1.0
+    * Initial version
