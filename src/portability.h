@@ -44,9 +44,9 @@
  
 #define PATH_MAX          128
 
-#define random()                      rand()
-#define snprintf                      _snprintf
-#define mkdir                         _mkdir
+#define random()          rand()
+#define snprintf          _snprintf
+#define mkdir             _mkdir
 
 // Stupid VC2010
 #pragma warning(disable: 4996 4800)
