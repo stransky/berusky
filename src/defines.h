@@ -395,11 +395,11 @@ typedef int anim_handle;
 #define INI_FILE_USER      "~/.berusky/"INI_FILE_NAME
 #define INI_FILE_LOCAL     "./"INI_FILE_NAME
 #elif WINDOWS
-#define INI_USER_DIRECTORY "C:\\berusky"
-#define INI_USER_LEVELS    "C:\\berusky\\user"
-#define INI_FILE_GLOBAL    "C:\\"INI_FILE_NAME
-#define INI_FILE_USER      "C:\\berusky\\"INI_FILE_NAME
-#define INI_FILE_LOCAL     "C:\\berusky\\"INI_FILE_NAME
+#define INI_USER_DIRECTORY "./"
+#define INI_USER_LEVELS    "./"
+#define INI_FILE_GLOBAL    INI_FILE_NAME
+#define INI_FILE_USER      INI_FILE_NAME
+#define INI_FILE_LOCAL     INI_FILE_NAME
 #endif
 
 #define INI_FILE          (config_file())
