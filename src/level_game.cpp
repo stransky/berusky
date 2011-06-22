@@ -104,6 +104,13 @@ void player::set_graphics(int num)
 level_generic::level_generic(ITEM_REPOSITORY *p_rep)
 : p_repo(p_rep), p_scr(NULL)
 {
+  assert(offsetof(LEVEL_DISK, signum) == 0);
+  assert(offsetof(LEVEL_DISK, back) == 30);
+  assert(offsetof(LEVEL_DISK, music) == 31);
+  assert(offsetof(LEVEL_DISK, rot) == 32);
+  assert(offsetof(LEVEL_DISK, rezerved) == 37);
+  assert(offsetof(LEVEL_DISK, floor) == 137);  
+
   memset(cells,0,sizeof(cells));
 
   int i;
@@ -183,7 +190,7 @@ bool level_generic::level_exists(const char *p_file)
 //Fixes bug deb#431906.
 static inline word translate_level_word(word w)
 {
-#ifdef LINXU
+#ifdef LINUX
 #if BYTE_ORDER == BIG_ENDIAN
   return static_cast<word>(w >> 8) | static_cast<word>(w << 8);
 #else
@@ -224,7 +231,7 @@ void level_generic::level_import(LEVEL_DISK *p_lev)
         item = translate_level_word(p_lev->level[y][x][0]);
         if(!item)
           item = NO_ITEM;
-      
+        
         if(p_repo->item_valid(item)) {
           item_handle variation = translate_level_word(p_lev->level[y][x][1]);
           item_handle rotation = translate_level_word(p_lev->level[y][x][2]);
@@ -241,7 +248,7 @@ void level_generic::level_import(LEVEL_DISK *p_lev)
         else {          
           item = P_PLAYER_1 + player;
         }
-        
+      
         if(p_repo->item_valid(item)) {
           // add player to graphics grid
           cell_set(x, y, LAYER_PLAYER, item, 0, p_lev->rot[player], true);
