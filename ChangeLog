@@ -1,3 +1,6 @@
+1.3 
+    * Fixed rhbz#689106 - crash after start
+
 1.2
     * Windows port
     * Fixed broken hints rendering
