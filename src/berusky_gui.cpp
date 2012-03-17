@@ -570,8 +570,8 @@ through."));
 
             p_font->start_set(20, 140);
             p_font->print(_("one-pass door - can be used only once,\n\
-then they close them off and there's no\n\
-way to open them\n"));
+then it is closed off and there's no\n\
+way to open it\n"));
 
             x = 40;
             y = 220;
@@ -835,7 +835,7 @@ void game_gui::menu_level_hint(MENU_STATE state, int data, int data1)
         if(p_hint) {
           p_font->print(NULL, 20, 100, _("Level hint:"));
         } else {
-          p_hint = _("\nSory dude, no hint available for this\nlevel.");
+          p_hint = _("\nSorry dude, no hint available for this\nlevel.");
         }
         p_font->print(NULL, 20, 120, p_hint);
       
