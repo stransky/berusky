@@ -38,6 +38,7 @@ typedef struct animation_template {
   
   int           frame_num;        //
   int           frame_correction; // base frame correction for this animation
+  int           speed_up;         // can be this animation boosted?
 
   // linear animations -> same values for every frame
   tpos          dx,dy;

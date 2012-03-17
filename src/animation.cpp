@@ -75,7 +75,7 @@ int  animation_repository::repository_load(const char *p_file, const char *p_dir
     Load animations from disc
   */
   
-  #define RECORDS 9
+  #define RECORDS 10
   DATA_RECORD rec[RECORDS];
   while(data_file.records_get(rec, RECORDS)) {
   
@@ -95,6 +95,7 @@ int  animation_repository::repository_load(const char *p_file, const char *p_dir
     p_tmp->sprite_step = rec[7].num;
   
     p_tmp->frame_correction = rec[8].num;
+    p_tmp->speed_up = rec[9].num;
   }
 
   data_file.close();
