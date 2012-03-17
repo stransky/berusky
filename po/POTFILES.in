@@ -1,0 +1,51 @@
+# List of source files containing translatable strings.
+
+## Created by Anjuta - will be overwritten
+## If you don't want it to overwrite it,
+## 	Please disable it in the Anjuta project configuration
+
+# Source files
+src/2d_graph.cpp
+src/2d_graph.h
+src/animation.cpp
+src/animation.h
+src/berusky.cpp
+src/berusky.h
+src/data_parser.cpp
+src/data_parser.h
+src/defines.h
+src/editor.cpp
+src/editor.h
+src/events.cpp
+src/events.h
+src/game_logic.cpp
+src/game_logic.h
+src/graphics.cpp
+src/graphics.h
+src/ini.cpp
+src/ini.h
+src/input.cpp
+src/input.h
+src/level.cpp
+src/level.h
+src/level_active.cpp
+src/level_active.h
+src/level_changer.cpp
+src/level_changer.h
+src/level_game.cpp
+src/level_game.h
+src/types.h
+src/utils.cpp
+src/utils.h
+src/data_parser_tables.cpp
+src/data_parser_tables.h
+src/berusky_gui.cpp
+src/berusky_gui.h
+src/main.cpp
+src/main.h
+src/stack.h
+src/gui.cpp
+src/gui.h
+src/portability.h
+
+
