@@ -142,6 +142,11 @@ public:
     return(item_desc_rotation[rot]);
   }
 
+  bool item_player(int item)
+  {        
+    return(item >= P_PLAYER_1 && item <= P_PLAYER_5);
+  }
+
   int item_get_layer(int item)
   {
     if(item == P_GROUND)

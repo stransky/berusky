@@ -329,7 +329,6 @@
 #define ANIM_PLAYER_5               4
 
 #define ANIM_MOVE_FRAMES            9
-#define ANIM_MOVE_FAST_FRAMES       9
 
 #define ANIM_MOVE_UP                5
 #define ANUM_MOVE_DOWN              7
@@ -342,6 +341,21 @@
 #define ANIM_EXIT_1                 11
 
 #define ANIM_BLAST                  14
+
+#define ANIM_PLAYER_1_FAST          15
+#define ANIM_PLAYER_2_FAST          16
+#define ANIM_PLAYER_3_FAST          17
+#define ANIM_PLAYER_4_FAST          18
+#define ANIM_PLAYER_5_FAST          19
+
+#define ANIM_MOVE_UP_FAST           20
+#define ANIM_MOVE_DOWN_FAST         22
+#define ANIM_MOVE_LEFT_FAST         21
+#define ANIM_MOVE_RIGHT_FAST        23
+
+#define ANIM_MOVE_FRAMES_FAST       4
+
+#define FAST_ANIMATION_SHIFT        15
 
 // -------------------------------------------------------
 // Animation flags

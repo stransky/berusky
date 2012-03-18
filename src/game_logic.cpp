@@ -97,8 +97,8 @@ typedef enum {
 
 #define push(event) { *p_stack = event; p_stack++; }
 
-int game_logic::player_move(LEVEL_EVENT *p_stack, int  player, tpos px, tpos py,
-                            tpos dx, tpos dy,
+int game_logic::player_move(LEVEL_EVENT *p_stack, int player, tpos px, tpos py,
+                            tpos dx, tpos dy, bool fast_movement,
                             int extra_events = 0)
 {
   LEVEL_EVENT *p_start = p_stack;
@@ -116,10 +116,10 @@ int game_logic::player_move(LEVEL_EVENT *p_stack, int  player, tpos px, tpos py,
   push(LEVEL_EVENT(GL_CELL_SET_DIFF, px, py, LAYER_PLAYER, 0, 0));
   push(LEVEL_EVENT(PL_PLAYER_SET_POS, nx, ny, player));
   push(LEVEL_EVENT(GL_CELL_MOVE, px, py, LAYER_PLAYER, nx, ny, TRUE));
-  push(LEVEL_EVENT(AN_RUN, px, py, LAYER_PLAYER, t2a(dx,dy), 6 + extra_events,
+  push(LEVEL_EVENT(AN_RUN, px, py, LAYER_PLAYER, t2a(dx,dy,fast_movement), 6 + extra_events,
                    NO_ROTATION));
   // Queue 
-  rt = p_level->repo_get_animation(px, py, LAYER_PLAYER, &flag, &anim);
+  rt = p_level->repo_get_animation(px, py, LAYER_PLAYER, fast_movement, &flag, &anim);
   assert(rt && flag&ANIM_TRIGGER_MOVE);
   push(LEVEL_EVENT(AN_RUN, px, py, LAYER_PLAYER, anim, 0, t2r(dx,dy)));
   
@@ -130,7 +130,7 @@ int game_logic::player_move(LEVEL_EVENT *p_stack, int  player, tpos px, tpos py,
 }
 
 int game_logic::item_move(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer,
-                          tpos dx, tpos dy, 
+                          tpos dx, tpos dy, bool fast_movement,
                           int extra_events = 0)
 {
   LEVEL_EVENT *p_start = p_stack;
@@ -140,7 +140,7 @@ int game_logic::item_move(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer,
 
   push(LEVEL_EVENT(GL_CELL_SET_DIFF, nx, ny, layer, 0, 0));
   push(LEVEL_EVENT(GL_CELL_MOVE, px, py, layer, nx, ny, TRUE));
-  push(LEVEL_EVENT(AN_RUN, px, py, layer, t2a(dx,dy), 2 + extra_events));
+  push(LEVEL_EVENT(AN_RUN, px, py, layer, t2a(dx,dy,fast_movement), 2 + extra_events));
   
   return(p_stack - p_start);
 }
@@ -165,7 +165,9 @@ int game_logic::item_erase(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer,
   LEVEL_EVENT *p_start = p_stack;
   int flag, anim;
   
-  if(p_level->repo_get_animation(px, py, layer, &flag, &anim) &&
+  // only items without fast movements can be erased from level so 
+  // fast_movement is always false here
+  if(p_level->repo_get_animation(px, py, layer, FALSE, &flag, &anim) &&
      flag&ANIM_TRIGGER_ERASE) {
     push(LEVEL_EVENT(GL_CELL_CLEAR_ALL, px, py, layer, graphics_change));
     push(LEVEL_EVENT(AN_RUN, px, py, layer, anim, 1 + extra_events));
@@ -233,6 +235,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
 {
   int  player = p_level->player_get();
   bool player_moved = FALSE;
+  bool fast_movement = (p_in->action_get() == GL_PLAYER_MOVE_FAST);
   
   tpos px,py,dx,dy;
   tpos nx,ny,nnx,nny;
@@ -331,7 +334,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
         break;
       
       if(itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -341,8 +344,8 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
         break;
       
       if(itm_next == NO_ITEM && itm_next_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
-        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
+        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy,fast_movement);
         player_moved = TRUE;
       }
       break;
@@ -353,12 +356,12 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
       
       // move player and tnt
       if(itm_next == NO_ITEM && itm_next_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
-        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
+        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy,fast_movement);
         player_moved = TRUE;
       }
       else if(itm_next == P_BOX) { // blow tnt & box   
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         event_num += item_blast(events+event_num,nnx,nny,LAYER_ITEMS);
         event_num += item_erase(events+event_num,nx,ny,LAYER_ITEMS,TRUE);
         player_moved = TRUE;
@@ -374,7 +377,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
   
     case P_STONE:
       if(p_level->player_mattock_drop(player)) {
-        event_num += player_move(events+event_num, player, px, py, dx, dy, event_num);
+        event_num += player_move(events+event_num, player, px, py, dx, dy, fast_movement, event_num);
         event_num += item_erase(events+event_num, nx, ny, LAYER_ITEMS, TRUE, event_num);
         player_moved = TRUE;
       }
@@ -388,7 +391,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
       
         /* Manage player movement */
         event_num += item_erase(events+event_num, nx, ny, LAYER_ITEMS, TRUE);
-        event_num += player_move(events+event_num, player, px, py, dx, dy, event_num);
+        event_num += player_move(events+event_num, player, px, py, dx, dy, fast_movement, event_num);
         player_moved = TRUE;
       
         /* Anim exit(s) if player has the propper amount of keys */
@@ -416,7 +419,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_MATTOCK:
       if(p_level->player_mattock_add(player)) {
         event_num += item_erase(events+event_num, nx, ny, LAYER_ITEMS, TRUE);
-        event_num += player_move(events+event_num, player, px, py, dx, dy, event_num);
+        event_num += player_move(events+event_num, player, px, py, dx, dy, fast_movement, event_num);
         player_moved = TRUE;
       }
       break;
@@ -429,7 +432,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_KEY5:
       if(player == (itm - P_KEY1) && p_level->player_key_add(player)) {
         event_num += item_erase(events+event_num, nx, ny, LAYER_ITEMS, TRUE);
-        event_num += player_move(events+event_num, player, px, py, dx, dy, event_num);
+        event_num += player_move(events+event_num, player, px, py, dx, dy, fast_movement, event_num);
         player_moved = TRUE;
       }
       break;
@@ -442,7 +445,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_DOOR4_H_O:
     case P_DOOR5_H_O:
       if(dx && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy, event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -455,7 +458,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_DOOR4_V_O:
     case P_DOOR5_V_O:
       if(dy && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy, event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -468,7 +471,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_DOOR4_H_Z:
     case P_DOOR5_H_Z:    
       if(player == (itm - P_DOOR1_H_Z) && dx && p_level->player_key_drop(player)) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);        
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);        
         if(p_level->cell_get_variation(nx, ny, LAYER_ITEMS) == DOOR_VARIATION_CLASSIC) {
           event_num += item_variation_set(events+event_num, nx, ny, LAYER_FLOOR, FLOOR_CLASSIC_UP, TRUE);
           event_num += item_set(events+event_num, nx, ny, LAYER_FLOOR, P_GROUND, FALSE);
@@ -492,7 +495,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_DOOR4_V_Z:
     case P_DOOR5_V_Z:
       if(player == (itm - P_DOOR1_V_Z) && dy && p_level->player_key_drop(player)) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy, event_num);        
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);        
         if(p_level->cell_get_variation(nx, ny, LAYER_ITEMS) == DOOR_VARIATION_CLASSIC) {
           event_num += item_variation_set(events+event_num, nx, ny, LAYER_FLOOR, FLOOR_CLASSIC_LEFT, TRUE);
           event_num += item_set(events+event_num, nx, ny, LAYER_FLOOR, P_GROUND, FALSE);
@@ -515,7 +518,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_ID_DOOR4_H_Z:
     case P_ID_DOOR5_H_Z:
       if(player == (itm-P_ID_DOOR1_H_Z) && dx) {      
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         event_num += item_set(events+event_num,nx,ny,LAYER_ITEMS,P_ID_DOOR1_H_O+(itm-P_ID_DOOR1_H_Z),TRUE,TRUE);
         player_moved = TRUE;
       }    
@@ -528,7 +531,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_ID_DOOR4_H_O:
     case P_ID_DOOR5_H_O:
       if(player == (itm - P_ID_DOOR1_H_O) && dx && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -539,7 +542,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_ID_DOOR4_V_Z:
     case P_ID_DOOR5_V_Z:
       if(player == (itm - P_ID_DOOR1_V_Z) && dy && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         event_num += item_set(events+event_num,nx,ny,LAYER_ITEMS,P_ID_DOOR1_V_O+(itm-P_ID_DOOR1_V_Z),TRUE,TRUE);
         player_moved = TRUE;
       }
@@ -551,7 +554,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     case P_ID_DOOR4_V_O:
     case P_ID_DOOR5_V_O:
       if(player == (itm-P_ID_DOOR1_V_O) && dy && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -559,14 +562,14 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     // One-pass doors
     case P_DV_H_O:
       if(dx && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;    
       }
       break;
         
     case P_DV_V_O:
       if(dy && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;    
       }
       break;
@@ -579,14 +582,14 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
     // Some strange door?
     case P_DV_H:
       if(dx && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
       
     case P_DV_V:
       if(dy && itm_player == NO_ITEM) {
-        event_num += player_move(events+event_num,player,px,py,dx,dy,event_num);
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         player_moved = TRUE;
       }
       break;
@@ -626,7 +629,7 @@ void game_logic::events_process(LEVEL_EVENT_QUEUE *p_queue)
 {
   while(!p_queue->empty()) {
     LEVEL_EVENT ev = p_queue->get();
-    if(ev.action_get() == GL_PLAYER_MOVE) {
+    if(ev.action_get() == GL_PLAYER_MOVE || ev.action_get() == GL_PLAYER_MOVE_FAST) {
       player_move_check(p_queue, &ev);
     } else if(ev.action_get() == GL_PLAYER_SWITCH) {
       player_switch(&ev);

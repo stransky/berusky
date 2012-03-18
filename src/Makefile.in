@@ -244,6 +244,7 @@ INCLUDES = \
 	$(PACKAGE_CFLAGS)
 
 AM_CXXFLAGS = \
+	-Wint-to-pointer-cast\
 	 -Wall\
 	 -g
 

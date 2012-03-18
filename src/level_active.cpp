@@ -245,8 +245,10 @@ void level_active::add_level_events(LEVEL_EVENT_QUEUE *p_queue)
     for(y = 0; y < LEVEL_CELLS_Y; y++) {
       for(l = 0; l < LEVEL_LAYERS; l++) {
         if(level.cell_is_full(x,y,l)) {
-          if(level.repo_get_flag(x,y,l)&ANIM_TRIGGER_INSERT)
-            p_queue->add(LEVEL_EVENT(AN_GENERATE_AND_RUN, x, y, l, level.repo_get_animation(x,y,l), 0, NO_ROTATION));
+          if(level.repo_get_flag(x,y,l)&ANIM_TRIGGER_INSERT) {
+            // static items do not have fast animations
+            p_queue->add(LEVEL_EVENT(AN_GENERATE_AND_RUN, x, y, l, level.repo_get_animation(x,y,l,FALSE), 0, NO_ROTATION));
+          }
         }
       }
     }

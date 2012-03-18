@@ -407,20 +407,26 @@ public:
       p_repo->item_flag_get(p_cell->item, p_cell->variation) : 0);
   }
 
-  anim_template_handle repo_get_animation(tpos x, tpos y, tpos layer)
+  anim_template_handle repo_get_animation(tpos x, tpos y, tpos layer, 
+                                          bool fast_movement)
   {
     LEVEL_CELL *p_cell = cells[x][y]+layer;
-    return(p_repo->item_valid(p_cell->item) ? 
-      p_repo->animation_get(p_cell->item, p_cell->variation) : ANIM_NONE);
+    anim_template_handle anim = ANIM_NONE;
+    if(p_repo->item_valid(p_cell->item)) {
+      anim = p_repo->animation_get(p_cell->item, p_cell->variation);
+      if(fast_movement && p_repo->item_player(p_cell->item))
+        anim += FAST_ANIMATION_SHIFT;
+    }
+    return(anim);
   }
 
-  bool repo_get_animation(tpos x, tpos y, tpos layer,
+  bool repo_get_animation(tpos x, tpos y, tpos layer, bool fast_movement,
                           int *p_flag,
                           anim_template_handle *p_anim_template)
   {
     assert(p_flag && p_anim_template);
   
-    *p_anim_template = repo_get_animation(x,y,layer);
+    *p_anim_template = repo_get_animation(x,y,layer,fast_movement);
     *p_flag = repo_get_flag(x,y,layer);
   
     return((*p_flag)&ANIM_TRIGGER);

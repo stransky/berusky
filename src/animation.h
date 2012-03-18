@@ -38,7 +38,6 @@ typedef struct animation_template {
   
   int           frame_num;        //
   int           frame_correction; // base frame correction for this animation
-  int           speed_up;         // can be this animation boosted?
 
   // linear animations -> same values for every frame
   tpos          dx,dy;
@@ -319,10 +318,11 @@ public:
 } ANIMATION_ENGINE;
 
 // Translation to animation
-inline int t2a(int dx, int dy)
+inline int t2a(int dx, int dy, int fast)
 {
   assert((dx+dy) && (!dx || !dy));
-  return dx ? (7 + dx) : (6 + dy);  
+  int anim = dx ? (7 + dx) : (6 + dy);
+  return fast ? anim+FAST_ANIMATION_SHIFT : anim;
 }
 
 // Translation to rotation

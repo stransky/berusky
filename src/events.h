@@ -111,7 +111,8 @@ typedef enum {
   // format: [GL_PLAYER_MOVE, x, y, diff_x, diff_y]
   //         [GL_PLAYER_MOVE_FAST, x, y, diff_x, diff_y]
   GL_PLAYER_MOVE,  
-
+  GL_PLAYER_MOVE_FAST,
+  
   // make other player active
   // format: [GL_PLAYER_SWITCH,  -1] - switch to another active player
   // format: [GL_PLAYER_SWITCH, num] - switch to player num

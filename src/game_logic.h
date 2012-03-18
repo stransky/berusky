@@ -37,8 +37,8 @@ typedef class game_logic {
   LEVEL_GAME   *p_level;
   LEVEL_STATUS *p_status;
 
-  int  player_move(LEVEL_EVENT *p_buffer, int  player, tpos px, tpos py, tpos dx, tpos dy, int extra_events);
-  int  item_move(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer, tpos dx, tpos dy, int extra_events);
+  int  player_move(LEVEL_EVENT *p_buffer, int  player, tpos px, tpos py, tpos dx, tpos dy, bool fast_move, int extra_events);
+  int  item_move(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer, tpos dx, tpos dy, bool fast_move, int extra_events);
   int  item_blast(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer, int extra_events);
   int  item_erase(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer, bool graphics_change, int extra_events);
   int  item_set(LEVEL_EVENT *p_stack, tpos px, tpos py, tpos layer, item_handle itm, bool graphics_change, bool rewrite_subitems);  

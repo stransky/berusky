@@ -75,10 +75,16 @@ int  animation_repository::repository_load(const char *p_file, const char *p_dir
     Load animations from disc
   */
   
-  #define RECORDS 10
+  #define RECORDS 9
   DATA_RECORD rec[RECORDS];
-  while(data_file.records_get(rec, RECORDS)) {
+  int rec_num, rec_line = 0;  
+  while((rec_num = data_file.records_get(rec, RECORDS))) {
   
+    bprintf("%d: animation template = %d, flag = %d, frame_num = %d, dx = %d, dy = %d, sprite_first = %d, sprite_num = %d, sprite_step = %d, frame_correction = %d",
+           rec_line, rec[0].num, rec[1].num, rec[2].num, rec[3].num,
+           rec[4].num, rec[5].num, rec[6].num, rec[7].num, rec[8].num);
+  
+    assert(rec_num == RECORDS);
     assert(rec[0].num < dynamic_last);
   
     ANIMATION_TEMPLATE *p_tmp = p_tpl+rec[0].num;
@@ -95,7 +101,8 @@ int  animation_repository::repository_load(const char *p_file, const char *p_dir
     p_tmp->sprite_step = rec[7].num;
   
     p_tmp->frame_correction = rec[8].num;
-    p_tmp->speed_up = rec[9].num;
+  
+    rec_line++;
   }
 
   data_file.close();
