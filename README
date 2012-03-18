@@ -99,7 +99,7 @@
 
   N           - change the music (not implemented yet)
   D           - start recording a demo (not implemented yet)
-  ALT+X       - quit quickly
+  CTRL+X      - quit quickly
 
   F1          - In game help
   F2          - Save level
