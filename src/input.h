@@ -237,11 +237,11 @@ typedef  SDLKey       KEYTYPE;
 typedef  SDLMod       KEYMOD;
  
 
-#define  KEY_PRESSED            0x1     // key is pressed
-#define  KEY_CLEAR_AFTER_PRESS  0x2     // clear key after press
-#define  KEY_GROUP_BLOCK        0x8     // Key is member of group
+#define  KEY_PRESSED                  0x1     // key is pressed
+#define  KEY_CLEAR_AFTER_PRESS        0x2     // clear key after press
+#define  KEY_GROUP_BLOCK              0x8     // Key is member of group
 
-#define  KEY_GROUP_BLOCK_MOVE   0x100
+#define  KEY_GROUP_BLOCK_MOVE         0x100
 
 inline bool in_rect(RECT &dst, tpos x, tpos y)
 {
@@ -458,7 +458,7 @@ public:
   
   // Keyboard interface
   void keyset_set(EVENT_KEY_SET *p_keyset);
-  void key_input(KEYTYPE key, KEYMOD mod, bool pressed);
+  void key_input(KEYTYPE key, KEYMOD modification, bool pressed);
   void key_add(LEVEL_EVENT_QUEUE *p_queue);
 
   // Mouse interface

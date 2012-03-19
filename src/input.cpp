@@ -34,7 +34,7 @@
 /* KB definitions
 */
 EVENT_KEY game_key_array[] = 
-{/*
+{
   {LEVEL_EVENT(GL_PLAYER_MOVE, 0,-1),LEVEL_EVENT(EV_NONE), K_UP,   0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
   {LEVEL_EVENT(GL_PLAYER_MOVE, 0, 1),LEVEL_EVENT(EV_NONE), K_DOWN, 0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
   {LEVEL_EVENT(GL_PLAYER_MOVE,-1, 0),LEVEL_EVENT(EV_NONE), K_LEFT, 0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
@@ -44,11 +44,6 @@ EVENT_KEY game_key_array[] =
   {LEVEL_EVENT(GL_PLAYER_MOVE_FAST, 0, 1),LEVEL_EVENT(EV_NONE), K_DOWN, 0,0,1,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
   {LEVEL_EVENT(GL_PLAYER_MOVE_FAST,-1, 0),LEVEL_EVENT(EV_NONE), K_LEFT, 0,0,1,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
   {LEVEL_EVENT(GL_PLAYER_MOVE_FAST, 1, 0),LEVEL_EVENT(EV_NONE), K_RIGHT,0,0,1,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
-*/
-  {LEVEL_EVENT(GL_PLAYER_MOVE_FAST, 0,-1),LEVEL_EVENT(EV_NONE), K_UP,   0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
-  {LEVEL_EVENT(GL_PLAYER_MOVE_FAST, 0, 1),LEVEL_EVENT(EV_NONE), K_DOWN, 0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
-  {LEVEL_EVENT(GL_PLAYER_MOVE_FAST,-1, 0),LEVEL_EVENT(EV_NONE), K_LEFT, 0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
-  {LEVEL_EVENT(GL_PLAYER_MOVE_FAST, 1, 0),LEVEL_EVENT(EV_NONE), K_RIGHT,0,0,0,KEY_GROUP_BLOCK, KEY_GROUP_BLOCK_MOVE},
 
   {LEVEL_EVENT(GL_PLAYER_SWITCH, SELECT_PLAYER_NEXT, 0),LEVEL_EVENT(EV_NONE), K_TAB, 0,0,0,KEY_CLEAR_AFTER_PRESS},
 
@@ -229,9 +224,9 @@ void input::events_game(LEVEL_EVENT_QUEUE *p_queue)
   p_queue->commit();
 }
 
-void input::key_input(KEYTYPE key, KEYMOD mod, bool pressed)
+void input::key_input(KEYTYPE key, KEYMOD modification, bool pressed)
 {
-  // check input queue  
+  // check input queue
   if(pressed) {
     input_queue.add(LEVEL_EVENT(GI_KEY_DOWN, (int)key));
     input_queue.commit();
@@ -241,19 +236,33 @@ void input::key_input(KEYTYPE key, KEYMOD mod, bool pressed)
   if(!p_set || flag&INPUT_BLOCK_SETS)
     return;
  
+  // Update keyboard imput
+  SDL_PumpEvents();
+  
   EVENT_KEY *p_key = p_set->p_keys;
   int        keynum = p_set->keynum;
   int        i;
 
-  bool shift = mod&K_SHIFT_MASK;
-  bool ctrl = mod&K_CTRL_MASK;
+  SDLMod mod = SDL_GetModState();
   
- // Update key flag
+  bool shift = mod&KMOD_SHIFT;
+  bool ctrl = mod&KMOD_CTRL;
+  
+  int    numkeys;
+  byte  *keystate = SDL_GetKeyState(&numkeys);
+
+  // Update all key events regard to current keyboard state
   for(i = 0; i < keynum; i++, p_key++) {
-    if(p_key->key == key && ctrl == p_key->ctrl && shift == p_key->shift) {
-      p_key->flag = pressed ? p_key->flag|KEY_PRESSED : p_key->flag&~KEY_PRESSED;
+    assert(p_key->key < numkeys);
+    if(keystate[p_key->key] && ctrl == p_key->ctrl && shift == p_key->shift) {
+      //bprintf("p_key = %p, activated, p_key->key = %d, keystate[p_key->key] = %d",p_key,p_key->key,keystate[p_key->key]);
+      p_key->flag = p_key->flag|KEY_PRESSED;
     }
-  }
+    else {
+      //bprintf("p_key = %p, activated, p_key->key = %d, keystate[p_key->key] = %d",p_key,p_key->key,keystate[p_key->key]);
+      p_key->flag = p_key->flag&~KEY_PRESSED;
+    }
+  }  
 }
 
 void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
@@ -276,9 +285,11 @@ void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
   while(ret) {
     switch (event.type) {
       case SDL_KEYDOWN:
+        //bprintf("SDL_KEYDOWN, sym = %d, mod = %d",event.key.keysym.sym, event.key.keysym.mod);
         key_input(event.key.keysym.sym, event.key.keysym.mod, TRUE);
         break;
       case SDL_KEYUP:
+        //bprintf("SDL_KEYUP, sym = %d, mod = %d",event.key.keysym.sym, event.key.keysym.mod);
         key_input(event.key.keysym.sym, event.key.keysym.mod, FALSE);
         break;
       case SDL_MOUSEMOTION:
