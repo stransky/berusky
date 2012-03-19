@@ -664,6 +664,7 @@ which can be controlled by these keys:"));
         int start_y;
       
         p_font->print(NULL, 20,  start_y = Y_START, _("arrows"));
+        p_font->print(NULL, 20,  start_y += Y_DIFF, _("SHIFT+arrows"));
         
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("Tab"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("N"));
@@ -673,7 +674,8 @@ which can be controlled by these keys:"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("F2"));
         p_font->print(NULL, 20,  start_y += Y_DIFF, _("F3"));
       
-        p_font->print(NULL, 69,  start_y = Y_START, _(" . . . . . . . move the bug"));
+        p_font->print(NULL, 135,  start_y = Y_START, _(". . . . . move the bug"));        
+        p_font->print(NULL, 205,  start_y += Y_DIFF, _(". . quick bug movement"));
         p_font->print(NULL, 86,  start_y += Y_DIFF, _(". . . . . . . switch among the bugs"));
         p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . change the music"));
         p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . demo"));
