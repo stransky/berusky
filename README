@@ -39,7 +39,7 @@
 
   Install it (as root):  
   #./install
-  
+
 2. Configuration
 
   All configuration is stored at ~/.berusky/berusky.ini or 
@@ -87,23 +87,24 @@
 
 5. Game keys
 
-  Arrows      - Move selected bug
-        
-  Tabulator   - Switch among the bugs
+  Arrows       - Move selected bug
+  SHIFT+Arrows - Fast bug movements
 
-  1           - Choose the first bug
-  2           - Choose the second bug
-  3           - Choose the third bug
-  4           - Choose the fourth bug
-  5           - Choose the fifth bug
+  Tabulator    - Switch among the bugs
 
-  N           - change the music (not implemented yet)
-  D           - start recording a demo (not implemented yet)
-  CTRL+X      - quit quickly
+  1            - Choose the first bug
+  2            - Choose the second bug
+  3            - Choose the third bug
+  4            - Choose the fourth bug
+  5            - Choose the fifth bug
 
-  F1          - In game help
-  F2          - Save level
-  F3          - Load level
+  N            - change the music (not implemented yet)
+  D            - start recording a demo (not implemented yet)
+  CTRL+X       - quit quickly
+
+  F1           - In game help
+  F2           - Save level
+  F3           - Load level
 
 6. Editor keys
 
@@ -116,32 +117,32 @@
   2       - select items layer
   3       - select players layer
   4       - select all layer
-  
+
   B       - change background image 
-  
+
   CTRL+N  - new level
-  
+
   F2      - save
   CTRL+F2 - save as
   F3      - load
   F9      - run level
   ESC     - end
-   
+
   CTRL+U  - undo  
 
   SHIFT+R - rotation of selected item
   CTRL+S  - level shader
 
-Mouse:  
-  
+Mouse:
+
   first mouse button      - insert selected item
   third mouse button      - clear selected cell
-  
+
   R + mouse wheel         - rotation of item in level
   V + mouse wheel         - variation of item in level
 
   F + first mouse button  - fill rectangle with selected item
   D + first mouse button  - draw rectangle with selected item
-  
+
   F + third mouse button  - clear solid rectangle with selected item
   D + third mouse button  - clear empty rectangle with selected item
