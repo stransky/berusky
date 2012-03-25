@@ -1,6 +1,11 @@
-- load file path from configure scripts?
+- New backgrounds
+- better level ordering - like the one in fish-filets
+- player profiles
 
-- Udelat "double size" rezim?
+- better animations - explosions and so
+
+- load file path from configure scripts?
+- "double size" mode?
 
 Nove prvky:
 
@@ -15,7 +20,7 @@ Berusky V1.1 crashes sometimes with this error:
 berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*):
 Assertion `surface_last < surface_num' failed.
 
--> kdyz se prepina mezi hrou/editorem?
+-> game/editor switch?
 
 Game:
 
