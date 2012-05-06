@@ -503,6 +503,11 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   sprite::color_key_set(COLOR_KEY_MENU);
   i  += p_grf->sprite_insert("menu4.spr", MENU_SPRIT_ARROWS,
                                           MENU_ARROWS_NUM, NULL);
+  i  += p_grf->sprite_insert("controls.spr", MENU_CHECKBOX_CHECKED,
+                                             MENU_CHECKBOX_NUM, NULL);
+  i  += p_grf->sprite_insert("slidebar.spr", MENU_SLIDEBAR, 1, NULL);
+  i  += p_grf->sprite_insert("slider.spr", MENU_SLIDER, 1, NULL);
+
   sprite::color_key_set(COLOR_KEY_GAME);
   i  += p_grf->sprite_insert("menu5.spr", MENU_SPRIT_LOGO_SMALL_1, MENU_SPRIT_LOGO_SMALL_NUM, NULL);
 
