@@ -63,6 +63,7 @@ public:
   void menu_new_game(MENU_STATE state, int data = 0, int data1 = 0);
   void menu_password(MENU_STATE state, int data = 0, int data1 = 0);
   void menu_password_check(MENU_STATE state, int data = 0, int data1 = 0);
+  void menu_settings(MENU_STATE state, int data = 0, int data1 = 0);
   void menu_level_hint(MENU_STATE state, int data = 0, int data1 = 0);
   void menu_help(MENU_STATE state, int data = 0, int data1 = 0);
   void menu_help_keys(MENU_STATE state, int data = 0, int data1 = 0);

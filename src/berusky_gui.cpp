@@ -98,12 +98,13 @@ void game_gui::menu_main(MENU_STATE state, int data, int data1)
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
         #define MENU_X_START 250
-        #define MENU_Y_START 220
+        #define MENU_Y_START 190
         #define MENU_X_DIFF  0
         #define MENU_Y_DIFF  35
 
         static char *new_game = _("new game");
         static char *password = _("password");
+        static char *settings = _("settings");
         static char *help = _("help");
         static char *editor = _("editor");
         static char *quit = _("quit");
@@ -117,6 +118,7 @@ void game_gui::menu_main(MENU_STATE state, int data, int data1)
         
         menu_item_draw(new_game, LEFT, TRUE, LEVEL_EVENT(GC_MENU_NEW_GAME));
         menu_item_draw(password, LEFT, TRUE, LEVEL_EVENT(GC_MENU_PASSWORD));
+        menu_item_draw(settings, LEFT, TRUE, LEVEL_EVENT(GC_MENU_SETTINGS));
         menu_item_draw(help, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP,FALSE));
         menu_item_draw(editor, LEFT, TRUE, LEVEL_EVENT(GC_RUN_EDITOR));      
         menu_item_draw(quit, LEFT, TRUE, LEVEL_EVENT(GC_MENU_QUIT));
@@ -365,6 +367,62 @@ void game_gui::menu_password_check(MENU_STATE state, int data, int data1)
   data = bool from_game
 */
 void game_gui::menu_help(MENU_STATE state, int data, int data1)
+{
+  switch(state) {
+    case MENU_RETURN:
+    case MENU_ENTER:
+      {
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_help, data, data1);
+    
+        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+        
+        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+
+        #define LOGO_START 0
+      
+        p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+
+        #define MENU_X_START 240
+        #define MENU_Y_START 240
+        #define MENU_X_DIFF  0
+        #define MENU_Y_DIFF  35
+      
+        bool from_game = (bool)data;
+      
+        static char *hint    = _("level hint");
+        static char *keys    = _("game controls");
+        static char *rules   = _("game rulez");
+        static char *credits = _("authors");
+        static char *back    = _("back");
+              
+        menu_item_set_pos(MENU_X_START, MENU_Y_START);
+        menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
+        
+        menu_item_start();
+        
+        if(from_game) {
+          menu_item_draw(hint, LEFT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
+        }
+        
+        menu_item_draw(keys, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_KEYS));
+        menu_item_draw(rules, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_RULES,0));
+        menu_item_draw(credits, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_CREDIT));
+        menu_item_draw(back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
+
+        p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
+        p_grf->flip();              
+      }
+      break;
+    
+    case MENU_LEAVE:
+      input.mevent_clear();
+      break;
+    default:
+      break;
+  }
+}
+
+void game_gui::menu_settings(MENU_STATE state, int data, int data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -1499,6 +1557,8 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         break;
       case GC_MENU_PASSWORD_CHECK:
         menu_password_check(MENU_ENTER, ev.param_int_get(PARAM_0));
+        break;
+      case GC_MENU_SETTINGS:
         break;
       case GC_MENU_HELP:
         menu_help(MENU_ENTER, ev.param_int_get(PARAM_0));
