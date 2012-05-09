@@ -422,13 +422,16 @@ void game_gui::menu_help(MENU_STATE state, int data, int data1)
   }
 }
 
+/*
+  data = bool from_game
+*/
 void game_gui::menu_settings(MENU_STATE state, int data, int data1)
 {
   switch(state) {
     case MENU_RETURN:
     case MENU_ENTER:
       {
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_help, data, data1);
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_settings, data, data1);
     
         p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
         
@@ -445,24 +448,19 @@ void game_gui::menu_settings(MENU_STATE state, int data, int data1)
       
         bool from_game = (bool)data;
       
-        static char *hint    = _("level hint");
-        static char *keys    = _("game controls");
-        static char *rules   = _("game rulez");
-        static char *credits = _("authors");
-        static char *back    = _("back");
+        static char *fulscreen = _("fulscreen");
+        static char *sound = _("sound");
+        static char *music = _("music");
+        static char *back = _("back");
               
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         
         menu_item_start();
         
-        if(from_game) {
-          menu_item_draw(hint, LEFT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
-        }
-        
-        menu_item_draw(keys, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_KEYS));
-        menu_item_draw(rules, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_RULES,0));
-        menu_item_draw(credits, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_CREDIT));
+        menu_item_draw(fulscreen, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_KEYS));
+        menu_item_draw(sound, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_RULES,0));
+        menu_item_draw(music, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_CREDIT));
         menu_item_draw(back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);

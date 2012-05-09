@@ -236,10 +236,57 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
   }
 }
 
-void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, ALIGNMENT spr_align, bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, ALIGNMENT spr_align, 
+                              bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
   menu_item_set_pos(x,y);
   menu_item_draw(p_text,spr_align,save_back,click1,click2,click3);
+}
+
+void gui_base::menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, 
+                                       bool checked, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+{
+
+  switch(spr_align)
+  {
+    case LEFT:
+      {      
+        p_grf->draw(checked ? MENU_CHECKBOX_CHECKED : MENU_CHECKBOX_UNCHECKED, last_x, last_y);
+        p_font->alignment_set(LEFT);
+        p_font->select(FONT_DEFAULT);
+        p_font->print(&r, last_x + 17 + MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
+      
+        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_CHECKBOX_CHECKED, last_x, last_y);
+        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_CHECKBOX_CHECKED,  last_x, last_y);
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
+
+        RECT r_arrow = {last_x, last_y, 17, 34};
+      
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+        if(save_back)
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
+        else
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+        if(save_back)
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
+        else
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+        
+        last_x += last_dx;
+        last_y += last_dy;
+      }
+      break;
+    
+    case RIGHT:
+      {
+      }          
+      break;
+  }
 }
 
 void gui_base::menu_services(LEVEL_EVENT ev)
