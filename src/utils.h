@@ -71,6 +71,9 @@
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
+#define POINTER_TO_INT(pointer) (*((int*)&(pointer)))
+#define INT_TO_POINTER(integer) (reinterpret_cast<void *>(integer))
+
 // -------------------------------------------------------
 // file interfaces
 // -------------------------------------------------------

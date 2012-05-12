@@ -81,7 +81,7 @@ game_gui::~game_gui(void)
   - zrusit 
 */
 
-void game_gui::menu_main(MENU_STATE state, int data, int data1)
+void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -146,7 +146,7 @@ void game_gui::menu_main(MENU_STATE state, int data, int data1)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_new_game(MENU_STATE state, int data, int data1)
+void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -209,7 +209,7 @@ void game_gui::menu_new_game(MENU_STATE state, int data, int data1)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_password(MENU_STATE state, int data, int data1)
+void game_gui::menu_password(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   #define MAX_PASSWORD 10
   static char password[MAX_PASSWORD] = "";
@@ -304,7 +304,7 @@ void game_gui::menu_password(MENU_STATE state, int data, int data1)
 #undef MENU_Y_DIFF
 #undef INSERT_START
 
-void game_gui::menu_password_check(MENU_STATE state, int data, int data1)
+void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -366,7 +366,7 @@ void game_gui::menu_password_check(MENU_STATE state, int data, int data1)
 /*
   data = bool from_game
 */
-void game_gui::menu_help(MENU_STATE state, int data, int data1)
+void game_gui::menu_help(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -422,10 +422,16 @@ void game_gui::menu_help(MENU_STATE state, int data, int data1)
   }
 }
 
+#undef LOGO_START
+#undef MENU_X_START
+#undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
+
 /*
   data = bool from_game
 */
-void game_gui::menu_settings(MENU_STATE state, int data, int data1)
+void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -441,26 +447,36 @@ void game_gui::menu_settings(MENU_STATE state, int data, int data1)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
-        #define MENU_X_START 240
-        #define MENU_Y_START 240
+        #define MENU_X_START 100
+        #define MENU_Y_START 180
         #define MENU_X_DIFF  0
         #define MENU_Y_DIFF  35
       
         bool from_game = (bool)data;
       
         static char *fulscreen = _("fulscreen");
+/*
         static char *sound = _("sound");
         static char *music = _("music");
-        static char *back = _("back");
-              
+*/
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
-        
+
         menu_item_start();
+        menu_item_draw_checkbox(fulscreen, LEFT, p_grf->fullscreen_get(), 0,
+                                LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
+/*
+        menu_item_draw_checkbox(sound, LEFT, p_ber->sound.sound_on, 1,
+                                LEVEL_EVENT(GC_MENU_SETTINGS_SOUND_SWITCH));
+        menu_item_draw_checkbox(music, LEFT, p_ber->sound.music_on, 2,
+                                LEVEL_EVENT(GC_MENU_SETTINGS_MUSIC_SWITCH));
+*/
+        static char *back = _("back");
         
-        menu_item_draw(fulscreen, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_KEYS));
-        menu_item_draw(sound, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_RULES,0));
-        menu_item_draw(music, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_CREDIT));
+        #define MENU_X_START_BACK 270
+        #define MENU_Y_START_BACK 400
+        
+        menu_item_set_pos(MENU_X_START_BACK, MENU_Y_START_BACK);
         menu_item_draw(back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
@@ -485,7 +501,7 @@ void game_gui::menu_settings(MENU_STATE state, int data, int data1)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_help_rules(MENU_STATE state, int data, int data1)
+void game_gui::menu_help_rules(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -696,7 +712,7 @@ it is possible to break them anywise.\n"));
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_help_keys(MENU_STATE state, int data, int data1)
+void game_gui::menu_help_keys(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -775,7 +791,7 @@ which can be controlled by these keys:"));
 #define SCROLL_START_Y  180
 #define SCROLL_LINES    12
 
-void game_gui::menu_help_credits(MENU_STATE state, int data, int data1)
+void game_gui::menu_help_credits(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   static char *p_text = NULL;
   static int frame = 0;
@@ -865,7 +881,7 @@ void game_gui::menu_help_credits(MENU_STATE state, int data, int data1)
   data  = set
   data1 = level
 */
-void game_gui::menu_level_hint(MENU_STATE state, int data, int data1)
+void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -929,7 +945,7 @@ void game_gui::menu_level_hint(MENU_STATE state, int data, int data1)
 #undef MENU_X_START_L
 #undef MENU_X_START_R
 
-void game_gui::menu_level_run(MENU_STATE state, int data, int data1)
+void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -1166,7 +1182,7 @@ void game_gui::level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_level_end(MENU_STATE state, int data, int data1)
+void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -1232,7 +1248,7 @@ void game_gui::menu_level_end(MENU_STATE state, int data, int data1)
   }
 }
 
-void game_gui::menu_level_end_custom(MENU_STATE state, int data, int data1)
+void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -1291,7 +1307,7 @@ void game_gui::menu_level_end_custom(MENU_STATE state, int data, int data1)
 /*
   int set = data;
 */
-void game_gui::menu_levelset_end(MENU_STATE state, int data, int data1)
+void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   static char *p_text = NULL;
   static int frame = 0;
@@ -1383,7 +1399,7 @@ void game_gui::menu_levelset_end(MENU_STATE state, int data, int data1)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 
-void game_gui::menu_in_game(MENU_STATE state, int data, int data1)
+void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:
@@ -1557,6 +1573,16 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_password_check(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_SETTINGS:
+        menu_settings(MENU_ENTER, ev.param_int_get(PARAM_0));
+        break;
+      case GC_MENU_SETTINGS_FULSCREEN_SWITCH:
+        p_grf->fullscreen_toggle();
+        break;
+      case GC_MENU_SETTINGS_SOUND_SWITCH:
+        p_ber->sound.sound_on = !p_ber->sound.sound_on;
+        break;
+      case GC_MENU_SETTINGS_MUSIC_SWITCH:
+        p_ber->sound.music_on = !p_ber->sound.music_on;
         break;
       case GC_MENU_HELP:
         menu_help(MENU_ENTER, ev.param_int_get(PARAM_0));
@@ -1635,6 +1661,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       
       case GI_SPRITE_DRAW:
       case GI_STRING_DRAW:
+      case GI_CHECKBOX_SWITCH:
       case GI_KEY_DOWN:
         menu_services(ev);
         break;

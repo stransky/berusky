@@ -43,7 +43,7 @@ typedef enum _MENU_STATE {
 class gui_base;
 
 typedef class gui_base GUI_BASE;
-typedef void (GUI_BASE::*GUI_BASE_FUNC)(MENU_STATE state, int data, int data1);
+typedef void (GUI_BASE::*GUI_BASE_FUNC)(MENU_STATE state, size_ptr data, size_ptr data1);
 
 typedef class menu_fuction {
 
@@ -51,16 +51,16 @@ public:
   
   GUI_BASE      *p_class;
   GUI_BASE_FUNC  p_func;
-  int            p1;
-  int            p2;
+  size_ptr       p1;
+  size_ptr       p2;
 
 public:
   
   menu_fuction(void) : p_class(0), p_func(0), p1(0), p2(0) {};
-  menu_fuction(GUI_BASE *p_class_, GUI_BASE_FUNC p_func_, int param_1 = 0, int param_2 = 0) :  
+  menu_fuction(GUI_BASE *p_class_, GUI_BASE_FUNC p_func_, size_ptr param_1 = 0, size_ptr param_2 = 0) :
   p_class(p_class_), p_func(p_func_), p1(param_1), p2(param_2) {};
 
-  void set(GUI_BASE *p_class_, GUI_BASE_FUNC p_func_, int param_1 = 0, int param_2 = 0)
+  void set(GUI_BASE *p_class_, GUI_BASE_FUNC p_func_, size_ptr param_1 = 0, size_ptr param_2 = 0)
   {
     p_class = p_class_;
     p_func = p_func_;
@@ -97,6 +97,87 @@ public:
 
 } MENU_FUCTION;
 
+typedef struct checkbox_config {
+
+  bool        state;
+  spr_handle  sprites[2];  
+  tpos        x,y;
+  LEVEL_EVENT event[MEVENTS];
+  int         event_num;
+
+  spr_handle sprite_get(void)
+  {
+    return(sprites[state ? 1 : 0]);
+  }
+
+  void check_switch(void)
+  {
+    state = !state;
+  }
+
+  void draw(void)
+  {
+    p_grf->draw(sprite_get(), x, y);
+  }
+
+  void draw_all(void)
+  {
+    p_grf->draw(sprite_get(), x, y);
+    p_grf->redraw_add(sprite_get(), x, y);
+    p_grf->flip();  
+  }
+
+  void event_set(LEVEL_EVENT ev)
+  {
+    event[0] = ev;
+    event_num = 1;
+  }
+
+  void event_set(LEVEL_EVENT ev, LEVEL_EVENT ev1)
+  {
+    event[0] = ev;
+    event[1] = ev1;
+    event_num = 2;
+  }
+
+  void event_set(LEVEL_EVENT ev, LEVEL_EVENT ev1, LEVEL_EVENT ev2)
+  {
+    event[0] = ev;
+    event[1] = ev1;
+    event[2] = ev2;
+    event_num = 3;
+  }
+
+  checkbox_config(void)
+  {
+    memset(this,0,sizeof(*this));
+    sprites[0] = MENU_CHECKBOX_UNCHECKED;
+    sprites[1] = MENU_CHECKBOX_CHECKED;
+  }
+
+  checkbox_config(bool state_, tpos x_, tpos y_)
+  {
+    state = state_;
+    sprites[0] = MENU_CHECKBOX_UNCHECKED;
+    sprites[1] = MENU_CHECKBOX_CHECKED;  
+    x = x_;
+    y = y_;
+    event_num = 0;
+  }
+
+  checkbox_config(bool state_, tpos x_, tpos y_, LEVEL_EVENT ev)
+  {
+    state = state_;
+    sprites[0] = MENU_CHECKBOX_UNCHECKED;
+    sprites[1] = MENU_CHECKBOX_CHECKED;
+    x = x_;
+    y = y_;
+    event[0] = ev;
+    event_num = 1;
+  }
+
+} CHECKBOX_CONFIG;
+
 typedef class gui_base {
 
 public:
@@ -128,13 +209,17 @@ private:
   /* Last used rect */
   RECT r;
 
+  /* Array of active checkboxes */
+  #define CHECKBOX_NUM 10
+  CHECKBOX_CONFIG checkbox[CHECKBOX_NUM];
+
 public:
 
   gui_base(void);
   ~gui_base(void);
 
   // Game UI - clean up management
-  void menu_enter(GUI_BASE *p_class, GUI_BASE_FUNC p_func, int param_1, int param_2);
+  void menu_enter(GUI_BASE *p_class, GUI_BASE_FUNC p_func, size_ptr param_1, size_ptr param_2);
   void menu_leave(void);
   
   // Game UI - "back" management
@@ -143,7 +228,7 @@ public:
 
   // Menu support functions
   void menu_services(LEVEL_EVENT ev);
-  void menu_dummy(MENU_STATE state, int data = 0, int data1 = 0);
+  void menu_dummy(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
 
   void menu_item_set_pos(tpos x, tpos y);
   void menu_item_set_add(tpos dx, tpos dy);
@@ -158,7 +243,8 @@ public:
                       ALIGNMENT spr_align, bool save_back, LEVEL_EVENT click1,
                       LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                       LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
-  void menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, bool checked,
+  void menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align,
+                               bool checked, int checkbox_id,
                                LEVEL_EVENT click1,
                                LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                                LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));

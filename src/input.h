@@ -300,13 +300,22 @@ typedef struct event_key_set {
 #define MASK_WHEEL_UP         0x10
 #define MASK_WHEEL_DOWN       0x20
 
+typedef enum { 
+
+  BUTTON_NONE = 0,
+  BUTTON_DOWN,
+  BUTTON_UP,
+
+} MOUSE_BUTTON_STATE;
+
+
 typedef class mouse_state {
 
 public:
 
-  RECT rect;
-  int  button[MOUSE_BUTTONS];
-  int  key;
+  RECT                rect;
+  MOUSE_BUTTON_STATE  button[MOUSE_BUTTONS];
+  int                 key;
 
 public:
   
@@ -334,9 +343,17 @@ public:
   
     int i;
     for(i = 0; i < MOUSE_BUTTONS; i++)
-      button[i] = 0x1&(buttons >> i);
+      button[i] = (0x1&(buttons >> i)) ? BUTTON_DOWN : BUTTON_NONE;
     
     key = key_;
+  }
+
+  mouse_state(RECT r, int buttons, MOUSE_BUTTON_STATE state)
+  {
+    rect = r;
+    int i;
+    for(i = 0; i < MOUSE_BUTTONS; i++)
+      button[i] = (0x1&(buttons >> i)) ? state : BUTTON_NONE;
   }
 
 } MOUSE_STATE;
@@ -373,7 +390,7 @@ typedef struct mouse_event {
     flag = flg;    
     last_state = FALSE;
     event_num = 0;
-    event[0].params_set(ET(handle));
+    event[0].params_set(ET(INT_TO_POINTER(handle)));
   }
 
   mouse_event(MOUSE_STATE state, int flg, LEVEL_EVENT ev)
@@ -462,7 +479,7 @@ public:
   void key_add(LEVEL_EVENT_QUEUE *p_queue);
 
   // Mouse interface
-  void mouse_input(tpos mx, tpos my, int state, int button);
+  void mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button);
 
   void mevent_state_clear(int first = 0);
   void mevent_clear(void);

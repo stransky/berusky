@@ -135,6 +135,24 @@ public:
 
 } BERUSKY_STATE;
 
+typedef class berusky_sound {
+
+public:
+
+  int sound_on;
+  int sound_volume;
+  int music_on;
+  int music_volume;
+
+public:
+
+  berusky_sound(void)
+  {
+    memset(this,0,sizeof(*this));
+  }
+
+} BERUSKY_SOUND;
+
 typedef class berusky {
   
   LEVEL_STORE       store;
@@ -143,6 +161,10 @@ typedef class berusky {
   DIR_LIST         *p_dir;
 
   BERUSKY_STATE     state;
+
+public:
+
+  BERUSKY_SOUND     sound;
 
 public:
 

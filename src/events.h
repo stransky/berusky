@@ -104,6 +104,10 @@ typedef enum {
   // format: [GC_STRING_DRAW, font, x, y, x_aling, string]
   GI_STRING_DRAW,
   
+  // Switch and redraw the checkbox
+  // format: [GI_CHECKBOX_SWITCH, checkbox_id]
+  GI_CHECKBOX_SWITCH,
+  
   // ------------------------------------------------------------------------
   // Game events
   
@@ -221,6 +225,9 @@ typedef enum {
   GC_MENU_NEW_GAME,
   GC_MENU_PASSWORD,
   GC_MENU_SETTINGS,
+  GC_MENU_SETTINGS_FULSCREEN_SWITCH,
+  GC_MENU_SETTINGS_SOUND_SWITCH,
+  GC_MENU_SETTINGS_MUSIC_SWITCH,
   GC_MENU_LEVEL_HINT,
   GC_MENU_HELP,
   GC_MENU_HELP_KEYS,
@@ -354,6 +361,7 @@ typedef void * EVENT_PARAM_TYPE;
 
 #define EVENT_TYPE_NONE   ((EVENT_PARAM_TYPE)(NULL))
 #define ET(p)             ((EVENT_PARAM_TYPE)(p))
+#define ET_INT(p)         ((EVENT_PARAM_TYPE)(INT_TO_POINTER(p)))
 
 /* Everything
 */
@@ -482,7 +490,12 @@ public:
               int p5 = 0)
   : action(ev), depend_events(0)
   {
-    params_set(ET(p0),ET(p1),ET(p2),ET(p3),ET(p4),ET(p5));
+    params_set(ET(INT_TO_POINTER(p0)),
+               ET(INT_TO_POINTER(p1)),
+               ET(INT_TO_POINTER(p2)),
+               ET(INT_TO_POINTER(p3)),
+               ET(INT_TO_POINTER(p4)),
+               ET(INT_TO_POINTER(p5)));
   }
 
 } LEVEL_EVENT;

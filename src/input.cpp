@@ -299,20 +299,20 @@ void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
           for(i = 0; i < MOUSE_BUTTONS; i++) {        
             bool state = event.motion.state&SDL_BUTTON(i);
             if(state) {
-              mouse_input(event.motion.x, event.motion.y, 1, i);
+              mouse_input(event.motion.x, event.motion.y, BUTTON_DOWN, i);
               pressed = TRUE;
             }
           }
           if(!pressed) {
-            mouse_input(event.motion.x, event.motion.y, 0, 0);
+            mouse_input(event.motion.x, event.motion.y, BUTTON_NONE, 0);
           }
         }
         break;
       case SDL_MOUSEBUTTONDOWN:
-        mouse_input(event.button.x, event.button.y, 1, event.button.button);
+        mouse_input(event.button.x, event.button.y, BUTTON_DOWN, event.button.button);
         break;
       case SDL_MOUSEBUTTONUP:
-        mouse_input(event.button.x, event.button.y, 0, event.button.button);
+        mouse_input(event.button.x, event.button.y, BUTTON_UP, event.button.button);
         break;
       case SDL_ACTIVEEVENT:
         if(event.active.state&SDL_APPACTIVE) {
@@ -347,7 +347,7 @@ void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
 // Mouse interface
 // -------------------------------------------------------------------------
 
-void input::mouse_input(tpos mx, tpos my, int state, int button)
+void input::mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button)
 {
   // bprintf("Mouse state [%d,%d], state %d, button %d", mx, my, state, button);
 
@@ -426,7 +426,7 @@ void input::mouse_input(tpos mx, tpos my, int state, int button)
     input_queue.commit();
   }
 
-  mstate.button[button] = FALSE;
+  mstate.button[button] = BUTTON_NONE;
 }
 
 void input::mevent_state_clear(int first)

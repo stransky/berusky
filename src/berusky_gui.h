@@ -59,23 +59,23 @@ public:
   char * credit_text_load(void);
 
   // Run menu (create menu background) in GUI
-  void menu_main(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_new_game(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_password(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_password_check(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_settings(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_level_hint(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_help(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_help_keys(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_help_rules(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_help_credits(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_in_game(MENU_STATE state, int data = 0, int data1 = 0);  
+  void menu_main(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_new_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_password(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_password_check(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_settings(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_level_hint(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_help(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_help_keys(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_help_rules(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_help_credits(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_in_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
 
   // Level screens
-  void menu_level_run(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_level_end(MENU_STATE state, int data = 0, int data1 = 0);
-  void menu_level_end_custom(MENU_STATE state, int data = 0, int data1 = 0);  
-  void menu_levelset_end(MENU_STATE state, int data = 0, int data1 = 0);
+  void menu_level_run(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_level_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_level_end_custom(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
+  void menu_levelset_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   
   // Callback for all
   bool callback(LEVEL_EVENT_QUEUE *p_queue, int frame);

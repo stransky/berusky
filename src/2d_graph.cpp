@@ -457,7 +457,7 @@ void sprite_store::sprite_delete(spr_handle handle, int num)
 //   the graph 2d store class
 // -------------------------------------------------------
 
-SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, int fullscreen)
+SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, int fullscreen_)
 {
 
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -484,6 +484,8 @@ SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, 
 
   redraw_reset();
   rect_whole = FALSE;
+
+  fullscreen = fullscreen_;
 
   return(p_hwscreen);
 }
@@ -520,6 +522,17 @@ void graph_2d::check(void)
     }
   }
   bprintf("--- ALL ---");
+}
+
+void graph_2d::fullscreen_toggle(void)
+{
+
+  if(!SDL_WM_ToggleFullScreen(p_screen_surface->surf_get())) {
+    bprintf("SDL_WM_ToggleFullScreen() failed!");
+  }
+  else {
+    fullscreen = !fullscreen;
+  }
 }
 
 // -------------------------------------------------------

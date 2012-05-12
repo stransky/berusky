@@ -43,7 +43,7 @@ gui_base::~gui_base(void)
 // Game UI - clean up management
 // -------------------------------------------------------
 
-void gui_base::menu_enter(GUI_BASE *p_class, GUI_BASE_FUNC p_func, int param_1, int param_2)
+void gui_base::menu_enter(GUI_BASE *p_class, GUI_BASE_FUNC p_func, size_ptr param_1, size_ptr param_2)
 {
   // If there is a menu function, call it
   menu_leave();
@@ -102,6 +102,7 @@ void gui_base::menu_item_set_add(tpos dx, tpos dy)
 
 void gui_base::menu_item_start(void)
 {
+  // Clear all input events for menu
   input.mevent_clear();
 }
 
@@ -119,8 +120,14 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
       
         LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_LC, last_x, last_y);
         LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_L,  last_x, last_y);
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), 
+                             ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
+                             ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                             ET_INT(LEFT), ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
+                             ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
+                             ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                             ET_INT(LEFT), ET_INT(p_text));
 
         RECT r_arrow = {last_x, last_y, 17, 34};
       
@@ -152,9 +159,16 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
       
         LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_RC, last_x, last_y);
         LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_R,  last_x, last_y);
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x - MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(RIGHT), ET(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT),  ET(last_x - MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(RIGHT), ET(p_text));
-      
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
+                                        ET_INT(FONT_SELECTED), 
+                                        ET_INT(last_x - MENU_TEXT_DIFF_X), 
+                                        ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                                        ET_INT(RIGHT), ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, 
+                                        ET_INT(FONT_DEFAULT),  
+                                        ET_INT(last_x - MENU_TEXT_DIFF_X), 
+                                        ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                                        ET_INT(RIGHT), ET_INT(p_text));      
         RECT r_arrow = {last_x, last_y, 17, 34};
       
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
@@ -190,8 +204,16 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x, last_y, p_text);
       
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x), ET(last_y), ET(LEFT), ET(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT),  ET(last_x), ET(last_y), ET(LEFT), ET(p_text));
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                        ET_INT(last_x), 
+                                        ET_INT(last_y), 
+                                        ET_INT(LEFT), 
+                                        ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
+                                        ET_INT(last_x), 
+                                        ET_INT(last_y), 
+                                        ET_INT(LEFT), 
+                                        ET_INT(p_text));
       
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
@@ -211,8 +233,16 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x, last_y, p_text);        
       
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x), ET(last_y), ET(RIGHT), ET(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT),  ET(last_x), ET(last_y), ET(RIGHT), ET(p_text));
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                        ET_INT(last_x), 
+                                        ET_INT(last_y), 
+                                        ET_INT(RIGHT), 
+                                        ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
+                                        ET_INT(last_x), 
+                                        ET_INT(last_y), 
+                                        ET_INT(RIGHT), 
+                                        ET_INT(p_text));
         
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
@@ -243,50 +273,66 @@ void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, ALIGNMENT spr_align,
   menu_item_draw(p_text,spr_align,save_back,click1,click2,click3);
 }
 
-void gui_base::menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, 
-                                       bool checked, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+#define MENU_TEXT_CHECKBOX_DIFF_X (20)
+#define MENU_TEXT_CHECKBOX_DIFF_Y (-1)
+
+void gui_base::menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, bool checked, int checkbox_id,
+                                       LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
 
   switch(spr_align)
   {
     case LEFT:
-      {      
-        p_grf->draw(checked ? MENU_CHECKBOX_CHECKED : MENU_CHECKBOX_UNCHECKED, last_x, last_y);
+      {
+        checkbox[checkbox_id] = CHECKBOX_CONFIG(checked, last_x, last_y);
+        checkbox[checkbox_id].draw();
+      
         p_font->alignment_set(LEFT);
         p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x + 17 + MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
+        p_font->print(&r,
+                      last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X,
+                      last_y + MENU_TEXT_CHECKBOX_DIFF_Y,
+                      p_text);
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_CHECKBOX_CHECKED, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_CHECKBOX_CHECKED,  last_x, last_y);
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_DEFAULT), ET(last_x + 17 + MENU_TEXT_DIFF_X), ET(last_y + MENU_TEXT_DIFF_Y), ET(LEFT), ET(p_text));
+        LEVEL_EVENT checkbox_draw = LEVEL_EVENT(GI_CHECKBOX_SWITCH, checkbox_id);
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                        ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X),
+                                        ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
+                                        ET_INT(LEFT), ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
+                                        ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X), 
+                                        ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
+                                        ET_INT(LEFT), ET_INT(p_text));
 
-        RECT r_arrow = {last_x, last_y, 17, 34};
+        // 20x20 is a size of the check-box
+        RECT r_box = {last_x, last_y, 20, 20};
+
+        // highlight the text when mouse is over
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
       
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        if(save_back)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        if(save_back)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-        
+        // if user clicked, activate the check-box and wait for mouse button release
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
+                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
+                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
+      
+        // if user clicked, activate the check-box and wait for mouse button release
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
+                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
+                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+              
         last_x += last_dx;
         last_y += last_dy;
       }
       break;
     
-    case RIGHT:
-      {
-      }          
+    default:
       break;
-  }
+   }
 }
 
 void gui_base::menu_services(LEVEL_EVENT ev)
@@ -312,6 +358,16 @@ void gui_base::menu_services(LEVEL_EVENT ev)
         p_grf->redraw_add(&r);
         p_grf->flip();
       }
+      break;    
+    case GI_CHECKBOX_SWITCH:
+      {
+        // format: [GC_CHECKBOX_DRAW, checkbox_id]
+        int id = ev.param_int_get(PARAM_0);
+        assert(id < CHECKBOX_NUM);
+      
+        checkbox[id].check_switch();
+        checkbox[id].draw_all();      
+      }
       break;
     case GI_KEY_DOWN:
       {
@@ -325,7 +381,7 @@ void gui_base::menu_services(LEVEL_EVENT ev)
   }
 }
 
-void gui_base::menu_dummy(MENU_STATE state, int data, int data1)
+void gui_base::menu_dummy(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
     case MENU_RETURN:

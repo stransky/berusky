@@ -454,6 +454,8 @@ typedef class graph_2d
   int          rect_last;
   bool         rect_whole;
 
+  bool         fullscreen;
+
 public:
   
   void graphics_dir_set(char *p_dir)
@@ -574,6 +576,13 @@ public:
        p_spr->blit(sx, sy, dx, dy, p_dst, tx, ty);
   }
 
+  bool fullscreen_get(void)
+  {
+    return(fullscreen);
+  }
+
+  void fullscreen_toggle(void);
+
   SPRITE * screen_get(void)
   {
     return(p_screen);
@@ -648,7 +657,7 @@ public:
     return (TRUE);
   }  
 
-  SDL_Surface * create_screen(int flag, int width, int height, int bpp, int fullscreen);
+  SDL_Surface * create_screen(int flag, int width, int height, int bpp, int fullscreen_);
 
   void check(void);
 

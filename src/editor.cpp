@@ -1495,6 +1495,7 @@ bool editor_gui::event_handler(void)
         
         case GI_SPRITE_DRAW:
         case GI_STRING_DRAW:
+        case GI_CHECKBOX_SWITCH:
         case GI_KEY_DOWN:
           menu_services(ev);
           break;
