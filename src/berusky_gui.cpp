@@ -492,6 +492,12 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
   }
 }
 
+void game_gui::menu_settings_fullscreen(void)
+{
+  p_grf->fullscreen_toggle();
+  set_fullscreen(INI_FILE, p_grf->fullscreen_get());
+}
+
 /*
 */
 
@@ -1576,7 +1582,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_settings(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_SETTINGS_FULSCREEN_SWITCH:
-        p_grf->fullscreen_toggle();
+        menu_settings_fullscreen();
         break;
       case GC_MENU_SETTINGS_SOUND_SWITCH:
         p_ber->sound.sound_on = !p_ber->sound.sound_on;

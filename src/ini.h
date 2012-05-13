@@ -52,6 +52,7 @@ int ini_read_int(FILE *f, const char *p_template, int dflt);
 int ini_read_int_file(const char *p_file, const char *p_template, int dflt);
 int ini_read_bool(FILE *f, const char *p_template, int dflt);
 int ini_read_bool_file(const char *p_file, const char *p_template, int dflt);
+bool ini_write_string(const char *p_file, const char *p_template, const char *p_value);
 int is_token(char *p_line, const char *p_token);
 int read_token(FILE *f_in, char *p_line, size_t max, char separator);
 

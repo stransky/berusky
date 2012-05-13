@@ -77,6 +77,9 @@ public:
   void menu_level_end_custom(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
   void menu_levelset_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   
+  // Helpers
+  void menu_settings_fullscreen(void);
+  
   // Callback for all
   bool callback(LEVEL_EVENT_QUEUE *p_queue, int frame);
 

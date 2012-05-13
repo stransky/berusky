@@ -227,3 +227,79 @@ int read_token(FHANDLE f_in, char *p_line, size_t max, char separator)
 
   return (c == separator);
 }
+
+bool ini_find_token(FHANDLE f, const char *p_template,
+                    long *p_file_start, long *p_file_end)
+{
+  char line[MAX_TOKEN_LEN];
+  long file_pos = 0;
+
+  fseek(f, 0, SEEK_SET);
+  while (fgets(line, MAX_TOKEN_LEN, f)) {
+    if(is_token(line, p_template)) {
+      *p_file_start = file_pos;
+      *p_file_end = ftell(f);
+      return(TRUE);
+    }
+    file_pos = ftell(f);
+  }
+
+  // no token - write a new one
+  return(FALSE);
+}
+
+int ini_write_string(FHANDLE f_in, FHANDLE f_out, const char *p_template, const char *p_value)
+{
+  long file_start,
+       file_end;
+
+  int found = ini_find_token(f_in, p_template, &file_start, &file_end);
+
+  fseek(f_in, 0, SEEK_SET);
+  fseek(f_out, 0, SEEK_SET);
+
+  if(found) {
+    file_copy(f_in, f_out, file_start);
+    fprintf(f_out,"%s = %s\n",p_template, p_value);
+    fseek(f_in, file_end, SEEK_SET);
+    file_copy(f_in, f_out);
+  }
+  else {
+    file_copy(f_in, f_out);    
+    fprintf(f_out,"%s = %s\n",p_template, p_value);
+  }
+
+  return(TRUE);
+}
+
+bool ini_write_string(const char *p_file,
+                      const char *p_template, const char *p_value)
+{
+  int ret;
+
+  FHANDLE f_orig = file_open(NULL, p_file, "r", FALSE);
+  if (!f_orig)
+    return(FALSE);
+
+  FHANDLE f_new(tmpfile());
+  if (!f_new)
+    return(FALSE);
+
+  ret = file_copy(f_orig, f_new);
+  if(!ret) {
+    fclose(f_orig);
+    fclose(f_new);
+    return(FALSE);
+  }
+
+  fclose(f_orig);
+
+  if((f_orig = file_open(NULL, p_file, "w", FALSE))) {
+    ret = ini_write_string(f_new, f_orig, p_template, p_value);
+    fclose(f_orig);
+  }
+
+  fclose(f_new);
+
+  return (ret);
+}

@@ -88,6 +88,7 @@ public:
 public:
 
   fhandle(void) : f(NULL) {};
+  fhandle(FILE *f_in) : f(f_in) {};
 
   void operator=(void *f_)
   {
@@ -139,6 +140,7 @@ int       file_size_get(const char * p_dir, const char * p_file);
 int       file_size_get(FHANDLE f);
 
 bool      file_copy(const char *p_src, const char *p_src_dir, const char *p_dest, const char *p_dest_dir, bool safe = TRUE);
+bool      file_copy(FHANDLE f_in, FHANDLE f_out, int len = 0);
 
 void      print_errno(bool new_line = FALSE);
 
@@ -363,6 +365,8 @@ public:
 } DIR_LIST;
 
 bool get_fullscreen(const char *p_ini_file);
+bool set_fullscreen(const char *p_ini_file, bool state);
+
 int  get_colors(const char *p_ini_file, int default_color_depth);
 
 // -------------------------------------------------------
@@ -380,5 +384,9 @@ inline char * change_tail(char * p_str, const char * p_end)
     *p_last = 0;
   return (p_end ? (char *) strcat(p_str, p_end) : p_str);
 }
+
+#ifdef LINUX
+char * itoa(int base, char *buf, int d);
+#endif
 
 #endif // __UTILS_H__

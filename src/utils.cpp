@@ -130,10 +130,16 @@ void dir_list::load(const char *p_ini)
   bprintf("current working dir: %s",cwd);
 }
 
+#define INI_FULLSCREEN "fullscreen"
 bool get_fullscreen(const char *p_ini_file)
 {  
-  #define INI_FULLSCREEN "fullscreen"
   return(ini_read_int_file(p_ini_file, INI_FULLSCREEN, FALSE));
+}
+
+bool set_fullscreen(const char *p_ini_file, bool state)
+{  
+  char tmp[100];
+  return(ini_write_string(p_ini_file, INI_FULLSCREEN, itoa(10, tmp, state ? 1 : 0)));
 }
 
 int  get_colors(const char *p_ini_file, int default_color_depth)
@@ -143,7 +149,7 @@ int  get_colors(const char *p_ini_file, int default_color_depth)
 }
 
 #ifdef LINUX
-void itoa(int base, char *buf, int d)
+char * itoa(int base, char *buf, int d)
 {
   char *p = buf;
   char *p1, *p2;
@@ -180,6 +186,7 @@ void itoa(int base, char *buf, int d)
     p1++;
     p2--;
   }
+  return(buf);
 }
 #endif // LINUX
 
@@ -308,6 +315,36 @@ bool file_save(const char * p_dir, const char * p_file, void *p_buffer, t_off le
   return(wrt == lenght);
 }
 
+#define FILE_BUF_SIZE 4096
+bool file_copy(FHANDLE f_in, FHANDLE f_out, int len)
+{  
+  char buffer[FILE_BUF_SIZE];
+  int  readed;
+
+  if(len) {
+    int to_read;
+    do {
+      len -= FILE_BUF_SIZE;
+      to_read = (len < 0) ? len+FILE_BUF_SIZE : FILE_BUF_SIZE;
+
+      if((readed = fread(buffer,1,to_read,f_in))) {
+        fwrite(buffer,1,readed,f_out);
+      }
+
+      if(readed != to_read) {
+        berror("file_copy - missing data?");
+      }
+    } while(to_read == FILE_BUF_SIZE);
+  }
+  else {
+    while((readed = fread(buffer,1,FILE_BUF_SIZE,f_in))) {
+      fwrite(buffer,1,readed,f_out);
+    }
+  }
+
+  return(TRUE);
+}
+
 bool file_copy(const char *p_src, const char *p_src_dir, const char *p_dest, const char *p_dest_dir, bool safe)
 {
   FHANDLE src = file_open(p_src_dir,  p_src,  "rb", safe);
@@ -319,18 +356,13 @@ bool file_copy(const char *p_src, const char *p_src_dir, const char *p_dest, con
     file_close(src);
     return(FALSE);
   }
-  
-  char buffer[4096];
-  int  readed;
-  
-  while((readed = fread(buffer,1,4096,src))) {
-    fwrite(buffer,1,readed,dst);
-  }
 
+  bool ret = file_copy(src, dst);
+  
   file_close(src);
   file_close(dst);
 
-  return(TRUE);
+  return(ret);
 }
 
 bool file_exists(const char * p_dir, const char * p_file)
