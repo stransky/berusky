@@ -81,6 +81,8 @@
 #define  TPOS_MIN       (-INT_MAX)
 #define  TPOS_MAX       INT_MAX
 
+#define  SCALE_FACTOR   2
+
 typedef int             tpos;
 typedef unsigned int    tcolor;
 typedef int             tcount;
@@ -147,6 +149,8 @@ public:
   surface(SDL_Surface *p_surf_, int used_ = 0);
   surface(class surface *p_src, bool deep_copy = false);
   surface(class surface &src, bool deep_copy = false);
+  surface(tpos width, tpos height, bool display_format = true);
+  surface(class surface *p_src, int scale = 1, bool display_format = true);
   ~surface(void);
 
   
@@ -221,6 +225,13 @@ public:
     return(r);
   }
 
+  // Double-size from the source surface
+  void scale(class surface *p_src, tpos src_x, tpos src_y,
+             tpos width, tpos height, tpos dst_x, tpos dst_y);
+
+  // Swithches content of this and given surface
+  void content_switch(class surface *p_new);
+  
 } SURFACE;
 
 // -------------------------------------------------------
@@ -377,6 +388,12 @@ public:
     return(p_surfaces+handle);
   }
 
+  // Switch content of the given surface with the new one
+  SURFACE * surface_switch(surf_handle handle, SURFACE *p_new)
+  {
+    p_surfaces[handle].content_switch(p_new);
+    return(p_surfaces+handle);
+  }
 
   /********************************************************
     Sprite interface

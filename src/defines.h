@@ -32,11 +32,11 @@
 */
 #define GAME_FPS                  30  // game refresh
 
-#define GAME_RESOLUTION_X         640
-#define GAME_RESOLUTION_Y         480
+#define GAME_RESOLUTION_X         1280
+#define GAME_RESOLUTION_Y         960
 
-#define LEVEL_RESOLUTION_X        640
-#define LEVEL_RESOLUTION_Y        420
+#define LEVEL_RESOLUTION_X        1280
+#define LEVEL_RESOLUTION_Y        840
 
 #define GAME_SCREEN_START_X       0
 #define GAME_SCREEN_START_Y       40
@@ -44,7 +44,7 @@
 #define EDITOR_RESOLUTION_X       1024
 #define EDITOR_RESOLUTION_Y       768
 
-#define SCREEN_DEPTH              24
+#define SCREEN_DEPTH              32
 
 #define SCREEN_TOP_PANNEL_X       0
 #define SCREEN_TOP_PANNEL_Y       0
@@ -65,8 +65,8 @@
 #define IN_LEVEL(x,y)             ((x) >= 0 && (x) < LEVEL_CELLS_X && \
                                    (y) >= 0 && (y) < LEVEL_CELLS_Y)
 
-#define CELL_SIZE_X               20
-#define CELL_SIZE_Y               20
+#define CELL_SIZE_X               40
+#define CELL_SIZE_Y               40
 
 #define ITEM_SIZE_X               (CELL_SIZE_X*3)
 #define ITEM_SIZE_Y               (CELL_SIZE_Y*3)

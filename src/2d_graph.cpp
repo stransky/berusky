@@ -30,10 +30,86 @@
 */
 #include "2d_graph.h"
 
+/*
+  Some code of this file comes from
+  http://www.libsdl.org/cgi/docwiki.cgi/Introduction_to_SDL_Video
+*/
+
+/*
+ * Return the pixel value at (x, y)
+ * NOTE: The surface must be locked before calling this!
+ */
+Uint32 getpixel(SDL_Surface *surf, int x, int y)
+{
+    int bpp = surf->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    Uint8 *p = (Uint8 *)surf->pixels + y * surf->pitch + x * bpp;
+
+    switch (bpp) {
+    case 1:
+        return *p;
+
+    case 2:
+        return *(Uint16 *)p;
+
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+
+    case 4:
+        return *(Uint32 *)p;
+
+    default:
+        return 0;       /* shouldn't happen, but avoids warnings */
+    } // switch
+}
+
+/*
+ * Set the pixel at (x, y) to the given value
+ * NOTE: The surface must be locked before calling this!
+ */
+void putpixel(SDL_Surface *surf, int x, int y, Uint32 pixel)
+{
+    int bpp = surf->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to set */
+    Uint8 *p = (Uint8 *)surf->pixels + y * surf->pitch + x * bpp;
+
+    switch (bpp) {
+    case 1:
+        *p = pixel;
+        break;
+
+    case 2:
+        *(Uint16 *)p = pixel;
+        break;
+
+    case 3:
+        if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+            p[0] = (pixel >> 16) & 0xff;
+            p[1] = (pixel >> 8) & 0xff;
+            p[2] = pixel & 0xff;
+        }
+        else {
+            p[0] = pixel & 0xff;
+            p[1] = (pixel >> 8) & 0xff;
+            p[2] = (pixel >> 16) & 0xff;
+        }
+        break;
+
+    case 4:
+        *(Uint32 *)p = pixel;
+        break;
+
+   default:
+        break;           /* shouldn't happen, but avoids warnings */
+    } // switch
+}
+
 // -------------------------------------------------------
 //   the surface class
 // -------------------------------------------------------
-
 char surface::graphics_dir[MAX_FILENAME] = "";
 
 void surface::load(char *p_file)
@@ -105,6 +181,27 @@ surface::surface(class surface &src, bool deep_copy)
   copy(&src, deep_copy);
 }
 
+surface::surface(tpos width, tpos height, bool display_format)
+: used(0), p_surf(NULL)
+{  
+  p_surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,0,0,0,0);
+  if(!p_surf) {
+    berror("Unable to create surface! (%dx%d)", width, height);
+  }
+
+  if(display_format) {
+    SDL_Surface *p_tmp = SDL_DisplayFormat(p_surf);
+    assert(p_tmp);
+    SDL_FreeSurface(p_surf);
+    p_surf = p_tmp;
+  }
+}
+
+surface::surface(class surface *p_src, int scale, bool display_format)
+{  
+  surface(p_src->surf_get_dx()*scale, p_src->surf_get_dy()*scale, display_format);
+}
+
 surface::~surface(void)
 { 
   free();
@@ -155,6 +252,102 @@ void surface::blit(tpos sx, tpos sy, tpos dx, tpos dy, class surface *p_dst, tpo
   SDL_BlitSurface(p_surf, &src_rec, p_dst->p_surf, &dst_rec);  
 }
 
+// Double scale from the source surface
+void surface::scale(class surface *p_src, tpos src_x, tpos src_y, 
+                    tpos width, tpos height, tpos dst_x, tpos dst_y)
+{
+  SDL_Surface *p_src_surf = p_src->p_surf;
+
+  // Lock the surface
+  if(SDL_MUSTLOCK(p_src_surf) ) {
+    if(SDL_LockSurface(p_src_surf) < 0 ) {
+      berror("Can't lock surface: %s\n", SDL_GetError());      
+    }
+  }
+
+  // Lock the surface
+  if(SDL_MUSTLOCK(p_surf) ) {
+    if(SDL_LockSurface(p_surf) < 0 ) {
+      berror("Can't lock surface: %s\n", SDL_GetError());      
+    }
+  }
+
+  int   x,y;  
+  // Copy & interpolate original pixels
+  for(y = 0; y < height; y++) {
+    for(x = 0; x < width; x++) {
+      Uint8 r,g,b;
+      Uint8 r1,g1,b1;
+      Uint8 r2,g2,b2;
+      Uint8 r3,g3,b3;
+    
+      /* Pixel positions:
+        0 | 1
+        -----
+        2 | 3
+      */
+      SDL_GetRGB(getpixel(p_src_surf, src_x+x, src_y+y), p_src_surf->format, &r, &g, &b);    
+
+      if(x+1 < width) {
+        SDL_GetRGB(getpixel(p_src_surf, src_x+x+1, src_y+y), p_src_surf->format, &r1, &g1, &b1);
+      }
+      if(y+1 < height) {
+        SDL_GetRGB(getpixel(p_src_surf, src_x+x, src_y+y+1), p_src_surf->format, &r2, &g2, &b2);
+      }
+      if(x+1 < width && y+1 < height) {
+        SDL_GetRGB(getpixel(p_src_surf, src_x+x+1, src_y+y+1), p_src_surf->format, &r3, &g3, &b3);
+      }
+
+      // 0
+      putpixel(p_surf, dst_x+2*x, dst_y+2*y, SDL_MapRGB(p_surf->format, r, g, b));
+      
+      // 1
+      if(x+1 < width) {
+        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y, 
+                SDL_MapRGB(p_surf->format, (r+r1)/2, (g+g1)/2, (b+b1)/2));
+      }
+      else {
+        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y, SDL_MapRGB(p_surf->format, r, g, b));
+      }
+    
+      // 2
+      if(y+1 < height) {
+        putpixel(p_surf, dst_x+2*x, dst_y+2*y+1,
+                SDL_MapRGB(p_surf->format, (r+r2)/2, (g+g2)/2, (b+b2)/2));
+      }
+      else {
+        putpixel(p_surf, dst_x+2*x, dst_y+2*y+1, SDL_MapRGB(p_surf->format, r, g, b));
+      }
+    
+      // 3
+      if(x+1 < width && y+1 < height) {
+        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1,
+                SDL_MapRGB(p_surf->format, (r+r1+r2+r3)/4, (g+g1+g2+g3)/4, (b+b1+b2+b3)/4));
+      }
+      else {
+        if(y+1 < height) {
+          putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1,
+                  SDL_MapRGB(p_surf->format, (r+r2)/2, (g+g2)/2, (b+b2)/2));
+        } else {
+          // just copy the pixel
+          putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1, SDL_MapRGB(p_surf->format, r, g, b));
+        }
+      }
+    }  
+  }
+
+  if(SDL_MUSTLOCK(p_src_surf)) {
+    SDL_UnlockSurface(p_src_surf);
+  }
+  if(SDL_MUSTLOCK(p_surf)) {
+    SDL_UnlockSurface(p_surf);
+  }
+}
+
+void surface::content_switch(class surface *p_new)
+{
+...
+}
 
 // -------------------------------------------------------
 //   the sprite class
@@ -335,6 +528,7 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
   spr_handle i, j, max;
   int x, y, w, h;
   FHANDLE f;
+  SURFACE *p_scaled = NULL;
 
   char line[200];
   strncpy(line, p_file, 200);
@@ -357,9 +551,24 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
     if (line[0] == ';')
       continue;
     else if (line[0] == 's') {
-      sscanf(line, "s %d %d %d %d", &x, &y, &w, &h);
-      rec.x = x; rec.y = y; rec.w = w; rec.h = h;
-      SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
+      int scale;
+      sscanf(line, "s %d %d %d %d %d", &x, &y, &w, &h, &scale);
+      if(!p_scaled && scale) {
+      
+        p_scaled = surface_switch(s_handle, new SURFACE(p_surf, SCALE_FACTOR));
+      }    
+      if(p_scaled) {
+        rec.x = SCALE_FACTOR*x;
+        rec.y = SCALE_FACTOR*y;
+        rec.w = SCALE_FACTOR*w;
+        rec.h = SCALE_FACTOR*h;
+        
+        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);      
+      }
+      else {
+        rec.x = x; rec.y = y; rec.w = w; rec.h = h;
+        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
+      }
       tmp.color_key_apply();
       sprite_insert(&tmp,1, i);
       i++;
@@ -456,7 +665,6 @@ void sprite_store::sprite_delete(spr_handle handle, int num)
 // -------------------------------------------------------
 //   the graph 2d store class
 // -------------------------------------------------------
-
 SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, int fullscreen_)
 {
 
