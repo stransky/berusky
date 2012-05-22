@@ -553,7 +553,9 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
     if (line[0] == ';')
       continue;
     else if (line[0] == 's') {
-      sscanf(line, "s %d %d %d %d %d", &x, &y, &w, &h, &scale);
+      int ret = sscanf(line, "s %d %d %d %d %d", &x, &y, &w, &h, &scale);
+      if(ret == 4)
+        scale = FALSE;
     
       if(!p_surf) {
         surf_handle s_handle = surface_insert(filename);
@@ -582,7 +584,9 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
       i++;
     }
     else if (line[0] == 'f') {
-      sscanf(line, "f %d %d %d %d %d", &x, &y, &w, &h, &max);
+      int ret = sscanf(line, "f %d %d %d %d %d", &x, &y, &w, &h, &max);
+      if(ret == 4)
+        scale = FALSE;
       if(scale) {
         x *= SCALE_FACTOR; y *= SCALE_FACTOR;
         w *= SCALE_FACTOR; h *= SCALE_FACTOR;
