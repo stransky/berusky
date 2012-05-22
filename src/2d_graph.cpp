@@ -253,6 +253,9 @@ void surface::blit(tpos sx, tpos sy, tpos dx, tpos dy, class surface *p_dst, tpo
 }
 
 // Double scale from the source surface
+// (src_x, src_y) are coordinates in source surface
+// (width, height) is a size of scaled rectangle in source surface
+// (dst_x, dst_y) are coordinates in target surface
 void surface::scale(class surface *p_src, tpos src_x, tpos src_y, 
                     tpos width, tpos height, tpos dst_x, tpos dst_y)
 {
@@ -344,9 +347,12 @@ void surface::scale(class surface *p_src, tpos src_x, tpos src_y,
   }
 }
 
+// Switch content of surfaces
 void surface::content_switch(class surface *p_new)
 {
-...
+  SDL_Surface *p_tmp = p_new->p_surf;
+  p_new->p_surf = p_surf;
+  p_surf = p_tmp;
 }
 
 // -------------------------------------------------------
@@ -527,54 +533,60 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
 {  
   spr_handle i, j, max;
   int x, y, w, h;
-  FHANDLE f;
-  SURFACE *p_scaled = NULL;
+  SURFACE *p_surf = NULL;
+  SURFACE *p_orig = NULL;
+  FHANDLE f;  
+  int     scale = FALSE;
+  char    filename[200];
+  char    line[200];
 
-  char line[200];
-  strncpy(line, p_file, 200);
-  change_tail(line, ".bmp");
-    
-  surf_handle s_handle = surface_insert(line);
-  SURFACE *p_surf = surface_get(s_handle);
-
-  if(!p_surf) {
-    berror("Can't load surface %s",line);
-  }
+  strncpy(filename, p_file, 200);
+  change_tail(filename, ".bmp");
 
   f = file_open(surface::graphics_dir_get(),p_file, "r");
 
   RECT rec = {0,0,0,0};
-  
+
   i = first;
   while (fgets(line, 200, f) && i < first+num)
   {
     if (line[0] == ';')
       continue;
     else if (line[0] == 's') {
-      int scale;
       sscanf(line, "s %d %d %d %d %d", &x, &y, &w, &h, &scale);
-      if(!p_scaled && scale) {
+    
+      if(!p_surf) {
+        surf_handle s_handle = surface_insert(filename);
+        p_surf = surface_get(s_handle);
+        if(!p_surf) {
+          berror("Can't load surface %s",line);
+        }
+        if(scale) {      
+          p_orig = new SURFACE(p_surf, SCALE_FACTOR);
+          p_surf = surface_switch(s_handle, p_orig);
+          // p_orig is the loaded one
+          // p_surf is a new (scaled) one
+        }
+      }
       
-        p_scaled = surface_switch(s_handle, new SURFACE(p_surf, SCALE_FACTOR));
-      }    
-      if(p_scaled) {
-        rec.x = SCALE_FACTOR*x;
-        rec.y = SCALE_FACTOR*y;
-        rec.w = SCALE_FACTOR*w;
-        rec.h = SCALE_FACTOR*h;
-        
-        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);      
+      rec.x = x; rec.y = y; rec.w = w; rec.h = h;
+      if(scale) {
+        p_surf->scale(p_orig, x, y, w, h, x*SCALE_FACTOR, y*SCALE_FACTOR);
+        rec.x *= SCALE_FACTOR; rec.y *= SCALE_FACTOR;
+        rec.w *= SCALE_FACTOR; rec.h *= SCALE_FACTOR;
       }
-      else {
-        rec.x = x; rec.y = y; rec.w = w; rec.h = h;
-        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
-      }
+            
+      SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
       tmp.color_key_apply();
       sprite_insert(&tmp,1, i);
       i++;
     }
     else if (line[0] == 'f') {
       sscanf(line, "f %d %d %d %d %d", &x, &y, &w, &h, &max);
+      if(scale) {
+        x *= SCALE_FACTOR; y *= SCALE_FACTOR;
+        w *= SCALE_FACTOR; h *= SCALE_FACTOR;
+      }
       for (j = 0; j < max; j++) {                 
         rec.x += x; rec.y += y; rec.w += w; rec.h += h;
         SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
@@ -584,6 +596,10 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
     }
   }
   fclose(f);
+
+  if(p_orig) {
+    delete p_orig;
+  }
 
   if(p_last)
     *p_last = i;
