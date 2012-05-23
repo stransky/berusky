@@ -66,6 +66,21 @@ Uint32 getpixel(SDL_Surface *surf, int x, int y)
     } // switch
 }
 
+bool getpixel(SDL_Surface *p_surf, int x, int y, RGB *p_color)
+{
+  Uint8 r,g,b;
+  SDL_GetRGB(getpixel(p_surf, x, y), p_surf->format, &r, &g, &b);
+  RGB key = sprite::color_key_get();
+  if(r != key.r || g != key.g || b != key.b) {
+    // it's not a transparent color - return it
+    p_color->r = r;
+    p_color->g = g;
+    p_color->b = b;
+    return(TRUE);
+  }
+  return(FALSE);
+}
+
 /*
  * Set the pixel at (x, y) to the given value
  * NOTE: The surface must be locked before calling this!
@@ -107,6 +122,45 @@ void putpixel(SDL_Surface *surf, int x, int y, Uint32 pixel)
     } // switch
 }
 
+bool putpixel(SDL_Surface *p_surf, int x, int y, RGB color)
+{
+  Uint8 r,g,b;
+
+  r = color.r;
+  g = color.g;
+  b = color.b;
+
+  putpixel(p_surf, x, y, SDL_MapRGB(p_surf->format, r, g, b));
+  return(TRUE);
+}
+
+static RGB interpolate(RGB *p_color, int num, int *p_hits)
+{
+  int i, hits;
+
+  RGB color = *p_color;  
+
+  for(i = 1, hits = 1; i < num; i++, p_color++) {
+    if(p_hits[i]) {
+      color.r += p_color->r;
+      color.g += p_color->g;
+      color.b += p_color->b;
+      hits++;
+    }
+  }
+  color.r /= hits;
+  color.g /= hits;
+  color.b /= hits;
+
+  return(color);
+}
+
+static RGB interpolate(RGB c1, RGB c2)
+{
+  RGB color((c1.r+c2.r)/2, (c1.g+c2.g)/2, (c1.b+c2.b)/2);
+  return(color);
+}
+
 // -------------------------------------------------------
 //   the surface class
 // -------------------------------------------------------
@@ -130,6 +184,25 @@ void surface::load(char *p_file)
     assert(p_tmp);
     p_surf = NULL;
   }     
+  used = 0;
+}
+
+void surface::create(tpos width, tpos height, bool display_format)
+{
+  assert(!p_surf);
+
+  p_surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,0,0,0,0);
+  if(!p_surf) {
+    berror("Unable to create surface! (%dx%d)", width, height);
+  }
+
+  if(display_format) {
+    SDL_Surface *p_tmp = SDL_DisplayFormat(p_surf);
+    assert(p_tmp);
+    SDL_FreeSurface(p_surf);
+    p_surf = p_tmp;
+  }
+
   used = 0;
 }
 
@@ -184,22 +257,13 @@ surface::surface(class surface &src, bool deep_copy)
 surface::surface(tpos width, tpos height, bool display_format)
 : used(0), p_surf(NULL)
 {  
-  p_surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,0,0,0,0);
-  if(!p_surf) {
-    berror("Unable to create surface! (%dx%d)", width, height);
-  }
-
-  if(display_format) {
-    SDL_Surface *p_tmp = SDL_DisplayFormat(p_surf);
-    assert(p_tmp);
-    SDL_FreeSurface(p_surf);
-    p_surf = p_tmp;
-  }
+  create(width, height, display_format);
 }
 
 surface::surface(class surface *p_src, int scale, bool display_format)
+: used(0), p_surf(NULL)
 {  
-  surface(p_src->surf_get_dx()*scale, p_src->surf_get_dy()*scale, display_format);
+  create(p_src->surf_get_dx()*scale, p_src->surf_get_dy()*scale, display_format);
 }
 
 surface::~surface(void)
@@ -279,64 +343,40 @@ void surface::scale(class surface *p_src, tpos src_x, tpos src_y,
   // Copy & interpolate original pixels
   for(y = 0; y < height; y++) {
     for(x = 0; x < width; x++) {
-      Uint8 r,g,b;
-      Uint8 r1,g1,b1;
-      Uint8 r2,g2,b2;
-      Uint8 r3,g3,b3;
+      RGB   color[4];
+      int   hits[4];
     
       /* Pixel positions:
         0 | 1
         -----
         2 | 3
       */
-      SDL_GetRGB(getpixel(p_src_surf, src_x+x, src_y+y), p_src_surf->format, &r, &g, &b);    
-
-      if(x+1 < width) {
-        SDL_GetRGB(getpixel(p_src_surf, src_x+x+1, src_y+y), p_src_surf->format, &r1, &g1, &b1);
+      if(!(hits[0] = getpixel(p_src_surf, src_x+x, src_y+y, color))) {
+        // It's a transparent color - just replicate it
+        RGB transparent = sprite::color_key_get();
+        putpixel(p_surf, dst_x+2*x,  dst_y+2*y,  transparent);
+        putpixel(p_surf, dst_x+2*x+1,dst_y+2*y,  transparent);
+        putpixel(p_surf, dst_x+2*x,  dst_y+2*y+1,transparent);
+        putpixel(p_surf, dst_x+2*x+1,dst_y+2*y+1,transparent);
+        continue;
       }
-      if(y+1 < height) {
-        SDL_GetRGB(getpixel(p_src_surf, src_x+x, src_y+y+1), p_src_surf->format, &r2, &g2, &b2);
-      }
-      if(x+1 < width && y+1 < height) {
-        SDL_GetRGB(getpixel(p_src_surf, src_x+x+1, src_y+y+1), p_src_surf->format, &r3, &g3, &b3);
-      }
+      
+      hits[1] = (x+1 < width && getpixel(p_src_surf, src_x+x+1, src_y+y, color+1));
+      hits[2] = (y+1 < height && getpixel(p_src_surf, src_x+x, src_y+y+1, color+2));
+      hits[3] = (x+1 < width && y+1 < height && getpixel(p_src_surf, src_x+x+1, src_y+y+1, color+3));
 
       // 0
-      putpixel(p_surf, dst_x+2*x, dst_y+2*y, SDL_MapRGB(p_surf->format, r, g, b));
+      putpixel(p_surf, dst_x+2*x, dst_y+2*y, color[0]);
       
       // 1
-      if(x+1 < width) {
-        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y, 
-                SDL_MapRGB(p_surf->format, (r+r1)/2, (g+g1)/2, (b+b1)/2));
-      }
-      else {
-        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y, SDL_MapRGB(p_surf->format, r, g, b));
-      }
+      putpixel(p_surf, dst_x+2*x+1, dst_y+2*y, hits[1] ? interpolate(color[0], color[1]) : color[0]);
     
       // 2
-      if(y+1 < height) {
-        putpixel(p_surf, dst_x+2*x, dst_y+2*y+1,
-                SDL_MapRGB(p_surf->format, (r+r2)/2, (g+g2)/2, (b+b2)/2));
-      }
-      else {
-        putpixel(p_surf, dst_x+2*x, dst_y+2*y+1, SDL_MapRGB(p_surf->format, r, g, b));
-      }
-    
+      putpixel(p_surf, dst_x+2*x, dst_y+2*y+1, hits[2] ? interpolate(color[0], color[2]) : color[0]);
+
       // 3
-      if(x+1 < width && y+1 < height) {
-        putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1,
-                SDL_MapRGB(p_surf->format, (r+r1+r2+r3)/4, (g+g1+g2+g3)/4, (b+b1+b2+b3)/4));
-      }
-      else {
-        if(y+1 < height) {
-          putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1,
-                  SDL_MapRGB(p_surf->format, (r+r2)/2, (g+g2)/2, (b+b2)/2));
-        } else {
-          // just copy the pixel
-          putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1, SDL_MapRGB(p_surf->format, r, g, b));
-        }
-      }
-    }  
+      putpixel(p_surf, dst_x+2*x+1, dst_y+2*y+1, interpolate(color, 4, hits));
+    }
   }
 
   if(SDL_MUSTLOCK(p_src_surf)) {
@@ -584,15 +624,15 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
       i++;
     }
     else if (line[0] == 'f') {
-      int ret = sscanf(line, "f %d %d %d %d %d", &x, &y, &w, &h, &max);
-      if(ret == 4)
-        scale = FALSE;
-      if(scale) {
-        x *= SCALE_FACTOR; y *= SCALE_FACTOR;
-        w *= SCALE_FACTOR; h *= SCALE_FACTOR;
-      }
-      for (j = 0; j < max; j++) {                 
+      sscanf(line, "f %d %d %d %d %d", &x, &y, &w, &h, &max);
+      for (j = 0; j < max; j++) {
         rec.x += x; rec.y += y; rec.w += w; rec.h += h;
+        if(scale) {
+          // rec.x+x; rec.y+y works only with scale-factor == 2
+          assert(SCALE_FACTOR == 2);
+          p_surf->scale(p_orig, rec.x, rec.y, rec.w, rec.h, rec.x+x, rec.y+y);
+          rec.x += x; rec.y += y; rec.w += w; rec.h += h;
+        }        
         SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
         sprite_insert(&tmp,1, i);
         i++;
@@ -696,6 +736,7 @@ SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, 
         
   flag |= SDL_HWSURFACE;
   
+  fullscreen = fullscreen_;
   if(fullscreen)
     flag |= SDL_FULLSCREEN;
     
@@ -712,8 +753,6 @@ SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, 
 
   redraw_reset();
   rect_whole = FALSE;
-
-  fullscreen = fullscreen_;
 
   return(p_hwscreen);
 }

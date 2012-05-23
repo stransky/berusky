@@ -122,7 +122,6 @@ void rect_adjust(RECT *p_r, RECT *p_s);
 
 typedef class surface
 {
-
   static char graphics_dir[MAX_FILENAME];
 
 public:
@@ -154,6 +153,7 @@ public:
   ~surface(void);
 
   
+  void create(tpos width, tpos height, bool display_format = true);
   void load(char *p_file);
   void copy(class surface *p_src, bool deep_copy = false);
   void free(void);
