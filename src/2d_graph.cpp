@@ -263,7 +263,7 @@ surface::surface(tpos width, tpos height, bool display_format)
 surface::surface(class surface *p_src, int scale, bool display_format)
 : used(0), p_surf(NULL)
 {  
-  create(p_src->surf_get_dx()*scale, p_src->surf_get_dy()*scale, display_format);
+  create(p_src->width_get()*scale, p_src->height_get()*scale, display_format);
 }
 
 surface::~surface(void)
@@ -339,6 +339,11 @@ void surface::scale(class surface *p_src, tpos src_x, tpos src_y,
     }
   }
 
+  assert(src_x+width <= p_src->width_get());
+  assert(src_y+height <= p_src->height_get());
+  assert(dst_x+2*width <= width_get());
+  assert(dst_y+2*height <= height_get());
+
   int   x,y;  
   // Copy & interpolate original pixels
   for(y = 0; y < height; y++) {
@@ -401,6 +406,14 @@ void surface::content_switch(class surface *p_new)
 
 RGB  sprite::key;
 
+void sprite::rect_check(void)
+{
+  if((flag&SDL_SPRITE_RECT) && p_surf) {
+    assert(rec.x+rec.w <= p_surf->width_get());
+    assert(rec.y+rec.h <= p_surf->height_get());
+  }  
+}
+
 void sprite::load(SURFACE *p_surf_, tflag flag_, RECT *p_rect)
 {
   flag = flag_;
@@ -415,7 +428,9 @@ void sprite::load(SURFACE *p_surf_, tflag flag_, RECT *p_rect)
   }
 
   if(p_surf)
-    p_surf->inc_ref();    
+    p_surf->inc_ref();
+  
+  rect_check();
 }
 
 void sprite::free(void)
@@ -444,6 +459,7 @@ sprite::sprite(class sprite &src)
   p_surf = src.p_surf;
   if(p_surf)
     p_surf->inc_ref();
+  rect_check();
 }
 
 sprite::~sprite(void)
@@ -498,8 +514,8 @@ void sprite::blit(class sprite *p_dst, tpos tx, tpos ty)
     dst_rec.w = p_src_rec->w;
     dst_rec.h = p_src_rec->h;
   } else {        
-    dst_rec.w = p_surf->surf_get_dx();
-    dst_rec.h = p_surf->surf_get_dy();
+    dst_rec.w = p_surf->width_get();
+    dst_rec.h = p_surf->height_get();
   }
   
   SDL_BlitSurface(p_surf->surf_get(), p_src_rec, p_dst->p_surf->surf_get(), &dst_rec);
@@ -569,6 +585,13 @@ void sprite_store::sprite_flag_clear(tflag flag, spr_handle first, spr_handle nu
     p_sprites[first].flag_clear(flag);
 }
 
+static RECT rect_scale(RECT src)
+{
+  src.x *= SCALE_FACTOR; src.y *= SCALE_FACTOR;
+  src.w *= SCALE_FACTOR; src.h *= SCALE_FACTOR;
+  return(src);
+}
+
 spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr_handle num, spr_handle *p_last)
 {  
   spr_handle i, j, max;
@@ -614,11 +637,10 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
       rec.x = x; rec.y = y; rec.w = w; rec.h = h;
       if(scale) {
         p_surf->scale(p_orig, x, y, w, h, x*SCALE_FACTOR, y*SCALE_FACTOR);
-        rec.x *= SCALE_FACTOR; rec.y *= SCALE_FACTOR;
-        rec.w *= SCALE_FACTOR; rec.h *= SCALE_FACTOR;
       }
-            
-      SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
+      
+      RECT rec_sprite = scale ? rect_scale(rec) : rec;
+      SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec_sprite);
       tmp.color_key_apply();
       sprite_insert(&tmp,1, i);
       i++;
@@ -628,12 +650,11 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
       for (j = 0; j < max; j++) {
         rec.x += x; rec.y += y; rec.w += w; rec.h += h;
         if(scale) {
-          // rec.x+x; rec.y+y works only with scale-factor == 2
-          assert(SCALE_FACTOR == 2);
-          p_surf->scale(p_orig, rec.x, rec.y, rec.w, rec.h, rec.x+x, rec.y+y);
-          rec.x += x; rec.y += y; rec.w += w; rec.h += h;
-        }        
-        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec);
+          p_surf->scale(p_orig, rec.x, rec.y, rec.w, rec.h, 
+                        rec.x*SCALE_FACTOR, rec.y*SCALE_FACTOR);
+        }
+        RECT rec_sprite = scale ? rect_scale(rec) : rec;
+        SPRITE tmp(p_surf,SDL_SPRITE_RECT,&rec_sprite);
         sprite_insert(&tmp,1, i);
         i++;
       }

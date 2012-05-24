@@ -201,13 +201,13 @@ public:
     return(p_surf);
   }
 
-  tpos surf_get_dx(void)
+  tpos width_get(void)
   {
     assert(p_surf);
     return(p_surf->w);
   }
 
-  tpos surf_get_dy(void)
+  tpos height_get(void)
   {
     assert(p_surf);
     return(p_surf->h);
@@ -325,6 +325,8 @@ public:
   {
     return(&rec);
   }
+
+  void rect_check(void);
 
 } SPRITE;
 
