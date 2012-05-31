@@ -88,10 +88,9 @@ void end(DIR_LIST *p_dir)
 void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 {
   /* Create game objects */
-  bool fullscreen = get_fullscreen(INI_FILE);
-  int  colors = get_colors(INI_FILE, SCREEN_DEPTH);
+  berusky_config::config_load(INI_FILE);
 
-  graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, colors, fullscreen);
+  graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
 
   #define START_LEN 400
   next_time = SDL_GetTicks() + START_LEN;
@@ -185,10 +184,9 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 void run_editor(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 {
   /* Create game objects */
-  bool fullscreen = get_fullscreen(INI_FILE);
-  int  colors = get_colors(INI_FILE, SCREEN_DEPTH);
+  berusky_config::config_load(INI_FILE);
 
-  graphics_start(EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y, colors, fullscreen);
+  graphics_start(EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
 
   /* Load&draw logos */
   graphics_logos_load(p_dir);

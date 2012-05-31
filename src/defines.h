@@ -30,21 +30,26 @@
 
 /* Basic constants
 */
-#define GAME_FPS                  30  // game refresh
+#define GAME_FPS                  (berusky_config::game_fps)  // game refresh
 
-#define GAME_RESOLUTION_X         1280
-#define GAME_RESOLUTION_Y         960
+#define FULLSCREEN                (berusky_config::fullscreen)
 
-#define LEVEL_RESOLUTION_X        1280
-#define LEVEL_RESOLUTION_Y        840
+#define SCREEN_DEPTH              (berusky_config::screen_depth)
+#define SCREEN_DEPTH_DEFAULT      32
 
-#define GAME_SCREEN_START_X       0
-#define GAME_SCREEN_START_Y       40
+#define DOUBLE_SIZE               (berusky_config::double_size)
 
-#define EDITOR_RESOLUTION_X       1024
-#define EDITOR_RESOLUTION_Y       768
+#define GAME_RESOLUTION_X         (berusky_config::game_resolution_x)
+#define GAME_RESOLUTION_Y         (berusky_config::game_resolution_y)
 
-#define SCREEN_DEPTH              32
+#define LEVEL_RESOLUTION_X        (berusky_config::level_resolution_x)
+#define LEVEL_RESOLUTION_Y        (berusky_config::level_resolution_y)
+
+#define GAME_SCREEN_START_X       (berusky_config::game_screen_start_x)
+#define GAME_SCREEN_START_Y       (berusky_config::game_screen_start_y)
+
+#define EDITOR_RESOLUTION_X       (berusky_config::editor_resolution_x)
+#define EDITOR_RESOLUTION_Y       (berusky_config::editor_resolution_y)
 
 #define SCREEN_TOP_PANNEL_X       0
 #define SCREEN_TOP_PANNEL_Y       0
@@ -65,8 +70,8 @@
 #define IN_LEVEL(x,y)             ((x) >= 0 && (x) < LEVEL_CELLS_X && \
                                    (y) >= 0 && (y) < LEVEL_CELLS_Y)
 
-#define CELL_SIZE_X               40
-#define CELL_SIZE_Y               40
+#define CELL_SIZE_X               (berusky_config::cell_size_x)
+#define CELL_SIZE_Y               (berusky_config::cell_size_y)
 
 #define ITEM_SIZE_X               (CELL_SIZE_X*3)
 #define ITEM_SIZE_Y               (CELL_SIZE_Y*3)

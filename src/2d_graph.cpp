@@ -28,7 +28,7 @@
 /*
   2D Graphics library
 */
-#include "2d_graph.h"
+#include "berusky.h"
 
 /*
   Some code of this file comes from
@@ -617,7 +617,7 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
       continue;
     else if (line[0] == 's') {
       int ret = sscanf(line, "s %d %d %d %d %d", &x, &y, &w, &h, &scale);
-      if(ret == 4)
+      if(!DOUBLE_SIZE || ret == 4)
         scale = FALSE;
     
       if(!p_surf) {
@@ -626,7 +626,7 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
         if(!p_surf) {
           berror("Can't load surface %s",line);
         }
-        if(scale) {      
+        if(scale) {
           p_orig = new SURFACE(p_surf, SCALE_FACTOR);
           p_surf = surface_switch(s_handle, p_orig);
           // p_orig is the loaded one

@@ -34,6 +34,81 @@
 #include "berusky.h"
 #include "berusky_gui.h"
 
+/* berusky-config defininitions
+*/
+int berusky_config::game_fps;
+
+int berusky_config::screen_depth;
+int berusky_config::fullscreen;
+
+int berusky_config::double_size;
+
+int berusky_config::game_resolution_x;
+int berusky_config::game_resolution_y;
+
+int berusky_config::level_resolution_x;
+int berusky_config::level_resolution_y;
+
+int berusky_config::game_screen_start_x;
+int berusky_config::game_screen_start_y;
+
+int berusky_config::editor_resolution_x;
+int berusky_config::editor_resolution_y;
+
+int berusky_config::cell_size_x;
+int berusky_config::cell_size_y;
+
+void berusky_config::original_size_set(void)
+{
+  game_resolution_x = 640;
+  game_resolution_y = 480;
+
+  level_resolution_x = 640;
+  level_resolution_y = 420;
+
+  game_screen_start_x = 0;
+  game_screen_start_y = 40;
+
+  editor_resolution_x = 1024;
+  editor_resolution_y = 768;
+
+  cell_size_x = 20;
+  cell_size_y = 20;
+}
+
+void berusky_config::double_size_set(void)
+{
+  game_resolution_x = 1280;
+  game_resolution_y = 960;
+
+  level_resolution_x = 1280;
+  level_resolution_y = 840;
+
+  game_screen_start_x = 0;
+  game_screen_start_y = 40;
+
+  editor_resolution_x = 1024;
+  editor_resolution_y = 768;
+
+  cell_size_x = 40;
+  cell_size_y = 40;
+}
+
+void berusky_config::config_load(const char *p_ini_file)
+{
+  game_fps = 30;  
+
+  fullscreen = get_fullscreen(p_ini_file);
+  screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
+  double_size = ini_read_int_file(p_ini_file, "double_size", FALSE);
+
+  if(double_size) {
+    double_size_set();
+  }
+  else {
+    original_size_set();
+  }
+}
 
 berusky::berusky(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)
 : p_repo(p_repo_), p_dir(p_dir_)

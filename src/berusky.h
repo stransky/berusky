@@ -63,6 +63,39 @@ using namespace std;
 
 #endif
 
+typedef struct berusky_config {
+
+  static int game_fps;
+
+  static int screen_depth;
+  static int fullscreen;
+
+  static int double_size;
+
+  static int game_resolution_x;
+  static int game_resolution_y;
+
+  static int level_resolution_x;
+  static int level_resolution_y;
+
+  static int game_screen_start_x;
+  static int game_screen_start_y;
+
+  static int editor_resolution_x;
+  static int editor_resolution_y;
+
+  static int cell_size_x;
+  static int cell_size_y;
+
+public:
+
+  static void original_size_set(void);
+  static void double_size_set(void);
+
+  static void config_load(const char *p_ini_file);
+
+} BERUSKY_CONFIG;
+
 /* Basic header files
 */
 #include "defines.h"
