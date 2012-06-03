@@ -443,13 +443,15 @@ bool graphics_game_load(DIR_LIST *p_dir)
   i += p_grf->sprite_insert("kyber3.spr", FIRST_CYBER_LEVEL + 2 * ROT_SHIFT, CYBER_SPRITES,NULL);
   i += p_grf->sprite_insert("kyber4.spr", FIRST_CYBER_LEVEL + 3 * ROT_SHIFT, CYBER_SPRITES,NULL);
   
-  i += p_grf->sprite_insert("herni1.spr",  FIRST_OTHER, GAME_SPRITES,NULL);
-  i += p_grf->sprite_insert("herni2.spr",  FIRST_OTHER + ROT_SHIFT, GAME_SPRITES,NULL);
+  i += p_grf->sprite_insert("herni1.spr",  FIRST_OTHER, GAME_SPRITES, NULL);
+  i += p_grf->sprite_insert("herni2.spr",  FIRST_OTHER + ROT_SHIFT, GAME_SPRITES, NULL);
   
-  i += p_grf->sprite_insert("hraci1.spr", FIRST_PLAYER, PLAYER_SPRITES,NULL);
-  i += p_grf->sprite_insert("hraci2.spr", FIRST_PLAYER + ROT_SHIFT, PLAYER_SPRITES,NULL);
-  i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT, PLAYER_SPRITES,NULL);
-  i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT, PLAYER_SPRITES,NULL);
+  i += p_grf->sprite_insert("game_cur.spr", FIRST_CURSOR, CURSOR_SPRITES, NULL);
+  
+  i += p_grf->sprite_insert("hraci1.spr", FIRST_PLAYER, PLAYER_SPRITES, NULL);
+  i += p_grf->sprite_insert("hraci2.spr", FIRST_PLAYER + ROT_SHIFT, PLAYER_SPRITES, NULL);
+  i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT, PLAYER_SPRITES, NULL);
+  i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT, PLAYER_SPRITES, NULL);
 
   if(!i) {
     berror(_("Unable to load data, exiting..."));    

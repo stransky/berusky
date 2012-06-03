@@ -42,11 +42,11 @@
 #define GAME_RESOLUTION_X         (berusky_config::game_resolution_x)
 #define GAME_RESOLUTION_Y         (berusky_config::game_resolution_y)
 
+#define LEVEL_SCREEN_START_X      (berusky_config::level_screen_start_x)
+#define LEVEL_SCREEN_START_Y      (berusky_config::level_screen_start_y)
+
 #define LEVEL_RESOLUTION_X        (berusky_config::level_resolution_x)
 #define LEVEL_RESOLUTION_Y        (berusky_config::level_resolution_y)
-
-#define GAME_SCREEN_START_X       (berusky_config::game_screen_start_x)
-#define GAME_SCREEN_START_Y       (berusky_config::game_screen_start_y)
 
 #define EDITOR_RESOLUTION_X       (berusky_config::editor_resolution_x)
 #define EDITOR_RESOLUTION_Y       (berusky_config::editor_resolution_y)
@@ -143,12 +143,14 @@
 #define TEXT_LENGHT               70000
 #define FONT_SPRITES              61
 #define FONT_STEP                 100
+#define CURSOR_SPRITES            2
 
 #define FIRST_GLOBAL_LEVEL        0
 #define FIRST_CLASSIC_LEVEL       100
 #define FIRST_CYBER_LEVEL         200
 #define FIRST_BACKGROUND          400
 #define FIRST_OTHER               410
+#define FIRST_CURSOR              590
 #define FIRST_PLAYER              600
 #define FIRST_MENU                700
 #define FIRST_LOGO                800
@@ -184,10 +186,10 @@
 #define ANIM_PLAYER_SPRITES       10
 
 #define FIRST_KEY                 (FIRST_OTHER+4)
-#define X_KEYS_POSITION           550
+#define X_KEYS_POSITION           (GAME_RESOLUTION_X-90)
 #define Y_KEYS_POSITION           0
 
-#define PLAYER_MARK               (FIRST_OTHER)
+#define PLAYER_MARK               (FIRST_CURSOR)
 #define EDIT_ZEME                 (FIRST_OTHER+10)
 #define UKAZATEL_3                (FIRST_OTHER+15)
 

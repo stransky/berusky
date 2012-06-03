@@ -78,8 +78,8 @@ typedef struct berusky_config {
   static int level_resolution_x;
   static int level_resolution_y;
 
-  static int game_screen_start_x;
-  static int game_screen_start_y;
+  static int level_screen_start_x;
+  static int level_screen_start_y;
 
   static int editor_resolution_x;
   static int editor_resolution_y;

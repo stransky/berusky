@@ -518,7 +518,7 @@ void level_game::top_panel_draw(bool redraw)
 }
 
 #define LOW_PANEL_MAT_X     0
-#define LOW_PANEL_MAT_Y     460
+#define LOW_PANEL_MAT_Y     (LEVEL_RESOLUTION_Y+LEVEL_SCREEN_START_Y)
 #define LOW_PANEL_MAT_DX    (GAME_RESOLUTION_X / 2)
 #define LOW_PANEL_MAT_DY    20
 
@@ -539,7 +539,7 @@ void level_game::low_panel_draw_matt(bool redraw)
 
 #define LOW_PANEL_STP_X      (GAME_RESOLUTION_X / 2)
 #define LOW_PANEL_STP_X_TEXT (GAME_RESOLUTION_X - 20)
-#define LOW_PANEL_STP_Y       460
+#define LOW_PANEL_STP_Y      (LEVEL_RESOLUTION_Y+LEVEL_SCREEN_START_Y)
 #define LOW_PANEL_STP_DX     (GAME_RESOLUTION_X / 2)
 #define LOW_PANEL_STP_DY      20
 

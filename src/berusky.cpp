@@ -49,8 +49,8 @@ int berusky_config::game_resolution_y;
 int berusky_config::level_resolution_x;
 int berusky_config::level_resolution_y;
 
-int berusky_config::game_screen_start_x;
-int berusky_config::game_screen_start_y;
+int berusky_config::level_screen_start_x;
+int berusky_config::level_screen_start_y;
 
 int berusky_config::editor_resolution_x;
 int berusky_config::editor_resolution_y;
@@ -66,8 +66,8 @@ void berusky_config::original_size_set(void)
   level_resolution_x = 640;
   level_resolution_y = 420;
 
-  game_screen_start_x = 0;
-  game_screen_start_y = 40;
+  level_screen_start_x = 0;
+  level_screen_start_y = 40;
 
   editor_resolution_x = 1024;
   editor_resolution_y = 768;
@@ -79,13 +79,13 @@ void berusky_config::original_size_set(void)
 void berusky_config::double_size_set(void)
 {
   game_resolution_x = 1280;
-  game_resolution_y = 960;
+  game_resolution_y = 900; //960 in fullscreen?
 
   level_resolution_x = 1280;
   level_resolution_y = 840;
 
-  game_screen_start_x = 0;
-  game_screen_start_y = 40;
+  level_screen_start_x = 0;
+  level_screen_start_y = 40;
 
   editor_resolution_x = 1024;
   editor_resolution_y = 768;
