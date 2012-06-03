@@ -186,7 +186,7 @@
 #define ANIM_PLAYER_SPRITES       10
 
 #define FIRST_KEY                 (FIRST_OTHER+4)
-#define X_KEYS_POSITION           (GAME_RESOLUTION_X-90)
+#define X_KEYS_POSITION           (550)
 #define Y_KEYS_POSITION           0
 
 #define PLAYER_MARK               (FIRST_CURSOR)

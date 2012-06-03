@@ -479,6 +479,9 @@ void graphics_game_free(void)
   p_grf->sprite_delete(FIRST_CYBER_LEVEL + 3 * ROT_SHIFT, CYBER_SPRITES);
   
   p_grf->sprite_delete(FIRST_OTHER, GAME_SPRITES);
+  p_grf->sprite_delete(FIRST_OTHER + ROT_SHIFT, GAME_SPRITES);
+
+  p_grf->sprite_delete(FIRST_CURSOR, CURSOR_SPRITES);
   
   p_grf->sprite_delete(FIRST_PLAYER, PLAYER_SPRITES);
   p_grf->sprite_delete(FIRST_PLAYER + ROT_SHIFT, PLAYER_SPRITES);
