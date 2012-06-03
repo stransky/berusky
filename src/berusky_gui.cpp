@@ -1440,10 +1440,10 @@ void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
-        #define MENU_X_START 200
-        #define MENU_Y_START 180
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 120)
+        #define MENU_Y_START (GAME_RESOLUTION_Y/2 - 60)
         #define MENU_X_DIFF  0
-        #define MENU_Y_DIFF  35
+        #define MENU_Y_DIFF  (DOUBLE_SIZE ? 45 : 35)
 
         static char *back    = _("return to game (ESC)");
         static char *rest    = _("restart level (CTRL+R)");
