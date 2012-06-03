@@ -88,19 +88,14 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
     case MENU_ENTER:
       {
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)(&game_gui::menu_main), data, data1);
-    
-        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
-        
-        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
-                  
-        #define LOGO_START 0
-      
-        p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
-        #define MENU_X_START 250
-        #define MENU_Y_START 190
-        #define MENU_X_DIFF  0
-        #define MENU_Y_DIFF  35
+        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+
+        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
+
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+
+        p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
 
         static char *new_game = _("new game");
         static char *password = _("password");
@@ -108,14 +103,17 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         static char *help = _("help");
         static char *editor = _("editor");
         static char *quit = _("quit");
-              
+
         p_font->select(FONT_DEFAULT);
 
-        menu_item_set_pos(MENU_X_START, MENU_Y_START);
+        menu_item_set_pos(GAME_RESOLUTION_X/2 - 70, GAME_RESOLUTION_Y/2 - 50);
+
+        #define MENU_X_DIFF  0
+        #define MENU_Y_DIFF  (DOUBLE_SIZE ? 45 : 35)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
 
         menu_item_start();
-        
+
         menu_item_draw(new_game, LEFT, TRUE, LEVEL_EVENT(GC_MENU_NEW_GAME));
         menu_item_draw(password, LEFT, TRUE, LEVEL_EVENT(GC_MENU_PASSWORD));
         menu_item_draw(settings, LEFT, TRUE, LEVEL_EVENT(GC_MENU_SETTINGS));
@@ -158,15 +156,13 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
-        #define LOGO_START 0
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
-        #define MENU_X_START 250
-        #define MENU_Y_START 240
-        #define MENU_X_DIFF  0
-        #define MENU_Y_DIFF  35
-      
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 70)
+        #define MENU_Y_START (GAME_RESOLUTION_Y/2)
+
         p_font->select(FONT_DEFAULT);
         p_font->alignment_set(CENTER);
         p_font->start_set(0, MENU_Y_START - 50);
@@ -180,6 +176,9 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         static char *back          = _("back");
       
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
+        
+        #define MENU_X_DIFF  0
+        #define MENU_Y_DIFF  (DOUBLE_SIZE ? 45 : 35)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         
         // udelat na to ulozeni tady flag -> prejdi a uloz!! (Zprava -> menu_back_save)
@@ -224,11 +223,11 @@ void game_gui::menu_password(MENU_STATE state, size_ptr data, size_ptr data1)
         
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
 
-        #define LOGO_START 0
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
-        #define INSERT_START 200
+        #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
         p_font->select(FONT_DEFAULT);
         p_font->alignment_set(CENTER);
         p_font->start_set(0, INSERT_START);
@@ -236,8 +235,9 @@ void game_gui::menu_password(MENU_STATE state, size_ptr data, size_ptr data1)
         password[0] = '\0';
         p_font->print(NULL, 0, INSERT_START+50, "_");
 
-        #define MENU_X_START 270
-        #define MENU_Y_START 400
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
+        #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
+      
         #define MENU_X_DIFF  90
         #define MENU_Y_DIFF  35
 
@@ -321,11 +321,11 @@ void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr dat
           
           tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
   
-          #define LOGO_START 0
+          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
         
           p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
         
-          #define INSERT_START 200
+          #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
           p_font->select(FONT_DEFAULT);
           p_font->alignment_set(CENTER);
           p_font->start_set(0, INSERT_START);
@@ -334,8 +334,8 @@ void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr dat
           p_font->print(_("Try me again!"));
         
   
-          #define MENU_X_START 270
-          #define MENU_Y_START 400
+          #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
+          #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
           #define MENU_X_DIFF  90
           #define MENU_Y_DIFF  35
   
@@ -378,7 +378,7 @@ void game_gui::menu_help(MENU_STATE state, size_ptr data, size_ptr data1)
         
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
-        #define LOGO_START 0
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
@@ -443,7 +443,7 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
-        #define LOGO_START 0
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
@@ -814,9 +814,10 @@ void game_gui::menu_help_credits(MENU_STATE state, size_ptr data, size_ptr data1
       
         sprite::color_key_set(COLOR_KEY_GAME);
 
-        p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);     
-        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);      
-        #define LOGO_START 0      
+        p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
+        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+      
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();
@@ -1417,7 +1418,7 @@ void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
         
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
-        #define LOGO_START 0
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
