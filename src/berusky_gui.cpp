@@ -91,10 +91,10 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
 
         p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
 
-        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
-
+        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+      
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-
+      
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
 
         static char *new_game = _("new game");
@@ -382,28 +382,28 @@ void game_gui::menu_help(MENU_STATE state, size_ptr data, size_ptr data1)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
-        #define MENU_X_START 240
-        #define MENU_Y_START 240
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 80)
+        #define MENU_Y_START (GAME_RESOLUTION_Y/2)
         #define MENU_X_DIFF  0
-        #define MENU_Y_DIFF  35
-      
+        #define MENU_Y_DIFF  (DOUBLE_SIZE ? 45 : 35)
+
         bool from_game = (bool)data;
-      
+
         static char *hint    = _("level hint");
         static char *keys    = _("game controls");
         static char *rules   = _("game rulez");
         static char *credits = _("authors");
         static char *back    = _("back");
-              
+
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
-        
+
         menu_item_start();
-        
+
         if(from_game) {
           menu_item_draw(hint, LEFT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
         }
-        
+
         menu_item_draw(keys, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_KEYS));
         menu_item_draw(rules, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_RULES,0));
         menu_item_draw(credits, LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP_CREDIT));
@@ -446,9 +446,10 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+      
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 220)
+        #define MENU_Y_START (GAME_RESOLUTION_Y/2 - 60)
 
-        #define MENU_X_START 100
-        #define MENU_Y_START 180
         #define MENU_X_DIFF  0
         #define MENU_Y_DIFF  35
       
@@ -472,9 +473,9 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
                                 LEVEL_EVENT(GC_MENU_SETTINGS_MUSIC_SWITCH));
 */
         static char *back = _("back");
-        
-        #define MENU_X_START_BACK 270
-        #define MENU_Y_START_BACK 400
+                
+        #define MENU_X_START_BACK (GAME_RESOLUTION_X/2 - 50)
+        #define MENU_Y_START_BACK (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
         
         menu_item_set_pos(MENU_X_START_BACK, MENU_Y_START_BACK);
         menu_item_draw(back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
@@ -1205,26 +1206,37 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         LEVEL_STATUS *p_status = p_ber->level_status_get();
         char tmp[100];
 
-        #define SMALL_LOGO_START 80
-        p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),SMALL_LOGO_START);
+        if(DOUBLE_SIZE) {
+          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
+        }
+        else {
+          #define SMALL_LOGO_START 80
+          p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),SMALL_LOGO_START);
+        }
+      
+        #define END_TEXT_START (DOUBLE_SIZE ? (GAME_RESOLUTION_Y/2-100) : 80)
       
         if(p_status->resolved()) {
-          p_font->print(NULL,0,SMALL_LOGO_START+100,_("your bugs have survived!"));
-          p_font->print(NULL,0,SMALL_LOGO_START+130,_("difficulty %s"), p_ber->levelset_get_difficulty());
-          p_font->print(NULL,0,SMALL_LOGO_START+180,_("it takes %d steps"), p_status->steps_get());
-          p_font->print(NULL,0,SMALL_LOGO_START+210,_("and %s."), p_status->time_get(tmp,100));
+          p_font->print(NULL,0,END_TEXT_START+100,_("your bugs have survived!"));
+          p_font->print(NULL,0,END_TEXT_START+130,_("difficulty %s"), p_ber->levelset_get_difficulty());
+          p_font->print(NULL,0,END_TEXT_START+180,_("it takes %d steps"), p_status->steps_get());
+          p_font->print(NULL,0,END_TEXT_START+210,_("and %s."), p_status->time_get(tmp,100));
         } else {
-          p_font->print(NULL,0,SMALL_LOGO_START+100,_("your bugs have given it up!"));
-          p_font->print(NULL,0,SMALL_LOGO_START+130,_("difficulty %s"), p_ber->levelset_get_difficulty());
-          p_font->print(NULL,0,SMALL_LOGO_START+180,_("they made %d steps"), p_status->steps_get());
-          p_font->print(NULL,0,SMALL_LOGO_START+210,_("and spent %s"), p_status->time_get(tmp,100));
+          p_font->print(NULL,0,END_TEXT_START+100,_("your bugs have given it up!"));
+          p_font->print(NULL,0,END_TEXT_START+130,_("difficulty %s"), p_ber->levelset_get_difficulty());
+          p_font->print(NULL,0,END_TEXT_START+180,_("they made %d steps"), p_status->steps_get());
+          p_font->print(NULL,0,END_TEXT_START+210,_("and spent %s"), p_status->time_get(tmp,100));
         }
 
-        p_grf->draw(MENU_SPRIT_LOGO_SMALL_3,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_3),SMALL_LOGO_START+240);
+        p_grf->draw(MENU_SPRIT_LOGO_SMALL_3,
+                    p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_3),
+                    GAME_RESOLUTION_Y-130);
         
-        #define MENU_X_START_L (320 - 17 - 120)
-        #define MENU_X_START_R (320 + 120)
-        #define MENU_Y_START    400
+        #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 120)
+        #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 120)
+        #define MENU_Y_START   (DOUBLE_SIZE ? (GAME_RESOLUTION_Y-80) : 400)
         #define MENU_X_DIFF     0
         #define MENU_Y_DIFF     30
         
@@ -1254,6 +1266,12 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
       break;
   }
 }
+
+#undef MENU_X_START_L
+#undef MENU_X_START_R
+#undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
 
 void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr data1)
 {
