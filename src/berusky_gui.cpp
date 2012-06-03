@@ -1285,22 +1285,33 @@ void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr d
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
         p_font->alignment_set(CENTER);
         p_font->select(FONT_DEFAULT);
-      
-        #define SMALL_LOGO_START 80      
-        p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),SMALL_LOGO_START);
-              
-        p_font->print(NULL,0,SMALL_LOGO_START+100,_("your bugs have survived!"));
-        p_font->print(NULL,0,SMALL_LOGO_START+130,_("custom level %s."), p_ber->levelset_get_name());
-      
+
+        if(DOUBLE_SIZE) {
+          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
+        }
+        else {
+          #define SMALL_LOGO_START 80
+          p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),SMALL_LOGO_START);
+        }
+
+        #define END_TEXT_START (DOUBLE_SIZE ? (GAME_RESOLUTION_Y/2-100) : 80)
+
+        p_font->print(NULL,0,END_TEXT_START+100,_("your bugs have survived!"));
+        p_font->print(NULL,0,END_TEXT_START+130,_("custom level %s."), p_ber->levelset_get_name());
+
         LEVEL_STATUS *p_status = p_ber->level_status_get();
-        p_font->print(NULL,0,SMALL_LOGO_START+180,_("it takes %d steps"), p_status->steps_get());
+        p_font->print(NULL,0,END_TEXT_START+180,_("it takes %d steps"), p_status->steps_get());
         char tmp[100];
-        p_font->print(NULL,0,SMALL_LOGO_START+210,_("and %s."), p_status->time_get(tmp,100));
+        p_font->print(NULL,0,END_TEXT_START+210,_("and %s."), p_status->time_get(tmp,100));      
 
-        p_grf->draw(MENU_SPRIT_LOGO_SMALL_3,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_3),SMALL_LOGO_START+240);      
+        p_grf->draw(MENU_SPRIT_LOGO_SMALL_3,
+                    p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_3),
+                    GAME_RESOLUTION_Y-130);
 
-        #define MENU_X_START   (320 - 35)
-        #define MENU_Y_START    400
+        #define MENU_X_START   (GAME_RESOLUTION_X/2 - 35)
+        #define MENU_Y_START   (DOUBLE_SIZE ? (GAME_RESOLUTION_Y-80) : 400)
         #define MENU_X_DIFF     0
         #define MENU_Y_DIFF     30
                 
@@ -1369,35 +1380,35 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
         if((frame & 0x3) == 0x0) {
           p_font->alignment_set(CENTER);
           p_font->select(FONT_DEFAULT);
-                
-          p_grf->draw(MENU_SPRIT_END,0,0);        
-        
+
+          p_grf->draw(MENU_SPRIT_END,0,0);
+
           if(position >= p_font->height_get_new_line(p_text)) {
             position -= p_font->height_get_new_line(p_text);
             p_text = strchr(p_text+1,'\n');
           }
-        
+
           if(p_text) {
             #define SCROLL_START_X  0
             #define SCROLL_START_Y  0
             #define SCROLL_LINES    20
-          
+
             p_font->print(NULL, SCROLL_START_X, SCROLL_START_Y-position, SCROLL_LINES, p_text);
           } else {
             menu_timer.clear();
-          
+
             #define MENU_X_START_L (320 - 17)
             #define MENU_Y_START    440
-                        
+
             static char *back_string = _("back");
-          
+
             menu_item_start();
             menu_item_draw(MENU_X_START_L, MENU_Y_START, back_string, LEFT, FALSE, LEVEL_EVENT(GC_MENU_START));
           }
-        
+
           p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
           p_grf->flip();
-          
+
           /* pokud jsem na konci -> odregistrovat timer, pridat <- back menu
           */
           position += 2;
@@ -1405,7 +1416,7 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
         frame++;
       }    
       break;
-    
+
     case MENU_LEAVE:
       p_text = NULL;
       menu_timer.clear();
