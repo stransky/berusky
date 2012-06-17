@@ -503,6 +503,10 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   i  += p_grf->sprite_insert("menu2.spr", MENU_SPRIT_LOGO, 1, NULL);
   i  += p_grf->sprite_insert("menu3.spr", MENU_SPRIT_BACK, 1, NULL);
 
+  i  += p_grf->sprite_insert("menu_back1.spr", MENU_SPRIT_BACK1, 1, NULL);
+  i  += p_grf->sprite_insert("menu_back2.spr", MENU_SPRIT_BACK2, 1, NULL);
+  i  += p_grf->sprite_insert("menu_back3.spr", MENU_SPRIT_BACK3, 1, NULL);
+
   sprite::color_key_set(COLOR_KEY_MENU);
   i  += p_grf->sprite_insert("menu4.spr", MENU_SPRIT_ARROWS,
                                           MENU_ARROWS_NUM, NULL);
