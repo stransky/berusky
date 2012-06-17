@@ -43,6 +43,20 @@
 #include "main.h"
 
 
+spr_handle menu_background_get(void)
+{  
+  spr_handle handles[] = {MENU_SPRIT_BACK2, MENU_SPRIT_BACK3};
+  int num = sizeof(handles)/sizeof(handles[0]);
+  static int init = TRUE;
+
+  if(init) {
+    srand(SDL_GetTicks());
+    init = FALSE;
+  }
+
+  return(handles[rand()/(RAND_MAX/num)]);
+}
+
 // -------------------------------------------------------
 // Game UI
 // -------------------------------------------------------
@@ -94,6 +108,10 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
       
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+      
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
 

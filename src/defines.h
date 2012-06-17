@@ -220,6 +220,7 @@
 
 #define GAME_ITEMS                72
 
+#define COLOR_KEY_BLACK           RGB(3,3,3)
 #define COLOR_KEY_GAME            RGB(165,106,106)
 #define COLOR_KEY_MENU            RGB(255,255,255)
 
