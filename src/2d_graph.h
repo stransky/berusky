@@ -83,6 +83,8 @@
 
 #define  SCALE_FACTOR   2
 
+#define  BITMAP_FORMAT  ".png"
+
 typedef int             tpos;
 typedef unsigned int    tcolor;
 typedef int             tcount;

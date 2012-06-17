@@ -28,7 +28,11 @@
 /*
   2D Graphics library
 */
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+
 #include "berusky.h"
+
 
 /*
   Some code of this file comes from
@@ -172,7 +176,7 @@ void surface::load(char *p_file)
 
   return_path(graphics_dir_get(), p_file, file, MAX_FILENAME);
 
-  SDL_Surface *p_tmp = SDL_LoadBMP(file);
+  SDL_Surface *p_tmp = IMG_Load(file);
   if(p_tmp)
   {
     p_surf = SDL_DisplayFormat(p_tmp);
@@ -604,7 +608,7 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
   char    line[200];
 
   strncpy(filename, p_file, 200);
-  change_tail(filename, ".bmp");
+  change_tail(filename, BITMAP_FORMAT);
 
   f = file_open(surface::graphics_dir_get(),p_file, "r");
 

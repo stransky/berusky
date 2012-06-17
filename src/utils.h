@@ -373,6 +373,16 @@ int  get_colors(const char *p_ini_file, int default_color_depth);
 // the rest
 // -------------------------------------------------------
 
+inline char * get_tail(char * p_str)
+{
+  char *p_act = p_str, *p_last = NULL;
+  while((p_act = strchr(p_act, '.'))) {
+    p_last = p_act;
+    p_act++;
+  }  
+  return (p_last ? p_str : NULL);
+}
+
 inline char * change_tail(char * p_str, const char * p_end)
 {
   char *p_act = p_str, *p_last = NULL;

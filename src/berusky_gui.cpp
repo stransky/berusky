@@ -972,36 +972,37 @@ void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
         p_font->alignment_set(CENTER);
         p_font->select(FONT_DEFAULT);
 
-        #define TEXT_START 250
+        #define IMAGE_START (DOUBLE_SIZE ? 100 : 50)        
+        #define TEXT_START  (DOUBLE_SIZE ? 400 : 250)
       
         switch(set) {
           case 0:
-            p_grf->draw(MENU_SPRIT_START+0,0,50);
-            p_font->print(NULL, 0, 20,_("difficulty training"));
+            p_grf->draw(MENU_SPRIT_START+0,GAME_RESOLUTION_X/2-320,IMAGE_START);
+            p_font->print(NULL, 0, IMAGE_START/2,_("difficulty training"));
             p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
             p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
             break;
           case 1:
-            p_grf->draw(MENU_SPRIT_START+1,0,25);
-            p_font->print(NULL, 0, 20, _("difficulty easy"));
+            p_grf->draw(MENU_SPRIT_START+1,GAME_RESOLUTION_X/2-320,IMAGE_START);
+            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty easy"));
             p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
             p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
             break;
           case 2:
-            p_grf->draw(MENU_SPRIT_START+2,0,50);
-            p_font->print(NULL, 0, 20, _("difficulty intermediate"));
+            p_grf->draw(MENU_SPRIT_START+2,GAME_RESOLUTION_X/2-320,IMAGE_START);
+            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty intermediate"));
             p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
             p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
             break;
           case 3:
-            p_grf->draw(MENU_SPRIT_START+3,0,50);
-            p_font->print(NULL, 0, 20, _("difficulty advanced"));
+            p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
+            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty advanced"));
             p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
             p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
             break;
           case 4:
-            p_grf->draw(MENU_SPRIT_START+3,0,50);
-            p_font->print(NULL, 0, 20, _("difficulty impossible"));
+            p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
+            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty impossible"));
             p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
             p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
             break;
@@ -1010,9 +1011,9 @@ void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
             break;
         }
       
-        #define MENU_X_START_L (320 - 17 - 60)
-        #define MENU_X_START_R (320 + 60)
-        #define MENU_Y_START    360
+        #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
+        #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
+        #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
         #define MENU_X_DIFF     0
         #define MENU_Y_DIFF     35
         
