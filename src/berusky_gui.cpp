@@ -898,7 +898,13 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_hint, data, data1);
       
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
-        p_grf->draw(MENU_SPRIT_BACK,0,0);
+      
+        if(DOUBLE_SIZE) {
+          p_grf->draw(MENU_SPRIT_BACK1,0,0);
+        }
+        else {
+          p_grf->draw(MENU_SPRIT_BACK,0,0);
+        }
 
         p_font->select(FONT_DEFAULT);
         p_font->alignment_set(LEFT);
@@ -913,23 +919,36 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
           // ... Load & print hint for level ...
           p_hint = level_hint_load(set, level);
         }
-        
+      
+        tpos start_x;
+        tpos start_y;
+      
+        if(DOUBLE_SIZE) {
+          start_x = GAME_RESOLUTION_X/2;
+          start_y = GAME_RESOLUTION_Y/2;
+        }
+        else {
+          start_x = 0;
+          start_y = 0;
+        }
+      
         if(p_hint) {
-          p_font->print(NULL, 20, 100, _("Level hint:"));
+          p_font->print(NULL, start_x+20, start_y+100, _("Level hint:"));
         } else {
           p_hint = _("\nSorry dude, no hint available for this\nlevel.");
         }
-        p_font->print(NULL, 20, 120, p_hint);
+        p_font->print(NULL, start_x+20, start_y+120, p_hint);
       
-        #define MENU_X_START 270
-        #define MENU_Y_START 400
+        #define MENU_X_START (start_x+270)
+        #define MENU_Y_START ((DOUBLE_SIZE) ? GAME_RESOLUTION_Y - 90 : 400)
         #define MENU_X_DIFF  90
         #define MENU_Y_DIFF  35
 
         static char *back = _("back");
       
         menu_item_start();
-        menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
+        menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, 
+                       back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
         
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();        
