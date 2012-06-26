@@ -519,11 +519,14 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   sprite::color_key_set(COLOR_KEY_GAME);
   i  += p_grf->sprite_insert("menu5.spr", MENU_SPRIT_LOGO_SMALL_1, MENU_SPRIT_LOGO_SMALL_NUM, NULL);
 
+  sprite::color_key_set(COLOR_KEY_BLACK_FULL);
   i  += p_grf->sprite_insert("back1.spr", MENU_SPRIT_START,   1, NULL);
+  sprite::color_key_set(COLOR_KEY_BLACK);
   i  += p_grf->sprite_insert("back2.spr", MENU_SPRIT_START+1, 1, NULL);
   i  += p_grf->sprite_insert("back3.spr", MENU_SPRIT_START+2, 1, NULL);
   i  += p_grf->sprite_insert("back4.spr", MENU_SPRIT_START+3, 1, NULL);
-
+  
+  sprite::color_key_set(COLOR_KEY_GAME);
   i  += p_grf->sprite_insert("mask1.spr",  EDITOR_MARK_BLACK, 1, NULL);
   i  += p_grf->sprite_insert("mask2.spr",  EDITOR_MARK_RED, 1, NULL);
   i  += p_grf->sprite_insert("mask3.spr",  EDITOR_MARK_YELLOW, 1, NULL);  

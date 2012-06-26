@@ -176,6 +176,10 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
 
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+      
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 70)
@@ -242,7 +246,11 @@ void game_gui::menu_password(MENU_STATE state, size_ptr data, size_ptr data1)
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
 
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-      
+
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
         #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
@@ -340,7 +348,11 @@ void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr dat
           tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
   
           #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-        
+
+          if(DOUBLE_SIZE) {
+            p_grf->draw(menu_background_get(),0,0);
+          }
+
           p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
         
           #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
@@ -398,6 +410,10 @@ void game_gui::menu_help(MENU_STATE state, size_ptr data, size_ptr data1)
 
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+        
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 80)
@@ -462,6 +478,10 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+      
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
@@ -1011,6 +1031,10 @@ void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
 
         #define IMAGE_START (DOUBLE_SIZE ? 100 : 50)        
         #define TEXT_START  (DOUBLE_SIZE ? 400 : 250)
+
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
       
         switch(set) {
           case 0:
@@ -1245,6 +1269,10 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         char tmp[100];
 
         if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+
+        if(DOUBLE_SIZE) {
           #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
           tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
           p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
@@ -1323,6 +1351,10 @@ void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr d
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
         p_font->alignment_set(CENTER);
         p_font->select(FONT_DEFAULT);
+
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
 
         if(DOUBLE_SIZE) {
           #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
@@ -1486,7 +1518,11 @@ void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
 
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-      
+
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
 
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 120)
