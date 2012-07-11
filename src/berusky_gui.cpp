@@ -494,6 +494,7 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         bool from_game = (bool)data;
       
         static char *fulscreen = _("fulscreen");
+        static char *double_size = _("double size");
 /*
         static char *sound = _("sound");
         static char *music = _("music");
@@ -504,6 +505,8 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_start();
         menu_item_draw_checkbox(fulscreen, LEFT, p_grf->fullscreen_get(), 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
+        menu_item_draw_checkbox(double_size, LEFT, berusky_config::double_size, 0,
+                                LEVEL_EVENT(GC_MENU_SETTINGS_DOUBLESIZE_SWITCH));
 /*
         menu_item_draw_checkbox(sound, LEFT, p_ber->sound.sound_on, 1,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_SOUND_SWITCH));
@@ -539,12 +542,13 @@ void game_gui::menu_settings_fullscreen(void)
 
 /*
 */
-
 #undef LOGO_START
 #undef MENU_X_START
 #undef MENU_Y_START
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
+#undef X_START
+#undef Y_START
 
 void game_gui::menu_help_rules(MENU_STATE state, size_ptr data, size_ptr data1)
 {
@@ -555,10 +559,24 @@ void game_gui::menu_help_rules(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_help_rules, data, data1);
       
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
-        p_grf->draw(MENU_SPRIT_BACK,0,0);
+      
+        if(DOUBLE_SIZE) {
+          #define LOGO_START 60
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+
+          p_grf->draw(menu_background_get(),0,0);
+          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+        }
+        else {
+          p_grf->draw(MENU_SPRIT_BACK,0,0);
+        }      
+      
         p_font->alignment_set(LEFT);
         p_font->select(FONT_DEFAULT);
-              
+      
+        #define X_START ((DOUBLE_SIZE) ? 320 : 0)
+        #define Y_START ((DOUBLE_SIZE) ? 150 : 0)
+
         int j, i, x, y;
         int variants;
         int page = data;
@@ -568,9 +586,15 @@ void game_gui::menu_help_rules(MENU_STATE state, size_ptr data, size_ptr data1)
           
         switch(page) {
           case 0:  
-            p_font->print(NULL, 80, 95, _("Basic rules and game elements"));
+            x = 20+X_START;
+            y = 95+Y_START;
+          
+            p_font->alignment_set(CENTER);
+            p_font->print(NULL, x+60, y, _("Basic rules and game elements"));
             
-            p_font->start_set(20, 140);
+            p_font->alignment_set(LEFT);
+            y += 45; // 140
+            p_font->start_set(x, y);
             p_font->print(_("In order to leave each level it is\n\
 necessary to own five keys and also\n\
 to have a free way to the exit.\n\n\
@@ -579,22 +603,27 @@ elements while completing individual\n\
 missions, we will try to explain their\n\
 meaning now.\n"));
 
-            p_font->print(NULL, 20, 310, _("box - it is possible to push it."));
-            x = 20;
-            y = 340;
+            y += 170; // 310
+            p_font->print(NULL, x, y, _("box - it is possible to push it."));
+            y += 30; // 340
+            if(DOUBLE_SIZE)
+              y += 10;
             variants = p_repo->variants_get(P_BOX);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_BOX, i, 0);
-              x += 30;
+              x += DOUBLE_SIZE ? 50 : 30;
             }
             
-            p_font->print(NULL, 20, 380, _("explosive - can destroy the boxes."));
-            x = 20;
-            y = 410;
+            x = 20+X_START;
+            y += 30;
+            p_font->print(NULL, x, y, _("explosive - can destroy the boxes."));
+            y += 30;
+            if(DOUBLE_SIZE)
+              y += 10;
             variants = p_repo->variants_get(P_TNT);
-            for (i = 0; i < variants; i++) {                
+            for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_TNT, i, 0);
-              x += 30;
+              x += DOUBLE_SIZE ? 50 : 30;
             }
           
             page_prev = page;
@@ -602,37 +631,53 @@ meaning now.\n"));
             break;
           
           case 1:
-            p_font->print(NULL, 160, 95, _("Active game elements"));
+            x = 20+X_START;
+            y = 95+Y_START;
+            p_font->alignment_set(CENTER);
+            p_font->print(NULL, 0, y, _("Active game elements"));
 
-            p_font->print(NULL, 20, 140, _("key - you need five of them."));
-            p_grf->draw(p_repo->sprite_get(P_KEY, 0, 0), 20, 165);
-            
-            p_font->print(NULL, 20, 200, _("exit - a gate to next level."));
-            x = 20;
-            y = 230;
+            p_font->alignment_set(LEFT);
+            y += 70;
+            p_font->print(NULL, x, y, _("key - you need five of them."));
+            y += 25;
+            if(DOUBLE_SIZE)
+              y += 10;
+            p_grf->draw(p_repo->sprite_get(P_KEY, 0, 0), x, y);
+
+            y += 70;
+            p_font->print(NULL, x, y, _("exit - a gate to next level."));            
+            y += 25;
+            if(DOUBLE_SIZE)
+              y += 10;
             variants = p_repo->variants_get(P_EXIT);
             for (i = 0; i < variants - 1; i += 2) {
               p_repo->draw(x, y, P_EXIT, i, 0);
-              x += 30;
+              x += DOUBLE_SIZE ? 50 : 30;
             }
             p_grf->draw(p_repo->sprite_get(P_EXIT, i - 1, 0), x, y);
           
-            p_font->print(NULL, 20, 270, _("stone - can be broken by a pickax."));
-            x = 20;
-            y = 300;
+            x = 20+X_START;
+            y += 70;
+            p_font->print(NULL, x, y, _("stone - can be broken by a pickax."));
+            y += 25;
+            if(DOUBLE_SIZE)
+              y += 10;
             variants = p_repo->variants_get(P_STONE);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_STONE, i, 0);
-              x += 30;
+              x += DOUBLE_SIZE ? 50 : 30;
             }
           
-            p_font->print(NULL, 20, 340, _("pickax - a tool for stone crushing."));
-            x = 20;
-            y = 370;
+            x = 20+X_START;
+            y += 70;
+            p_font->print(NULL, x, y, _("pickax - a tool for stone crushing."));
+            y += 25;
+            if(DOUBLE_SIZE)
+              y += 10;
             variants = p_repo->variants_get(P_MATTOCK);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_MATTOCK, i, 0);
-              x += 30;
+              x += DOUBLE_SIZE ? 50 : 30;
             }
                               
             break;
@@ -645,21 +690,21 @@ meaning now.\n"));
 only a bug with identical color can\n\
 pick them up"));
           
-            x = 20;
-            y = 210;
+            x = 20+X_START;
+            y = 210+Y_START;
             for (j = 0; j < 5; j++) {
               variants = p_repo->variants_get(P_KEY1 + j);
               for (i = 0; i < variants; i++) {
                 p_repo->draw(x, y, P_KEY1 + j, i, 0);
-                x += 30;
+                x += DOUBLE_SIZE ? 50 : 30;
               }
             }
           
             p_font->start_set(20, 250);
             p_font->print(_("color door - can be opened by the\nrespective color key only"));
           
-            x = 40;
-            y = 300;
+            x = 40+X_START;
+            y = 300+Y_START;
             variants = p_repo->variants_get(P_DOOR1_V_Z);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_DOOR1_V_Z, i, 0);
@@ -672,8 +717,8 @@ identical color is allowed to go\n\
 through. Boxes cannot be pushed\n\
 through."));
           
-            x = 40;
-            y = 430;
+            x = 40+X_START;
+            y = 430+Y_START;
             variants = p_repo->variants_get(P_ID_DOOR1_V_Z);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_ID_DOOR1_V_Z, i, 0);
@@ -690,15 +735,15 @@ through."));
 then it is closed off and there's no\n\
 way to open it\n"));
 
-            x = 40;
-            y = 220;
+            x = 40+X_START;
+            y = 220+Y_START;
             variants = p_repo->variants_get(P_DV_V_O);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_DV_V_O, i, 0);        
               x += 70;
             }
-            x = 40;
-            y = 260;
+            x = 40+X_START;
+            y = 260+Y_START;
             variants = p_repo->variants_get(P_DV_V_Z);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_DV_V_Z, i, 0);        
@@ -724,11 +769,11 @@ it is possible to break them anywise.\n"));
         static char *next = _("next");
         static char *back = _("back");
       
-        #define MENU_X_START    350
+        #define MENU_X_START    (350 + (X_START/2))
         #define MENU_X_START_L  MENU_X_START
         #define MENU_X_START_R  MENU_X_START_L + 250
         #define MENU_X_START_B  MENU_X_START_L + 50
-        #define MENU_Y_START    410
+        #define MENU_Y_START    ((DOUBLE_SIZE) ? GAME_RESOLUTION_Y - 90 : 410)
         #define MENU_X_DIFF     0
         #define MENU_Y_DIFF     30
       
@@ -756,6 +801,8 @@ it is possible to break them anywise.\n"));
 #undef MENU_Y_START
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
+#undef X_START
+#undef Y_START
 
 void game_gui::menu_help_keys(MENU_STATE state, size_ptr data, size_ptr data1)
 {
@@ -766,43 +813,55 @@ void game_gui::menu_help_keys(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_help_keys, data, data1);
       
         p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
-        p_grf->draw(MENU_SPRIT_BACK,0,0);
+      
+        if(DOUBLE_SIZE) {      
+          #define LOGO_START 60
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+        
+          p_grf->draw(menu_background_get(),0,0);
+          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+        }
+        else {
+          p_grf->draw(MENU_SPRIT_BACK,0,0);
+        }
         p_font->select(FONT_DEFAULT);
         
+        #define X_START ((DOUBLE_SIZE) ? 320 : 0)
+        #define Y_START ((DOUBLE_SIZE) ? 300 : 100)
+        #define Y_DIFF  25
+            
         p_font->alignment_set(CENTER);
-        p_font->print(NULL, 220, 100, _("Game Controls"));
+        p_font->print(NULL, 220, Y_START, _("Game Controls"));
       
         p_font->alignment_set(LEFT);
-        p_font->print(NULL, 20,  140, _("Up to five bugs are available,\n\
-which can be controlled by these keys:"));
+        p_font->print(NULL, X_START+20,  Y_START+40, _("Up to five bugs are available,\n\
+which can be controlled by these keys:"));      
       
-        #define Y_DIFF  25
-        #define Y_START 200
-        int start_y;
-      
-        p_font->print(NULL, 20,  start_y = Y_START, _("arrows"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("SHIFT+arrows"));
+        int start_y = Y_START+100;
+        p_font->print(NULL, X_START+20,  start_y, _("arrows"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("SHIFT+arrows"));
         
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("Tab"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("N"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("D"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("CTRL+X"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("F1"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("F2"));
-        p_font->print(NULL, 20,  start_y += Y_DIFF, _("F3"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("Tab"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("N"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("D"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("CTRL+X"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("F1"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("F2"));
+        p_font->print(NULL, X_START+20,  start_y += Y_DIFF, _("F3"));
       
-        p_font->print(NULL, 135,  start_y = Y_START, _(". . . . . move the bug"));        
-        p_font->print(NULL, 205,  start_y += Y_DIFF, _(". . quick bug movement"));
-        p_font->print(NULL, 86,  start_y += Y_DIFF, _(". . . . . . . switch among the bugs"));
-        p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . change the music"));
-        p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . demo"));
-        p_font->print(NULL, 110, start_y += Y_DIFF, _(". . . . . . quit quickly"));
-        p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . Help"));
-        p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . Save level"));
-        p_font->print(NULL, 60,  start_y += Y_DIFF, _(". . . . . . . . Load level"));
+        start_y = Y_START+100;
+        p_font->print(NULL, X_START+135,  start_y, _(". . . . . move the bug"));
+        p_font->print(NULL, X_START+205,  start_y += Y_DIFF, _(". . quick bug movement"));
+        p_font->print(NULL, X_START+86,  start_y += Y_DIFF, _(". . . . . . . switch among the bugs"));
+        p_font->print(NULL, X_START+60,  start_y += Y_DIFF, _(". . . . . . . . change the music"));
+        p_font->print(NULL, X_START+60,  start_y += Y_DIFF, _(". . . . . . . . demo"));
+        p_font->print(NULL, X_START+110, start_y += Y_DIFF, _(". . . . . . quit quickly"));
+        p_font->print(NULL, X_START+60,  start_y += Y_DIFF, _(". . . . . . . . Help"));
+        p_font->print(NULL, X_START+60,  start_y += Y_DIFF, _(". . . . . . . . Save level"));
+        p_font->print(NULL, X_START+60,  start_y += Y_DIFF, _(". . . . . . . . Load level"));
 
-        #define MENU_X_START 270
-        #define MENU_Y_START 400
+        #define MENU_X_START (GAME_RESOLUTION_X/2-50)
+        #define MENU_Y_START ((DOUBLE_SIZE) ? GAME_RESOLUTION_Y - 90 : 400)
         #define MENU_X_DIFF  90
         #define MENU_Y_DIFF  35
 
@@ -1687,6 +1746,8 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         break;
       case GC_MENU_SETTINGS_FULSCREEN_SWITCH:
         menu_settings_fullscreen();
+        break;
+      case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:
         break;
       case GC_MENU_SETTINGS_SOUND_SWITCH:
         p_ber->sound.sound_on = !p_ber->sound.sound_on;

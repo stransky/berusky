@@ -925,8 +925,8 @@ void font::print(char *p_string, RECT *p_res, int lines)
     tpos width_string = p_font->width_get(p_tmp);
     tpos height_string = p_font->height_get(p_tmp);
     tpos width_screen = p_font->screen_width_get();
-    tpos px = ax,
-         py = ay;
+    tpos px = ax+offset_x,
+         py = ay+offset_y;
     
     switch(align) {
       case LEFT:
@@ -980,7 +980,7 @@ void font::print(RECT *p_res, tpos x, tpos y, const char *p_text,...)
   vsnprintf(text,2000,p_text,arguments);
   va_end(arguments);
   
-  start_set(x,y);
+  start_set(x, y);
   print(text,p_res);
 }
 
@@ -996,7 +996,7 @@ void font::print(RECT *p_res, tpos x, tpos y, int lines, const char *p_text,...)
   vsnprintf(text,2000,p_text,arguments);
   va_end(arguments);
   
-  start_set(x,y);
+  start_set(x, y);
   print(text,p_res,lines);
 }
 

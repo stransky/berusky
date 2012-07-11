@@ -848,6 +848,10 @@ typedef class font {
   // Actuall x,y
   tpos              ax,ay;
 
+  // offset for print functions
+  tpos              offset_x;
+  tpos              offset_y;
+
 public:
 
   font(GRAPH_2D *p_graph);
@@ -902,6 +906,11 @@ public:
   void start_set(tpos x, tpos y)
   {
     ax = sx = x; ay = sy = y;
+  }
+
+  void offset_set(tpos x, tpos y)
+  {
+    offset_x = x; offset_y = y;
   }
   
   void alignment_set(ALIGNMENT al)
