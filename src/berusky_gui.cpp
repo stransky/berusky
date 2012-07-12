@@ -925,8 +925,8 @@ which can be controlled by these keys:"));
 #undef MENU_X_START_L
 
 #define SCROLL_START_X  0
-#define SCROLL_START_Y  180
-#define SCROLL_LINES    12
+#define SCROLL_START_Y  (DOUBLE_SIZE ? 180+60 : 180)
+#define SCROLL_LINES    (DOUBLE_SIZE ? 24 : 12)
 
 void game_gui::menu_help_credits(MENU_STATE state, size_ptr data, size_ptr data1)
 {
@@ -979,8 +979,8 @@ void game_gui::menu_help_credits(MENU_STATE state, size_ptr data, size_ptr data1
           } else {
             menu_timer.clear();
           
-            #define MENU_X_START_L (320 - 17)
-            #define MENU_Y_START    440
+            #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17)
+            #define MENU_Y_START   (DOUBLE_SIZE ? GAME_RESOLUTION_Y - 90 : 440)
                         
             static char *back_string = _("back");
 
