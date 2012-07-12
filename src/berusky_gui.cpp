@@ -606,8 +606,7 @@ meaning now.\n"));
             y += 170; // 310
             p_font->print(NULL, x, y, _("box - it is possible to push it."));
             y += 30; // 340
-            if(DOUBLE_SIZE)
-              y += 10;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_BOX);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_BOX, i, 0);
@@ -616,10 +615,10 @@ meaning now.\n"));
             
             x = 20+X_START;
             y += 30;
+            if(DOUBLE_SIZE) y += 40;
             p_font->print(NULL, x, y, _("explosive - can destroy the boxes."));
             y += 30;
-            if(DOUBLE_SIZE)
-              y += 10;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_TNT);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_TNT, i, 0);
@@ -636,19 +635,21 @@ meaning now.\n"));
             p_font->alignment_set(CENTER);
             p_font->print(NULL, 0, y, _("Active game elements"));
 
+            // A line for key
             p_font->alignment_set(LEFT);
-            y += 70;
+            y += 40;
+            if(DOUBLE_SIZE) y += 40;
             p_font->print(NULL, x, y, _("key - you need five of them."));
-            y += 25;
-            if(DOUBLE_SIZE)
-              y += 10;
+            y += 30;
+            if(DOUBLE_SIZE) y += 10;
             p_grf->draw(p_repo->sprite_get(P_KEY, 0, 0), x, y);
 
-            y += 70;
+            // A line for exits
+            y += 40;
+            if(DOUBLE_SIZE) y += 40;
             p_font->print(NULL, x, y, _("exit - a gate to next level."));            
-            y += 25;
-            if(DOUBLE_SIZE)
-              y += 10;
+            y += 30;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_EXIT);
             for (i = 0; i < variants - 1; i += 2) {
               p_repo->draw(x, y, P_EXIT, i, 0);
@@ -656,24 +657,26 @@ meaning now.\n"));
             }
             p_grf->draw(p_repo->sprite_get(P_EXIT, i - 1, 0), x, y);
           
+            // A line for stones
             x = 20+X_START;
-            y += 70;
+            y += 40;
+            if(DOUBLE_SIZE) y += 40;
             p_font->print(NULL, x, y, _("stone - can be broken by a pickax."));
-            y += 25;
-            if(DOUBLE_SIZE)
-              y += 10;
+            y += 30;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_STONE);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_STONE, i, 0);
               x += DOUBLE_SIZE ? 50 : 30;
             }
           
+            // A line for pickax
             x = 20+X_START;
-            y += 70;
+            y += 40;
+            if(DOUBLE_SIZE) y += 40;
             p_font->print(NULL, x, y, _("pickax - a tool for stone crushing."));
-            y += 25;
-            if(DOUBLE_SIZE)
-              y += 10;
+            y += 30;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_MATTOCK);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_MATTOCK, i, 0);
@@ -683,15 +686,20 @@ meaning now.\n"));
             break;
       
           case 2:
-            p_font->print(NULL, 160, 95,  _("Active game elements"));
+            x = 20+X_START;
+            y = 95+Y_START;
+            p_font->alignment_set(CENTER);
+            p_font->print(NULL, x, y,  _("Active game elements"));
           
-            p_font->start_set(20, 140);
+            // Color keys
+            y += 55; // 140
+            p_font->alignment_set(LEFT);
+            p_font->start_set(x, y);
             p_font->print(_("color key - used to unlock color door,\n\
 only a bug with identical color can\n\
 pick them up"));
           
-            x = 20+X_START;
-            y = 210+Y_START;
+            y += 70; // 210;
             for (j = 0; j < 5; j++) {
               variants = p_repo->variants_get(P_KEY1 + j);
               for (i = 0; i < variants; i++) {
@@ -700,57 +708,78 @@ pick them up"));
               }
             }
           
-            p_font->start_set(20, 250);
+            // Color doors
+            x = 20+X_START;
+            y += 40; // 250
+            if(DOUBLE_SIZE) y += 40;
+            p_font->start_set(x, y);
             p_font->print(_("color door - can be opened by the\nrespective color key only"));
           
-            x = 40+X_START;
-            y = 300+Y_START;
+            //x = 40+X_START;
+            y += 50; // 300
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_DOOR1_V_Z);
             for (i = 0; i < variants; i++) {
-              p_repo->draw(x, y, P_DOOR1_V_Z, i, 0);
-              x += 70;
+              p_repo->draw(x, y, P_DOOR1_V_Z, i, 0);              
+              x += DOUBLE_SIZE ? 140 : 70;
             }
           
-            p_font->start_set(20, 340);
+            x = 20+X_START;
+            y += 40; // 340
+            if(DOUBLE_SIZE) y += 40;
+            p_font->start_set(x, y);
             p_font->print(_("color gate-way - only a bug with\n\
 identical color is allowed to go\n\
 through. Boxes cannot be pushed\n\
 through."));
           
             x = 40+X_START;
-            y = 430+Y_START;
+            y += 90; // 430;
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_ID_DOOR1_V_Z);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_ID_DOOR1_V_Z, i, 0);
-              x += 70;
+              x += DOUBLE_SIZE ? 140 : 70;
             }
                     
             break;
       
           case 3:
-            p_font->print(NULL, 160, 95,  _("Active game elements"));
+            x = 20+X_START;
+            y = 95+Y_START;
+            p_font->alignment_set(CENTER);
+            p_font->print(NULL, x, y,  _("Active game elements"));
 
-            p_font->start_set(20, 140);
+            // One-pass doors
+            p_font->alignment_set(LEFT);
+            y += 45; // 140
+            p_font->start_set(x, y);
             p_font->print(_("one-pass door - can be used only once,\n\
 then it is closed off and there's no\n\
 way to open it\n"));
-
+            
             x = 40+X_START;
-            y = 220+Y_START;
+            y += 80; // 220
+            if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_DV_V_O);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_DV_V_O, i, 0);        
-              x += 70;
+              x += DOUBLE_SIZE ? 140 : 70;
             }
             x = 40+X_START;
-            y = 260+Y_START;
+            y += 40; // 260;
+            if(DOUBLE_SIZE) y += 20;
             variants = p_repo->variants_get(P_DV_V_Z);
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_DV_V_Z, i, 0);        
-              x += 70;
+              x += DOUBLE_SIZE ? 140 : 70;
             }
 
-            p_font->start_set(20, 300);
+            // The rest
+            x = 20+X_START;
+            y += 40; // 300
+            if(DOUBLE_SIZE) y += 40;
+            p_font->start_set(x, y);
             p_font->print(_("Other elements not listed here are just\n\
 walls, which have no interesting\n\
 properties. They cannot be push away nor\n\
