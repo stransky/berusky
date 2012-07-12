@@ -1,6 +1,9 @@
 - Background for level path
 - Background for menu
 - fix help
+- better level map
+- game -> in_game menu -> help -> credits -> returns back to main menu
+instead of the in-game menu
 
 - New backgrounds (from B2)
 - double-size mode, new items (from B2)

@@ -30,6 +30,9 @@
 
 #include "portability.h"
 
+// uncomment for event debugging
+#define EVENTS_DEBUG 1
+
 #ifdef LINUX
 #include <sys/time.h>
 #endif
@@ -329,6 +332,9 @@ typedef enum {
   // editor redo
   // format: [ED_REDO]
   ED_REDO,
+  
+  // Last event, used for debugging
+  EV_LAST,
 
 } EVENT_TYPE;
 
@@ -463,6 +469,8 @@ public:
     return(translation_table[action]);
   }
 
+  void translate_test(void);
+
 public:
   
   level_event(void)  
@@ -538,7 +546,7 @@ public:
     }    
   }
 
-  void dump(char *p_desc, int first, int next)
+  void dump(const char *p_desc, int first, int next)
   {
     int akt;
   
@@ -550,11 +558,11 @@ public:
     }
   }
 
-  void dump_read(char *p_desc)
+  void dump_read(const char *p_desc)
   {
     dump(p_desc,read_first,read_next);
   }
-  void dump_write(char *p_desc)
+  void dump_write(const char *p_desc)
   {
     dump(p_desc,write_first,write_next);
   }
@@ -699,8 +707,8 @@ public:
 
   event_stream(void) : max_events(0), p_queue(NULL)
   {    
-    clear();
-    extend(EXTEND_STEP);
+    // Init and test the created event queue
+    testcase();
   }
 
   ~event_stream(void)

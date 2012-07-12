@@ -338,12 +338,21 @@ bool level_active::play_callback(LEVEL_EVENT_QUEUE *p_queue)
   // Get and process all events in level
   // Process events from user
 
-  //p_queue->dump_read("Before logic");    
+#if EVENTS_DEBUG
+  p_queue->dump_read("Read - before logic");
+#endif
+
   logic.events_process(p_queue);
 
-  //p_queue->dump("Before changer");
+#if EVENTS_DEBUG
+  p_queue->dump_read("Read - before changer");
+#endif
+
   changer.events_process(p_queue);
-  //p_queue->dump("After changer");
+
+#if EVENTS_DEBUG
+  p_queue->dump_read("Read - after changer");
+#endif
   
   // Redraw level/screen
   level.level_draw();

@@ -56,6 +56,7 @@ const char * level_event::translation_table[] =
   "AN_STOP_AND_CLEAR",
   "GC_RUN_LEVEL_SET",
   "GC_RUN_LEVEL_LINE",
+  "GC_RUN_EDITOR",
   "GC_STOP_LEVEL",
   "GC_MENU_RUN_LEVEL",
   "GC_MENU_END_LEVEL",
@@ -86,23 +87,28 @@ const char * level_event::translation_table[] =
   "ED_LEVEL_LOAD",
   "ED_LEVEL_SAVE",
   "ED_LEVEL_SAVE_AS",
-  "ED_LEVEL_RUN",
+  "ED_LEVEL_SELECT_LAYER",
   "ED_LEVEL_SET_CURSOR",
-  "ED_LEVEL_DRAW_CURSOR",
+  "ED_LEVEL_RECTANGLE_SELECTION",
   "ED_LEVEL_DRAW_CURSOR_INSERT_ITEM",
   "ED_LEVEL_DRAW_CURSOR_ROTATE_ITEM",
   "ED_LEVEL_DRAW_CURSOR_VARIATE_ITEM",
   "ED_LEVEL_DRAW_CURSOR_CLEAR_ITEM",
+  "ED_LEVEL_CHANGE_BACKGROUND",
   "ED_HELP",
   "ED_QUIT",
+  "ED_ROTATE_SELECTION",
+  "ED_VARIATE_SELECTION",
   "ED_LEVEL_SHADER",
+  "ED_LEVEL_RUN",
   "ED_LEVEL_LAYER",
   "ED_LEVEL_IPANEL_SCROLL",
   "ED_LEVEL_MOUSE_PANEL_SCROLL",
   "ED_LEVEL_IPANEL_SELECT",
   "ED_LEVEL_IPANEL_SELECT_LOCK",
   "ED_UNDO",
-  "ED_REDO"
+  "ED_REDO",
+  "EV_LAST",
 };
 
 const char * level_event::translate_event(EVENT_TYPE action)
@@ -110,12 +116,26 @@ const char * level_event::translate_event(EVENT_TYPE action)
   return(translation_table[action]);
 }
 
+void level_event::translate_test(void)
+{
+  assert(!strcmp(translate_event(AN_RUN), "AN_RUN"));
+  assert(!strcmp(translate_event(GC_MENU_SETTINGS), "GC_MENU_SETTINGS"));
+  assert(!strcmp(translate_event(GC_MENU_QUIT), "GC_MENU_QUIT"));
+  assert(!strcmp(translate_event(ED_LEVEL_RUN), "ED_LEVEL_RUN"));
+  assert(!strcmp(translate_event(ED_QUIT), "ED_QUIT"));
+  assert(!strcmp(translate_event(EV_LAST), "EV_LAST"));
+
+  int size = (sizeof(level_event::translation_table)/sizeof(level_event::translation_table[0]));
+  assert(size == EV_LAST+1);  
+}
+
 void event_stream::testcase(void)
 {
-  extend(EXTEND_STEP);
   clear();
+  extend(EXTEND_STEP);
 
   LEVEL_EVENT ev(EV_TEST);
+  ev.translate_test();
 
   assert(empty());
   assert(!full());
@@ -138,4 +158,6 @@ void event_stream::testcase(void)
   assert(read_next == 1);
   assert(write_first == 1);
   assert(write_next == 1);
+  
+  clear();
 }

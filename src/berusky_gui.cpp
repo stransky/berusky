@@ -1336,6 +1336,9 @@ void game_gui::level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu)
       }
     }
   }
+#if EVENTS_DEBUG
+  p_queue->dump_write("Write - game_gui::level_stop() - end");
+#endif 
 }
 
 #undef MENU_X_START_L
@@ -1379,7 +1382,7 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         if(p_status->resolved()) {
           p_font->print(NULL,0,END_TEXT_START+100,_("your bugs have survived!"));
           p_font->print(NULL,0,END_TEXT_START+130,_("difficulty %s"), p_ber->levelset_get_difficulty());
-          p_font->print(NULL,0,END_TEXT_START+180,_("it takes %d steps"), p_status->steps_get());
+          p_font->print(NULL,0,END_TEXT_START+180,_("they made %d steps"), p_status->steps_get());
           p_font->print(NULL,0,END_TEXT_START+210,_("and %s."), p_status->time_get(tmp,100));
         } else {
           p_font->print(NULL,0,END_TEXT_START+100,_("your bugs have given it up!"));
@@ -1464,7 +1467,7 @@ void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr d
         p_font->print(NULL,0,END_TEXT_START+130,_("custom level %s."), p_ber->levelset_get_name());
 
         LEVEL_STATUS *p_status = p_ber->level_status_get();
-        p_font->print(NULL,0,END_TEXT_START+180,_("it takes %d steps"), p_status->steps_get());
+        p_font->print(NULL,0,END_TEXT_START+180,_("it took %d steps"), p_status->steps_get());
         char tmp[100];
         p_font->print(NULL,0,END_TEXT_START+210,_("and %s."), p_status->time_get(tmp,100));      
 
@@ -1553,14 +1556,14 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
           if(p_text) {
             #define SCROLL_START_X  0
             #define SCROLL_START_Y  0
-            #define SCROLL_LINES    20
+            #define SCROLL_LINES    (DOUBLE_SIZE ? 40 : 20)
 
             p_font->print(NULL, SCROLL_START_X, SCROLL_START_Y-position, SCROLL_LINES, p_text);
           } else {
             menu_timer.clear();
 
-            #define MENU_X_START_L (320 - 17)
-            #define MENU_Y_START    440
+            #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17)
+            #define MENU_Y_START   (DOUBLE_SIZE ? (GAME_RESOLUTION_Y - 90) : 440)
 
             static char *back_string = _("back");
 
@@ -1755,6 +1758,10 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
   /* Scan the queue and do the propper action */
   static LEVEL_EVENT_QUEUE tmp_queue;
 
+#if EVENTS_DEBUG
+  p_queue->dump_read("Read - game_gui::callback() loop start");
+#endif
+
   while(!p_queue->empty()) {
     LEVEL_EVENT ev = p_queue->get();
       
@@ -1882,6 +1889,10 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
   p_queue->add(&tmp_queue);
   p_queue->commit();  
   tmp_queue.clear();
+
+#if EVENTS_DEBUG
+  p_queue->dump_read("Read - game_gui::callback() end");
+#endif
 
   /* Call the game (if exists) */
   if(p_ber) {
