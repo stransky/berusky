@@ -715,7 +715,8 @@ pick them up"));
             p_font->start_set(x, y);
             p_font->print(_("color door - can be opened by the\nrespective color key only"));
           
-            //x = 40+X_START;
+            x = 40+X_START;
+            if(DOUBLE_SIZE) x += 20;
             y += 50; // 300
             if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_DOOR1_V_Z);
@@ -734,6 +735,7 @@ through. Boxes cannot be pushed\n\
 through."));
           
             x = 40+X_START;
+            if(DOUBLE_SIZE) x += 20;
             y += 90; // 430;
             if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_ID_DOOR1_V_Z);
@@ -759,6 +761,7 @@ then it is closed off and there's no\n\
 way to open it\n"));
             
             x = 40+X_START;
+            if(DOUBLE_SIZE) x += 20;
             y += 80; // 220
             if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_DV_V_O);
@@ -767,6 +770,7 @@ way to open it\n"));
               x += DOUBLE_SIZE ? 140 : 70;
             }
             x = 40+X_START;
+            if(DOUBLE_SIZE) x += 20;
             y += 40; // 260;
             if(DOUBLE_SIZE) y += 20;
             variants = p_repo->variants_get(P_DV_V_Z);
