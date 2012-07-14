@@ -1525,7 +1525,7 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
         p_text = level_end_text_load(set);
         assert(p_text);        
       
-        sprite::color_key_set(COLOR_KEY_GAME);
+        sprite::color_key_set(COLOR_KEY_BLACK);
         p_grf->sprite_delete(MENU_SPRIT_END, 1);
       
         char line[1000];
@@ -1545,8 +1545,11 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
         if((frame & 0x3) == 0x0) {
           p_font->alignment_set(CENTER);
           p_font->select(FONT_DEFAULT);
-
-          p_grf->draw(MENU_SPRIT_END,0,0);
+        
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_END);
+        
+          p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+          p_grf->draw(MENU_SPRIT_END,GAME_RESOLUTION_X/2-width/2,DOUBLE_SIZE ? 60 : 0);
 
           if(position >= p_font->height_get_new_line(p_text)) {
             position -= p_font->height_get_new_line(p_text);
