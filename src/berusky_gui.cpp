@@ -1886,6 +1886,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
   }
 
   /* Commit all writes */
+  tmp_queue.commit();
   p_queue->add(&tmp_queue);
   p_queue->commit();  
   tmp_queue.clear();

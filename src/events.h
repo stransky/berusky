@@ -31,7 +31,7 @@
 #include "portability.h"
 
 // uncomment for event debugging
-#define EVENTS_DEBUG 1
+// #define EVENTS_DEBUG 1
 
 #ifdef LINUX
 #include <sys/time.h>
