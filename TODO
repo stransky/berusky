@@ -1,6 +1,5 @@
 - Background for level path
 - Background for menu
-- fix help
 - better level map
 - game -> in_game menu -> help -> credits -> returns back to main menu
 instead of the in-game menu
@@ -10,7 +9,6 @@ instead of the in-game menu
 - better level ordering - like the one in fish-filets
 - player profiles - level path
 - put settings to in-game menu
-
 
 - profile save - fullscreen
 
