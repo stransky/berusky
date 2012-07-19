@@ -1193,6 +1193,109 @@ void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
   }
 }
 
+// Draw level path
+void game_gui::menu_level_run_path_draw(int level_set)
+{
+  p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
+  p_font->alignment_set(CENTER);
+  p_font->select(FONT_DEFAULT);
+  
+  #define IMAGE_START (DOUBLE_SIZE ? 100 : 50)        
+  #define TEXT_START  (DOUBLE_SIZE ? 400 : 250)
+  
+  if(DOUBLE_SIZE) {
+    p_grf->draw(menu_background_get(),0,0);
+  }
+
+  #define FIRST_PIPE (FIRST_CLASSIC_LEVEL+13)
+  #define FIRST_EXIT (FIRST_CLASSIC_LEVEL+42)
+
+  p_grf->draw(FIRST_PIPE,0,0);
+  p_grf->draw(FIRST_PIPE+1,20,0);
+
+  // Draw the level path
+
+/*  
+  switch(set) {
+    case 0:
+      p_grf->draw(MENU_SPRIT_START+0,GAME_RESOLUTION_X/2-320,IMAGE_START);
+      p_font->print(NULL, 0, IMAGE_START/2,_("difficulty training"));
+      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
+      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
+      break;
+    case 1:
+      p_grf->draw(MENU_SPRIT_START+1,GAME_RESOLUTION_X/2-320,IMAGE_START);
+      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty easy"));
+      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
+      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
+      break;
+    case 2:
+      p_grf->draw(MENU_SPRIT_START+2,GAME_RESOLUTION_X/2-320,IMAGE_START);
+      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty intermediate"));
+      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
+      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
+      break;
+    case 3:
+      p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
+      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty advanced"));
+      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
+      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
+      break;
+    case 4:
+      p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
+      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty impossible"));
+      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
+      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
+      break;
+    default:
+      assert(0);
+      break;
+  }
+*/
+  #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
+  #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
+  #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
+  #define MENU_X_DIFF     0
+  #define MENU_Y_DIFF     35
+  
+  static char *back_string = _("back");
+
+  menu_item_start();
+  menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string, LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+
+  p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
+  p_grf->flip();              
+}
+
+// New level set - based on profiles
+void game_gui::menu_level_run_new(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+  switch(state) {
+    case MENU_RETURN:
+    case MENU_ENTER:
+      {            
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run_new, data, data1);
+
+        int set = data;
+        int level = data1;
+      
+        bool ret = p_ber->levelset_load(set);
+        assert(ret);
+        p_ber->levelset_set_level(level);
+
+        menu_level_run_path_draw(set);            
+      }
+      break;
+    
+    case MENU_LEAVE:
+      input.mevent_clear();
+      break;      
+    
+    default:
+      break;
+  }
+}
+
 /* Load a hint for given level */
 
 #define MARK_START  "~%d_%d"
@@ -1846,7 +1949,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         break;
      
       case GC_MENU_RUN_LEVEL:
-        menu_level_run(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        menu_level_run_new(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
         break;
       case GC_MENU_END_LEVEL:
         menu_level_end(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));

@@ -73,12 +73,14 @@ public:
 
   // Level screens
   void menu_level_run(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_level_run_new(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_end_custom(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
   void menu_levelset_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   
   // Helpers
   void menu_settings_fullscreen(void);
+  void menu_level_run_path_draw(int level_set);
   
   // Callback for all
   bool callback(LEVEL_EVENT_QUEUE *p_queue, int frame);
