@@ -1079,7 +1079,7 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_start();
         menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, 
                        back, LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
-        
+
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();        
       }
@@ -1207,6 +1207,17 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
     p_grf->draw(menu_background_get(),0,0);
   }
 
+/* 
+  Pipe list:
+
+  0  -
+  1  \
+  2  |
+  3  _|
+  4  /
+  5  L
+*/
+
   #define FIRST_PIPE            (FIRST_CLASSIC_LEVEL+13)
   #define FIRST_EXIT            (FIRST_CLASSIC_LEVEL+42)
   #define MAX_LEVELS_VERTICAL   18
@@ -1235,6 +1246,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         p_grf->draw(FIRST_PIPE,0,(level_num+1)*ITEM_SIZE);
       }
       break;
+    // Easy
     case 1:
       {
         // Draw top of the pipe
@@ -1296,9 +1308,9 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*15,1*ITEM_SIZE);
         p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*15,2*ITEM_SIZE);
         p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*15,3*ITEM_SIZE);
-      
+
         // fourth line
-        for(i = 0; i < 9; i++, level++) {
+        for(i = 0; i < 7; i++, level++) {
           int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
           int position = i+3;
           p_grf->draw(spr, 15*ITEM_SIZE, (position+1)*ITEM_SIZE);
@@ -1306,29 +1318,113 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
                               (position+1)*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
                               p_ber->levelset_get_passwd(level));
         }
-      
-        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*15,13*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE,ITEM_SIZE*14,13*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE*13,13*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*13,14*ITEM_SIZE);
-      
+
+        p_grf->draw(FIRST_PIPE+5,ITEM_SIZE*15,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*16,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*17,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*18,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*19,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*20,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE*20,10*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*21,10*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*21, 9*ITEM_SIZE);
+
         // fifth line
-        for(i = 0; i < 5; i++, level++) {
-          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
-          int position = i+5+9;
-          p_grf->draw(spr, 13*ITEM_SIZE, (position+1)*ITEM_SIZE);
-          p_font->print(NULL, 13*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
-                              (position+1)*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
+        for(i = 0; i < 7; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;          
+          int position = 8-i;
+          p_grf->draw(spr, 21*ITEM_SIZE, (position)*ITEM_SIZE);
+          p_font->print(NULL, 21*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              (position)*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
                               p_ber->levelset_get_passwd(level));
         }
-              
-        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*13,20*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*13,21*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*13,22*ITEM_SIZE);
-      
+
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*21,ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*21,0);
       }
       break;
+    // Intermediate
     case 2:
+      {        
+        // Draw top of the pipe
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE,22*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE,21*ITEM_SIZE);
+        
+        int i, level;
+      
+        // first line
+        for(i = 0, level = 0; i < 10; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
+          int position = MAX_LEVELS_VERTICAL+2-level;
+          p_grf->draw(spr, ITEM_SIZE, position*ITEM_SIZE);
+          p_font->print(NULL, ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              position*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
+                              p_ber->levelset_get_passwd(level));
+        }
+
+        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE,10*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*2,10*ITEM_SIZE);
+      
+        // second line
+        for(i = 0; i < 7; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
+          int position = MAX_LEVELS_VERTICAL+1-level;
+          p_grf->draw(spr, 2*ITEM_SIZE, position*ITEM_SIZE);
+          p_font->print(NULL, 2*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              position*ITEM_SIZE+TEXT_SHIFT_VERTICAL,
+                              p_ber->levelset_get_passwd(level));
+        }
+
+        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE*2,2*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*3,2*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*3,1*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE*3,0);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*4,0);
+        p_grf->draw(FIRST_PIPE+1,ITEM_SIZE*5,0);
+        p_grf->draw(FIRST_PIPE+5,ITEM_SIZE*5,ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*6,ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE,  ITEM_SIZE*7,ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+1,ITEM_SIZE*8,ITEM_SIZE);
+      
+        // third line
+        for(i = 0; i < 9; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
+          int position = (i+2);
+          p_grf->draw(spr, 8*ITEM_SIZE, position*ITEM_SIZE);
+          p_font->print(NULL, 8*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              position*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
+                              p_ber->levelset_get_passwd(level));
+        }
+
+        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE*8,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE  ,ITEM_SIZE*7,11*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+4,ITEM_SIZE*6,11*ITEM_SIZE);
+
+        // fourth line
+        for(i = 0; i < 5; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
+          int position = (i+12);
+          p_grf->draw(spr, 6*ITEM_SIZE, position*ITEM_SIZE);
+          p_font->print(NULL, 6*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              position*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
+                              p_ber->levelset_get_passwd(level));
+        }
+        
+        p_grf->draw(FIRST_PIPE+5,ITEM_SIZE*6,17*ITEM_SIZE);
+        p_grf->draw(FIRST_PIPE+1,ITEM_SIZE*7,17*ITEM_SIZE);
+
+        // fifth line
+        for(i = 0; i < 4; i++, level++) {
+          int spr = (level <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
+          int position = (i+18);
+          p_grf->draw(spr, 7*ITEM_SIZE, position*ITEM_SIZE);
+          p_font->print(NULL, 7*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                              position*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
+                              p_ber->levelset_get_passwd(level));
+        }
+      
+        p_grf->draw(FIRST_PIPE+2,ITEM_SIZE*7,22*ITEM_SIZE);
+      }
       break;
     case 3:
       break;
@@ -1391,6 +1487,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
       break;
   }
 */
+/*
   #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
   #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
   #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
@@ -1400,6 +1497,23 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
   static char *back_string = _("back");
 
   menu_item_start();
+  menu_item_draw(MENU_X_START_L,
+                 MENU_Y_START+2*MENU_Y_DIFF,
+                 back_string, LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+*/
+  #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
+  #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
+  #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
+  #define MENU_X_DIFF     0
+  #define MENU_Y_DIFF     35
+  
+  static char *play_string = _("play level");
+  static char *level_hint  = _("level hint");
+  static char *back_string = _("back");
+
+  menu_item_start();
+  menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET, level_set, level_act));
+  menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint, RIGHT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
   menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string, LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
 
   p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
@@ -2089,6 +2203,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
      
       case GC_MENU_RUN_LEVEL:
         menu_level_run_new(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        //menu_level_run(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
         break;
       case GC_MENU_END_LEVEL:
         menu_level_end(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
