@@ -1427,10 +1427,77 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
       }
       break;
     case 3:
+      {
+      
+      
+      }
       break;
     case 4:
       {
         // Draw top of the pipe
+      
+        #define IMP_START_X 11
+        #define IMP_START_Y 6
+
+        #define draw_level(lev,x,y)                                 \
+        {                                                           \
+          int spr = (lev <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT; \
+          p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);             \
+          p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,  \
+                              (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,    \
+                              p_ber->levelset_get_passwd(lev));     \
+        }
+        #define draw_pipe(pip,x,y)                                  \
+        {                                                           \
+          p_grf->draw(FIRST_PIPE+pip,                               \
+                      (x)*ITEM_SIZE,                                \
+                      (y)*ITEM_SIZE);                               \
+        }
+      
+        draw_pipe(5,IMP_START_X+1,IMP_START_Y);
+        draw_level(0,IMP_START_X+2, IMP_START_Y);
+      
+        draw_pipe(2,IMP_START_X+2,IMP_START_Y+1);
+        draw_level(1,IMP_START_X+2, IMP_START_Y+2);
+      
+        draw_pipe(5,IMP_START_X+2,IMP_START_Y+3);
+        draw_pipe(0,IMP_START_X+3,IMP_START_Y+3);
+        draw_pipe(1,IMP_START_X+4,IMP_START_Y+3);
+        draw_level(2,IMP_START_X+4, IMP_START_Y+4);
+      
+        draw_pipe(2,IMP_START_X+4,IMP_START_Y+5);
+        draw_pipe(3,IMP_START_X+4,IMP_START_Y+6);
+        draw_pipe(0,IMP_START_X+3,IMP_START_Y+6);
+        draw_pipe(0,IMP_START_X+3,IMP_START_Y+6);
+        draw_pipe(0,IMP_START_X+2,IMP_START_Y+6);
+        draw_pipe(0,IMP_START_X+1,IMP_START_Y+6);
+        draw_pipe(4,IMP_START_X+0,IMP_START_Y+6);
+        draw_pipe(3,IMP_START_X+0,IMP_START_Y+7);
+        draw_pipe(0,IMP_START_X-1,IMP_START_Y+7);
+        draw_pipe(5,IMP_START_X-2,IMP_START_Y+7);
+        draw_pipe(2,IMP_START_X-2,IMP_START_Y+6);
+        draw_level(3,IMP_START_X-2, IMP_START_Y+5);
+
+        draw_pipe(1,IMP_START_X-2,IMP_START_Y+4);
+        draw_pipe(0,IMP_START_X-3,IMP_START_Y+4);
+        draw_pipe(5,IMP_START_X-4,IMP_START_Y+4);
+        draw_level(4,IMP_START_X-4, IMP_START_Y+3);
+
+        draw_pipe(4,IMP_START_X-4,IMP_START_Y+2);
+        draw_pipe(0,IMP_START_X-3,IMP_START_Y+2);
+        draw_pipe(0,IMP_START_X-2,IMP_START_Y+2);
+        draw_pipe(3,IMP_START_X-1,IMP_START_Y+2);
+        draw_pipe(2,IMP_START_X-1,IMP_START_Y+1);
+        draw_pipe(2,IMP_START_X-1,IMP_START_Y);
+        draw_pipe(2,IMP_START_X-1,IMP_START_Y-1);
+        draw_pipe(4,IMP_START_X-1,IMP_START_Y-2);        
+        draw_pipe(0,IMP_START_X  ,IMP_START_Y-2);
+        draw_pipe(1,IMP_START_X+1,IMP_START_Y-2);
+        draw_pipe(2,IMP_START_X+1,IMP_START_Y-1);
+        
+        
+      
+/*      
         p_grf->draw(FIRST_PIPE,0,0);
         p_grf->draw(FIRST_PIPE+1,40,0);
 
@@ -1443,6 +1510,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         }
         p_grf->draw(FIRST_PIPE+3,40,(level_num+1)*40);
         p_grf->draw(FIRST_PIPE,0,(level_num+1)*40);
+*/      
       }
       break;
     default:
