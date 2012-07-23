@@ -1225,25 +1225,81 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
   #define TEXT_SHIFT_VERTICAL   (DOUBLE_SIZE ? 10 : 0)
   #define TEXT_SHIFT_HORIZONTAL (DOUBLE_SIZE ? 50 : 20)
 
+  #define draw_level(lev,x,y)                                 \
+  {                                                           \
+    int spr = (lev <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT; \
+    p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);             \
+    p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,  \
+                        (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,    \
+                        p_ber->levelset_get_passwd(lev));     \
+  }
+  #define draw_pipe(pip,x,y)                                  \
+  {                                                           \
+    p_grf->draw(FIRST_PIPE+pip,                               \
+                (x)*ITEM_SIZE,                                \
+                (y)*ITEM_SIZE);                               \
+  }
+
   switch(level_set) {
     case 0:
       {
         // Draw top of the pipe
-        p_grf->draw(FIRST_PIPE,0,0);
-        p_grf->draw(FIRST_PIPE+1,ITEM_SIZE,0);
-
-        assert(level_num < MAX_LEVELS_VERTICAL);
-        int i;
-        for(i = 0; i < level_num; i++) {
-          int spr = (i <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
-          p_grf->draw(spr,ITEM_SIZE,(i+1)*ITEM_SIZE);
-          p_font->print(NULL, ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
-                              (i+1)*ITEM_SIZE+TEXT_SHIFT_VERTICAL, 
-                              p_ber->levelset_get_passwd(i));
-        }
+        draw_pipe(2,14,0);
+        draw_pipe(2,14,1);
+        draw_level(0,14,2);
       
-        p_grf->draw(FIRST_PIPE+3,ITEM_SIZE,(level_num+1)*ITEM_SIZE);
-        p_grf->draw(FIRST_PIPE,0,(level_num+1)*ITEM_SIZE);
+        draw_pipe(3,14,3);
+        draw_pipe(4,13,3);
+        draw_level(1,13,4);
+      
+        draw_pipe(3,13,5);
+        draw_pipe(0,12,5);
+        draw_pipe(4,11,5);
+        draw_level(2,11,6);
+      
+        draw_pipe(2,11,7);
+        draw_level(3,11,8);
+      
+        draw_pipe(2,11,9);
+        draw_level(4,11,10);
+      
+        draw_pipe(3,11,11);
+        draw_pipe(0,10,11);
+        draw_pipe(4,9,11);
+        draw_level(5,9,12);
+
+        draw_pipe(3,9,13);
+        draw_pipe(0,8,13);
+        draw_pipe(0,7,13);
+        draw_pipe(0,6,13);
+        draw_pipe(4,5,13);
+        draw_level(6,5,14);
+        draw_pipe(0,4,14);
+        draw_pipe(0,3,14);
+        draw_pipe(0,2,14);
+        draw_pipe(0,1,14);
+        draw_pipe(0,0,14);
+
+        draw_pipe(2,5,15);
+        draw_pipe(2,5,16);
+        draw_level(7,5,17);
+        
+        draw_pipe(2,5,18);
+        draw_pipe(5,5,19);
+        draw_pipe(0,6,19);
+        draw_pipe(0,7,19);
+        draw_level(8,8,19);
+
+        draw_pipe(0,10,6);
+        draw_pipe(0,9,6);
+        draw_pipe(0,8,6);
+        draw_pipe(5,7,6);
+        draw_pipe(2,7,5);
+        draw_pipe(2,7,4);
+        draw_level(9,7,3);
+        draw_pipe(2,7,2);
+        draw_pipe(2,7,1);
+        draw_pipe(2,7,0);
       }
       break;
     // Easy
@@ -1428,31 +1484,124 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
       break;
     case 3:
       {
+        // Draw center of the net
+        #define ADV_START_X 15
+        #define ADV_START_Y 10
       
+        draw_level(0,ADV_START_X, ADV_START_Y);
       
+        draw_pipe(2, ADV_START_X, ADV_START_Y-1);
+        draw_level(1,ADV_START_X, ADV_START_Y-2);
+      
+        draw_pipe(2, ADV_START_X, ADV_START_Y-3);
+        draw_pipe(2, ADV_START_X, ADV_START_Y-4);
+        draw_level(3,ADV_START_X, ADV_START_Y-5);
+      
+        draw_pipe(0, ADV_START_X-1, ADV_START_Y-5);
+        draw_pipe(5, ADV_START_X-2, ADV_START_Y-5);
+        draw_pipe(2, ADV_START_X-2, ADV_START_Y-6);
+        draw_level(3,ADV_START_X-2, ADV_START_Y-7);
+      
+        draw_pipe(2, ADV_START_X-2, ADV_START_Y-8);
+        draw_pipe(2, ADV_START_X-2, ADV_START_Y-9);
+        draw_pipe(2, ADV_START_X-2, ADV_START_Y-10);
+
+        draw_pipe(2, ADV_START_X, ADV_START_Y+1);
+        draw_pipe(2, ADV_START_X, ADV_START_Y+2);
+        draw_pipe(5, ADV_START_X, ADV_START_Y+3);
+        draw_pipe(0, ADV_START_X+1, ADV_START_Y+3);
+        draw_level(4,ADV_START_X+2, ADV_START_Y+3);
+
+        draw_pipe(4, ADV_START_X+2, ADV_START_Y+2);
+        draw_pipe(0, ADV_START_X+3, ADV_START_Y+2);
+        draw_pipe(0, ADV_START_X+4, ADV_START_Y+2);        
+        draw_level(5,ADV_START_X+5, ADV_START_Y+2);
+
+        draw_pipe(2, ADV_START_X+5, ADV_START_Y+1);
+        draw_pipe(2, ADV_START_X+5, ADV_START_Y);
+        draw_level(6,ADV_START_X+5, ADV_START_Y-1);
+
+        draw_pipe(4, ADV_START_X+5, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X+6, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X+7, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X+8, ADV_START_Y-2);
+        draw_level(7,ADV_START_X+9, ADV_START_Y-2);
+
+        draw_pipe(2, ADV_START_X+9, ADV_START_Y-3);
+        draw_pipe(2, ADV_START_X+9, ADV_START_Y-4);
+        draw_pipe(2, ADV_START_X+9, ADV_START_Y-5);
+        draw_level(8,ADV_START_X+9, ADV_START_Y-6);
+
+        draw_pipe(2, ADV_START_X+9, ADV_START_Y-1);
+        draw_pipe(2, ADV_START_X+9, ADV_START_Y);
+        draw_level(9,ADV_START_X+9, ADV_START_Y+1);
+        
+        draw_pipe(5, ADV_START_X+2, ADV_START_Y+4);
+        draw_pipe(0, ADV_START_X+3, ADV_START_Y+4);
+        draw_level(10,ADV_START_X+4, ADV_START_Y+4);
+        
+        draw_pipe(2, ADV_START_X+4, ADV_START_Y+5);
+        draw_pipe(2, ADV_START_X+4, ADV_START_Y+6);
+        draw_level(11,ADV_START_X+4, ADV_START_Y+7);
+        
+        draw_pipe(5, ADV_START_X+4, ADV_START_Y+8);
+        draw_pipe(0, ADV_START_X+5, ADV_START_Y+8);
+        draw_level(12,ADV_START_X+6, ADV_START_Y+8);
+
+        draw_pipe(0, ADV_START_X-1, ADV_START_Y);
+        draw_pipe(0, ADV_START_X-2, ADV_START_Y);
+        draw_pipe(0, ADV_START_X-3, ADV_START_Y);
+        draw_pipe(0, ADV_START_X-4, ADV_START_Y);
+        draw_pipe(5, ADV_START_X-5, ADV_START_Y);
+        draw_level(13,ADV_START_X-5, ADV_START_Y-1);
+        draw_pipe(0, ADV_START_X-1, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X-2, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X-3, ADV_START_Y-2);
+        draw_pipe(0, ADV_START_X-4, ADV_START_Y-2);
+        draw_pipe(4, ADV_START_X-5, ADV_START_Y-2);
+
+        draw_pipe(0, ADV_START_X-6, ADV_START_Y-1);
+        draw_pipe(0, ADV_START_X-7, ADV_START_Y-1);
+        draw_pipe(0, ADV_START_X-8, ADV_START_Y-1);
+        draw_pipe(0, ADV_START_X-9, ADV_START_Y-1);
+        draw_pipe(5, ADV_START_X-10, ADV_START_Y-1);
+        draw_level(14,ADV_START_X-10, ADV_START_Y-2);
+
+        draw_pipe(2, ADV_START_X-10, ADV_START_Y-3);
+        draw_pipe(2, ADV_START_X-10, ADV_START_Y-4);
+        draw_level(15,ADV_START_X-10, ADV_START_Y-5);
+
+        draw_pipe(2, ADV_START_X+6, ADV_START_Y+9);
+        draw_pipe(2, ADV_START_X+6, ADV_START_Y+10);
+        draw_level(16,ADV_START_X+6, ADV_START_Y+11);
+        
+        draw_pipe(2, ADV_START_X-10, ADV_START_Y-6);
+        draw_pipe(2, ADV_START_X-10, ADV_START_Y-7);
+        draw_level(17,ADV_START_X-10, ADV_START_Y-8);
+        
+        draw_pipe(4, ADV_START_X-11, ADV_START_Y-2);
+        draw_pipe(2, ADV_START_X-11, ADV_START_Y-1);
+        draw_pipe(2, ADV_START_X-11, ADV_START_Y);
+        draw_pipe(2, ADV_START_X-11, ADV_START_Y+1);
+        draw_level(18,ADV_START_X-11, ADV_START_Y+2);
+        
+        draw_pipe(3, ADV_START_X-11, ADV_START_Y+3);
+        draw_pipe(0, ADV_START_X-12, ADV_START_Y+3);        
+        draw_pipe(4, ADV_START_X-13, ADV_START_Y+3);
+        draw_pipe(2, ADV_START_X-13, ADV_START_Y+4);
+        draw_pipe(2, ADV_START_X-13, ADV_START_Y+5);
+        draw_level(19,ADV_START_X-13, ADV_START_Y+6);
+        
+        draw_pipe(0, ADV_START_X-14, ADV_START_Y+6);
+        draw_pipe(0, ADV_START_X-15, ADV_START_Y+6);
+        
       }
       break;
     case 4:
       {
-        // Draw top of the pipe
-      
-        #define IMP_START_X 11
+        // Draw top of the pipe      
+        #define IMP_START_X 15
         #define IMP_START_Y 6
-
-        #define draw_level(lev,x,y)                                 \
-        {                                                           \
-          int spr = (lev <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT; \
-          p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);             \
-          p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,  \
-                              (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,    \
-                              p_ber->levelset_get_passwd(lev));     \
-        }
-        #define draw_pipe(pip,x,y)                                  \
-        {                                                           \
-          p_grf->draw(FIRST_PIPE+pip,                               \
-                      (x)*ITEM_SIZE,                                \
-                      (y)*ITEM_SIZE);                               \
-        }
       
         draw_pipe(5,IMP_START_X+1,IMP_START_Y);
         draw_level(0,IMP_START_X+2, IMP_START_Y);
@@ -1494,23 +1643,6 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(0,IMP_START_X  ,IMP_START_Y-2);
         draw_pipe(1,IMP_START_X+1,IMP_START_Y-2);
         draw_pipe(2,IMP_START_X+1,IMP_START_Y-1);
-        
-        
-      
-/*      
-        p_grf->draw(FIRST_PIPE,0,0);
-        p_grf->draw(FIRST_PIPE+1,40,0);
-
-        assert(level_num < MAX_LEVELS_VERTICAL);
-        int i;
-        for(i = 0; i < level_num; i++) {
-          int spr = (i <= level_act) ? FIRST_EXIT+1 : FIRST_EXIT;
-          p_grf->draw(spr,40,(i+1)*40);
-          p_font->print(NULL, 90, (i+1)*40+10, p_ber->levelset_get_passwd(i));
-        }
-        p_grf->draw(FIRST_PIPE+3,40,(level_num+1)*40);
-        p_grf->draw(FIRST_PIPE,0,(level_num+1)*40);
-*/      
       }
       break;
     default:
