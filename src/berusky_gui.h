@@ -81,6 +81,7 @@ public:
   // Helpers
   void menu_settings_fullscreen(void);
   void menu_level_run_path_draw(int level_set, int level_act, int level_num);
+  int  menu_level_run_path_draw_line(const char *p_path, int level_act, int level_num, int sx, int sy);
   
   // Callback for all
   bool callback(LEVEL_EVENT_QUEUE *p_queue, int frame);

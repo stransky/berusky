@@ -31,7 +31,6 @@
     Level Store
    *******************************************************
 */
-
 void level_store::alloc(int num)
 {
   if(levelnum <= num) {
