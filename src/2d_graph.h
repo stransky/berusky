@@ -730,17 +730,21 @@ public:
 #define FALIGN_RIGHT_NO_ARROW   5
 */
 
-typedef enum _ALIGNMENT {
+typedef enum _MENU_TYPE {
 
-  LEFT,
-  CENTER,
-  RIGHT,
+  MENU_LEFT,
+  MENU_CENTER,
+  MENU_RIGHT,
 
-  LEFT_NO_ARROW,
-  CENTER_NO_ARROW,
-  RIGHT_NO_ARROW
+  MENU_LEFT_NO_ARROW,
+  MENU_CENTER_NO_ARROW,
+  MENU_RIGHT_NO_ARROW,
 
-} ALIGNMENT;
+  MENU_LEFT_SPRITE,
+  MENU_CENTER_SPRITE,
+  MENU_RIGHT_SPRITE
+
+} MENU_TYPE;
 
 #define DEFAULT_NEW_LINE_SHIFT  4
 
@@ -841,7 +845,7 @@ typedef class font {
   int               font_selected;
   FONT_INFO         finfo[FONT_NUM];
 
-  ALIGNMENT         align;
+  MENU_TYPE         align;
 
   // Start x,y
   tpos              sx,sy;
@@ -913,7 +917,7 @@ public:
     offset_x = x; offset_y = y;
   }
   
-  void alignment_set(ALIGNMENT al)
+  void alignment_set(MENU_TYPE al)
   {
     align = al;  
   }

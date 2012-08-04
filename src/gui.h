@@ -235,15 +235,27 @@ public:
   void menu_item_set_diff(tpos dx, tpos dy);
 
   void menu_item_start(void);
+
+  void menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,
+                             spr_handle active, spr_handle inactive,
+                             LEVEL_EVENT click1,
+                             LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
+                             LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
+  void menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
+                           LEVEL_EVENT click1, 
+                           LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
+                           LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
+
   void menu_item_draw(char *p_text,
-                      ALIGNMENT spr_align, bool save_back, LEVEL_EVENT click1,
+                      MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1,
                       LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                       LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
   void menu_item_draw(tpos x, tpos y, char *p_text,
-                      ALIGNMENT spr_align, bool save_back, LEVEL_EVENT click1,
+                      MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1,
                       LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                       LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
-  void menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align,
+
+  void menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align,
                                bool checked, int checkbox_id,
                                LEVEL_EVENT click1,
                                LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),

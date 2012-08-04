@@ -893,7 +893,7 @@ font::font(GRAPH_2D *p_graph)
   memset(this,0,sizeof(*this));
 
   font_info::p_grf = p_graph;
-  align = LEFT;
+  align = MENU_LEFT;
 }
 
 font::~font(void)
@@ -929,15 +929,18 @@ void font::print(char *p_string, RECT *p_res, int lines)
          py = ay+offset_y;
     
     switch(align) {
-      case LEFT:
-      case LEFT_NO_ARROW:
+      case MENU_LEFT:
+      case MENU_LEFT_NO_ARROW:
+      case MENU_LEFT_SPRITE:
         break;
-      case CENTER:
-      case CENTER_NO_ARROW:
+      case MENU_CENTER:
+      case MENU_CENTER_NO_ARROW:
+      case MENU_CENTER_SPRITE:
         px = (width_screen - width_string) / 2;
         break;
-      case RIGHT:
-      case RIGHT_NO_ARROW:
+      case MENU_RIGHT:
+      case MENU_RIGHT_NO_ARROW:
+      case MENU_RIGHT_SPRITE:
         px -= width_string;
         break;
     }

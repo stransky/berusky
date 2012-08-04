@@ -106,38 +106,39 @@ void gui_base::menu_item_start(void)
   input.mevent_clear();
 }
 
-void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,
+                                     spr_handle active, spr_handle inactive,
+                                     LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
-
   switch(spr_align)
   {
-    case LEFT:
-      {      
+    case MENU_LEFT_SPRITE:
+      {
         p_grf->draw(MENU_SPRIT_ARROW_L, last_x, last_y);
-        p_font->alignment_set(LEFT);
+        p_font->alignment_set(MENU_LEFT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x + 17 + MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_LC, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_L,  last_x, last_y);
+        RECT r_arrow = {last_x, last_y, 17, 34};
+      
+        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, active, last_x, last_y);
+        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, inactive,  last_x, last_y);
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), 
                              ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
                              ET_INT(last_y + MENU_TEXT_DIFF_Y), 
-                             ET_INT(LEFT), ET_INT(p_text));
+                             ET_INT(MENU_LEFT), ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
                              ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
                              ET_INT(last_y + MENU_TEXT_DIFF_Y), 
-                             ET_INT(LEFT), ET_INT(p_text));
-
-        RECT r_arrow = {last_x, last_y, 17, 34};
-      
+                             ET_INT(MENU_LEFT), ET_INT(p_text));
+    
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
         if(save_back)
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
         else
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-
+  
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
         if(save_back)
@@ -146,29 +147,28 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
         
         last_x += last_dx;
-        last_y += last_dy;
+        last_y += last_dy;      
       }
       break;
-    
-    case RIGHT:
+    case MENU_RIGHT_SPRITE:
       {
         p_grf->draw(MENU_SPRIT_ARROW_R, last_x, last_y);
-        p_font->alignment_set(RIGHT);
+        p_font->alignment_set(MENU_RIGHT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x - MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_RC, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, MENU_SPRIT_ARROW_R,  last_x, last_y);
+        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, active, last_x, last_y);
+        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, inactive,  last_x, last_y);
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
                                         ET_INT(FONT_SELECTED), 
                                         ET_INT(last_x - MENU_TEXT_DIFF_X), 
                                         ET_INT(last_y + MENU_TEXT_DIFF_Y), 
-                                        ET_INT(RIGHT), ET_INT(p_text));
+                                        ET_INT(MENU_RIGHT), ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, 
                                         ET_INT(FONT_DEFAULT),  
                                         ET_INT(last_x - MENU_TEXT_DIFF_X), 
                                         ET_INT(last_y + MENU_TEXT_DIFF_Y), 
-                                        ET_INT(RIGHT), ET_INT(p_text));      
+                                        ET_INT(MENU_RIGHT), ET_INT(p_text));
         RECT r_arrow = {last_x, last_y, 17, 34};
       
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
@@ -186,33 +186,37 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
       
         last_x += last_dx;
-        last_y += last_dy;
-      }          
+        last_y += last_dy;      
+      }
       break;
-    
-    case CENTER:
+    case MENU_CENTER_SPRITE:
       {
-      
-      
-      
-      }      
+      }
       break;
+    default:
+      break;
+  }
+}
     
-    case LEFT_NO_ARROW:
+void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
+                                   LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+{
+  switch(spr_align) {
+    case MENU_LEFT_NO_ARROW:
       {
-        p_font->alignment_set(LEFT);
+        p_font->alignment_set(MENU_LEFT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x, last_y, p_text);
       
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
                                         ET_INT(last_x), 
                                         ET_INT(last_y), 
-                                        ET_INT(LEFT), 
+                                        ET_INT(MENU_LEFT),
                                         ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
                                         ET_INT(last_x), 
                                         ET_INT(last_y), 
-                                        ET_INT(LEFT), 
+                                        ET_INT(MENU_LEFT),
                                         ET_INT(p_text));
       
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
@@ -227,21 +231,21 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
       }
       break;
     
-    case RIGHT_NO_ARROW:
+    case MENU_RIGHT_NO_ARROW:
       {
-        p_font->alignment_set(RIGHT);
+        p_font->alignment_set(MENU_RIGHT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x, last_y, p_text);        
       
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
                                         ET_INT(last_x), 
                                         ET_INT(last_y), 
-                                        ET_INT(RIGHT), 
+                                        ET_INT(MENU_RIGHT), 
                                         ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
                                         ET_INT(last_x), 
                                         ET_INT(last_y), 
-                                        ET_INT(RIGHT), 
+                                        ET_INT(MENU_RIGHT), 
                                         ET_INT(p_text));
         
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
@@ -255,18 +259,49 @@ void gui_base::menu_item_draw(char *p_text, ALIGNMENT spr_align, bool save_back,
         last_y += last_dy;
       }
       break;
-    
-    case CENTER_NO_ARROW:
-      {
-      
-      
-      
-      }
+    default:
       break;
   }
 }
 
-void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, ALIGNMENT spr_align, 
+void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+{
+  switch(spr_align)
+  {
+    case MENU_LEFT:
+      {      
+        menu_item_draw_sprite(p_text, MENU_LEFT_SPRITE, save_back, 
+                              MENU_SPRIT_ARROW_LC, MENU_SPRIT_ARROW_L, 
+                              click1, click2, click3);
+      }
+      break;
+    case MENU_RIGHT:
+      {
+        menu_item_draw_sprite(p_text, MENU_RIGHT_SPRITE, save_back,
+                              MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_R,
+                              click1, click2, click3);
+      }          
+      break;
+    
+    case MENU_CENTER:
+      {
+        // not implemented
+        assert(0);
+      }      
+      break;
+    
+    case MENU_LEFT_NO_ARROW:
+    case MENU_RIGHT_NO_ARROW:
+      {
+        menu_item_draw_text(p_text, spr_align, save_back, click1, click2, click3);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, 
                               bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
   menu_item_set_pos(x,y);
@@ -276,18 +311,18 @@ void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, ALIGNMENT spr_align,
 #define MENU_TEXT_CHECKBOX_DIFF_X (20)
 #define MENU_TEXT_CHECKBOX_DIFF_Y (-1)
 
-void gui_base::menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, bool checked, int checkbox_id,
+void gui_base::menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool checked, int checkbox_id,
                                        LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
 
   switch(spr_align)
   {
-    case LEFT:
+    case MENU_LEFT:
       {
         checkbox[checkbox_id] = CHECKBOX_CONFIG(checked, last_x, last_y);
         checkbox[checkbox_id].draw();
       
-        p_font->alignment_set(LEFT);
+        p_font->alignment_set(MENU_LEFT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r,
                       last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X,
@@ -298,11 +333,11 @@ void gui_base::menu_item_draw_checkbox(char *p_text, ALIGNMENT spr_align, bool c
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
                                         ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X),
                                         ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
-                                        ET_INT(LEFT), ET_INT(p_text));
+                                        ET_INT(MENU_LEFT), ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
                                         ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X), 
                                         ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
-                                        ET_INT(LEFT), ET_INT(p_text));
+                                        ET_INT(MENU_LEFT), ET_INT(p_text));
 
         // 20x20 is a size of the check-box
         RECT r_box = {last_x, last_y, 20, 20};
@@ -352,7 +387,7 @@ void gui_base::menu_services(LEVEL_EVENT ev)
         RECT r;
         
         p_font->select(ev.param_int_get(PARAM_0));
-        p_font->alignment_set((ALIGNMENT)ev.param_int_get(PARAM_3));
+        p_font->alignment_set((MENU_TYPE)ev.param_int_get(PARAM_3));
         p_font->print(&r,(tpos)ev.param_int_get(PARAM_1),(tpos)ev.param_int_get(PARAM_2),(char *)ev.param_point_get(PARAM_4));
       
         p_grf->redraw_add(&r);

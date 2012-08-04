@@ -547,7 +547,7 @@ void level_game::low_panel_draw_steps(bool redraw)
 {
   p_grf->fill(LOW_PANEL_STP_X,LOW_PANEL_STP_Y,LOW_PANEL_STP_DX,LOW_PANEL_STP_DY,0);
 
-  p_font->alignment_set(RIGHT);
+  p_font->alignment_set(MENU_RIGHT);
   p_font->select(FONT_DEFAULT);
 
   p_font->print(NULL,LOW_PANEL_STP_X_TEXT,LOW_PANEL_STP_Y,"steps: %d",p_status->steps_get());
