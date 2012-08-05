@@ -56,11 +56,13 @@ berusky_SOURCES = \
 	stack.h\
 	gui.cpp\
 	gui.h\
-	portability.h
+	portability.h\
+	profile.cpp\
+	profile.h
 
 berusky_LDFLAGS = 
 
 berusky_LDADD =  \
 	$(PACKAGE_LIBS)\
-	 -lSDL
+	 -lSDL -lSDL_image
 

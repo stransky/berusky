@@ -399,4 +399,12 @@ inline char * change_tail(char * p_str, const char * p_end)
 char * itoa(int base, char *buf, int d);
 #endif
 
+typedef struct _DIRECTORY_ENTRY {
+
+  char name[MAX_FILENAME];
+
+} DIRECTORY_ENTRY;
+
+int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY **p_list);
+
 #endif // __UTILS_H__

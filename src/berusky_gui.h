@@ -35,9 +35,12 @@
 // -------------------------------------------------------
 typedef class game_gui : public gui_base {
 
-  ITEM_REPOSITORY *p_repo;
-  DIR_LIST        *p_dir;
-  BERUSKY         *p_ber;
+  ITEM_REPOSITORY   *p_repo;
+  DIR_LIST          *p_dir;
+  BERUSKY           *p_ber;
+
+  BERUSKY_SOUND     sound;
+  BERUSKY_PROFILE   profile;
 
 public:
   
@@ -80,8 +83,8 @@ public:
   
   // Helpers
   void menu_settings_fullscreen(void);
-  void menu_level_run_path_draw(int level_set, int level_act, int level_num);
-  int  menu_level_run_path_draw_line(const char *p_path, int level_act, int level_num, int sx, int sy);
+  void menu_level_run_path_draw(int level_set, int level_act, int level_num, int level_last);
+  int  menu_level_run_path_draw_line(const char *p_path, int level_act, int level_num, int level_last, int sx, int sy);
   
   // Callback for all
   bool callback(LEVEL_EVENT_QUEUE *p_queue, int frame);
@@ -89,6 +92,9 @@ public:
   void menu_dialog_error(char *p_text,...);
 
   void run_editor(void);
+
+  // Profiles
+  bool profiles_load(void);
 
 } GAME_GUI;
 

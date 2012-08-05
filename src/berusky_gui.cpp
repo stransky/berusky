@@ -63,12 +63,15 @@ spr_handle menu_background_get(void)
 
 game_gui::game_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)
 : gui_base(), p_repo(p_repo_), p_dir(p_dir_)
-{  
+{
   // Create game main class
   p_ber = new BERUSKY(p_repo_,p_dir);
 
   // Set window title
   window_set_title(GAME_TITLE);
+
+  /* Player profiles */
+  profiles_load();
 }
 
 game_gui::~game_gui(void)
@@ -204,6 +207,7 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         
         // udelat na to ulozeni tady flag -> prejdi a uloz!! (Zprava -> menu_back_save)
+        // TODO - switch to profiles
         menu_item_start();
         menu_item_draw(training, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 0, 0));
         menu_item_draw(easy, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 1, 0));
@@ -1264,13 +1268,14 @@ static int translate_direction(DIRECTION_INDEX last, DIRECTION_INDEX next)
   The level path is encoded from those paths + two digits of level number
 */
 int game_gui::menu_level_run_path_draw_line(const char *p_path,
-                                            int level_act, int level_num,
+                                            int level_act, int level_num, int level_last,
                                             int sx, int sy)
 {
 
   #define FIRST_PIPE            (FIRST_CLASSIC_LEVEL+13)
 
-  #define LEVEL_OPEN            (FIRST_CLASSIC_LEVEL+43)
+  #define LEVEL_DONE            (FIRST_CLASSIC_LEVEL+43)
+  #define LEVEL_NEXT            (FIRST_CLASSIC_LEVEL+45)
   #define LEVEL_CLOSED          (FIRST_CLASSIC_LEVEL+42)
 
   #define ITEM_SIZE             (DOUBLE_SIZE ? 40 : 20)
@@ -1280,8 +1285,9 @@ int game_gui::menu_level_run_path_draw_line(const char *p_path,
   #define draw_level(lev,x,y)                                 \
   {                                                           \
     assert(lev < level_num);                                  \
-    int spr = (lev <= level_act) ? LEVEL_OPEN : LEVEL_CLOSED; \
+    int spr = (lev < level_last) ? LEVEL_DONE : ((lev == level_act) ? LEVEL_NEXT : LEVEL_CLOSED); \
     p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);             \
+    p_font->select((lev == level_act) ? FONT_SELECTED : FONT_DEFAULT); \
     p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,  \
                         (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,    \
                         p_ber->levelset_get_passwd(lev));     \
@@ -1364,7 +1370,7 @@ int game_gui::menu_level_run_path_draw_line(const char *p_path,
 }
 
 // Draw level path
-void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_num)
+void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_num, int level_last)
 {
   p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
   p_font->alignment_set(MENU_LEFT);
@@ -1445,31 +1451,31 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         int lev = 0;
       
         lev += menu_level_run_path_draw_line("V01LPUPUV02UPLPUPV03UPRPRV13UPUV04UPUV05UPRPRV06UPUPU",
-                                             level_act, level_num, 15, 12);
+                                             level_act, level_num, level_last, 15, 12);
         lev += menu_level_run_path_draw_line("LPLPUPUV07LPUPUPV08UPUPUPUPU",
-                                             level_act, level_num, 13, 8);
+                                             level_act, level_num, level_last, 13, 8);
         lev += menu_level_run_path_draw_line("UPUV09UPUV10UPLPUPU",
-                                             level_act, level_num, 6, 5);
+                                             level_act, level_num, level_last, 6, 5);
         lev += menu_level_run_path_draw_line("UPRPRPRPRV00UPRV11UPUV12UPRPUV13UPUV14UPUV15UPRPUPU",
-                                             level_act, level_num, 15, 12);
+                                             level_act, level_num, level_last, 15, 12);
         lev += menu_level_run_path_draw_line("DPRV16DPDV17DPRPRPRPDPV18DPDV19DPLPDV20",
-                                             level_act, level_num, 15, 12);
+                                             level_act, level_num, level_last, 15, 12);
         lev += menu_level_run_path_draw_line("LPLPLPLPUV21UPLPLPLPLPDV22DPDV23DPDV24LPDV25DPDV26",
-                                             level_act, level_num, 16, 15);
+                                             level_act, level_num, level_last, 16, 15);
         lev += menu_level_run_path_draw_line("DPDV27DPLPDV28DPDV29DPDPLPDPDV30DPDPDV31LPLPLPLPLPLPU",
-                                             level_act, level_num, 27, -1);
+                                             level_act, level_num, level_last, 27, -1);
         lev += menu_level_run_path_draw_line("DPLPDV32DPLPDPDPV33DPRPRPRPDPV34DPDV35",
-                                             level_act, level_num, 25, 12);
+                                             level_act, level_num, level_last, 25, 12);
         lev += menu_level_run_path_draw_line("LPLPLPLPDV36LPLPL",
-                                             level_act, level_num, 6, 3);
+                                             level_act, level_num, level_last, 6, 3);
         lev += menu_level_run_path_draw_line("DPDPV37DPDV38DPDV39DPDV40LPLPL",
-                                             level_act, level_num, 2, 4);
+                                             level_act, level_num, level_last, 2, 4);
         lev += menu_level_run_path_draw_line("DPDV41DPRPRPRPRPDPRPR",
-                                             level_act, level_num, 2, 12);
+                                             level_act, level_num, level_last, 2, 12);
         lev += menu_level_run_path_draw_line("LPDPDPV43DPDV44DPDV49DPDPD",
-                                             level_act, level_num, 2, 14);
+                                             level_act, level_num, level_last, 2, 14);
         lev += menu_level_run_path_draw_line("LPLPDPDPLPLPLPLPLPUV45UPUV46UPUV47LPUPUV48",
-                                             level_act, level_num, 14, 10);
+                                             level_act, level_num, level_last, 14, 10);
         assert(lev == 50);
       }
       break;
@@ -1483,7 +1489,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
                            "27UPUV28UPUV29UPRPUPV30UPUV31UPLPLPDPDPLPLPLPDPV32DPDV33DPLPDPDV34DPLP"
         int lev = 0;
       
-        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, 27, -1);
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, 27, -1);
 
         assert(lev == 35);
       }
@@ -1743,7 +1749,7 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr data, size_ptr data
         assert(ret);
         p_ber->levelset_set_level(level);
 
-        menu_level_run_path_draw(set, level, p_ber->levelset_get_levelnum());
+        menu_level_run_path_draw(set, level, p_ber->levelset_get_levelnum(), level);
       }
       break;
     
@@ -2356,10 +2362,10 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:
         break;
       case GC_MENU_SETTINGS_SOUND_SWITCH:
-        p_ber->sound.sound_on = !p_ber->sound.sound_on;
+        //p_ber->sound.sound_on = !p_ber->sound.sound_on;
         break;
       case GC_MENU_SETTINGS_MUSIC_SWITCH:
-        p_ber->sound.music_on = !p_ber->sound.music_on;
+        //p_ber->sound.music_on = !p_ber->sound.music_on;
         break;
       case GC_MENU_HELP:
         menu_help(MENU_ENTER, ev.param_int_get(PARAM_0));
@@ -2490,4 +2496,16 @@ void game_gui::menu_dialog_error(char *p_text,...)
   gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
 */  
+}
+
+bool game_gui::profiles_load(void)
+{  
+  // BERUSKY_PROFILE *p_profiles array has to be released by delete []
+  BERUSKY_PROFILE *p_profiles;
+  int profile_num;
+
+  if(!::profiles_load(INI_USER_PROFILES, &p_profiles, &profile_num))
+    return(FALSE);
+
+  return(TRUE);
 }

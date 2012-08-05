@@ -124,6 +124,7 @@ public:
 #include "game_logic.h"
 #include "level_changer.h"
 #include "level_active.h"
+#include "profile.h"
 
 typedef enum _GAME_STATE {
 
@@ -194,10 +195,6 @@ typedef class berusky {
   DIR_LIST         *p_dir;
 
   BERUSKY_STATE     state;
-
-public:
-
-  BERUSKY_SOUND     sound;
 
 public:
 

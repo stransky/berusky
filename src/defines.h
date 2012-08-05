@@ -422,6 +422,7 @@ typedef int anim_handle;
 #ifdef LINUX
 #define INI_USER_DIRECTORY "~/.berusky"
 #define INI_USER_LEVELS    "~/.berusky/User"
+#define INI_USER_PROFILES  "~/.berusky/Profiles"
 #define INI_FILE_GLOBAL    "/var/games/berusky/"INI_FILE_NAME
 #define INI_FILE_USER      "~/.berusky/"INI_FILE_NAME
 #define INI_FILE_LOCAL     "./"INI_FILE_NAME

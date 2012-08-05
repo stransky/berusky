@@ -296,6 +296,12 @@ void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back,
         menu_item_draw_text(p_text, spr_align, save_back, click1, click2, click3);
       }
       break;
+    case MENU_CENTER_NO_ARROW:
+      {
+        // not implemented
+        assert(0);
+      }
+      break;
     default:
       break;
   }

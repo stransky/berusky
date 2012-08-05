@@ -55,7 +55,7 @@ am_berusky_OBJECTS = 2d_graph.$(OBJEXT) animation.$(OBJEXT) \
 	level_active.$(OBJEXT) level_changer.$(OBJEXT) \
 	level_game.$(OBJEXT) utils.$(OBJEXT) \
 	data_parser_tables.$(OBJEXT) berusky_gui.$(OBJEXT) \
-	main.$(OBJEXT) gui.$(OBJEXT)
+	main.$(OBJEXT) gui.$(OBJEXT) profile.$(OBJEXT)
 berusky_OBJECTS = $(am_berusky_OBJECTS)
 am__DEPENDENCIES_1 =
 berusky_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -290,12 +290,14 @@ berusky_SOURCES = \
 	stack.h\
 	gui.cpp\
 	gui.h\
-	portability.h
+	portability.h\
+	profile.cpp\
+	profile.h
 
 berusky_LDFLAGS = 
 berusky_LDADD = \
 	$(PACKAGE_LIBS)\
-	 -lSDL
+	 -lSDL -lSDL_image
 
 all: all-am
 
@@ -402,6 +404,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level_changer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/level_game.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/profile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Po@am__quote@
 
 .cpp.o:

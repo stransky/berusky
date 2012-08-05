@@ -33,6 +33,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <dirent.h>
+#include <fnmatch.h>
 
 #include "portability.h"
 
@@ -445,3 +447,77 @@ bool dir_create(const char *p_dir)
     return(TRUE);
   }
 }
+
+#ifdef LINUX
+static const char *p_file_mask;
+
+static int filter(const struct dirent *file)
+{
+  return(!fnmatch(p_file_mask, file->d_name, 0));
+}
+
+int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY **p_list)
+{
+  char tmp[MAX_FILENAME];
+  struct dirent **namelist;
+  int i;
+  
+  return_path(p_dir, "", tmp, MAX_FILENAME);
+  
+  p_file_mask = p_mask;
+  int c = scandir(tmp, &namelist, &filter, alphasort);
+  if (c < 0) {
+    return 0;
+  }
+
+  *p_list = (DIRECTORY_ENTRY *)mmalloc(sizeof(DIRECTORY_ENTRY)*c);
+  for(i = 0; i < c; i++) {    
+    strcpy((*p_list)[i].name, namelist[i]->d_name);
+    free(namelist[i]);
+  } 
+
+  free(namelist);
+  return(c);
+}
+#endif
+
+#ifdef WINDOWS
+int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY *p_list)
+{
+//int pr_FindFileToProfile(WCHAR * wName, char *cFile)
+//{
+	PLAYER_PROFILE	Profile;
+	FILE *file;
+	long Done, error;
+	struct _finddata_t	Data;
+
+	Done = _findfirst(p_mask,&Data);
+	error = Done;
+			
+	while(error != -1)
+	{
+		if(error != -1)
+		{
+			file = fopen(Data.name, "rb");
+
+			if(file)
+			{
+				fread(&Profile, sizeof(PLAYER_PROFILE), 1, file);
+				fclose(file);
+
+				if(!wcscmp(Profile.cName, wName))
+				{
+					strcpy(cFile, Data.name);
+					_findclose(Done); 
+					return 1;
+				}
+			}
+
+			error = _findnext(Done,&Data);
+		}
+	}
+	_findclose(Done); 
+
+  return 0;
+}
+#endif

@@ -47,5 +47,7 @@ src/stack.h
 src/gui.cpp
 src/gui.h
 src/portability.h
+src/profile.cpp
+src/profile.h
 
 
