@@ -203,95 +203,56 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
 void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
                                    LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
+  MENU_TYPE align;
+
   switch(spr_align) {
     case MENU_LEFT_NO_ARROW:
       {
-        p_font->alignment_set(MENU_LEFT);
-        p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x, last_y, p_text);
-      
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
-                                        ET_INT(last_x), 
-                                        ET_INT(last_y), 
-                                        ET_INT(MENU_LEFT),
-                                        ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
-                                        ET_INT(last_x), 
-                                        ET_INT(last_y), 
-                                        ET_INT(MENU_LEFT),
-                                        ET_INT(p_text));
-      
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-        if(save_back)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-        
-        last_x += last_dx;
-        last_y += last_dy;
+        align = MENU_LEFT;
       }
       break;
     
     case MENU_RIGHT_NO_ARROW:
       {
-        p_font->alignment_set(MENU_RIGHT);
-        p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x, last_y, p_text);        
-      
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
-                                        ET_INT(last_x), 
-                                        ET_INT(last_y), 
-                                        ET_INT(MENU_RIGHT), 
-                                        ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
-                                        ET_INT(last_x), 
-                                        ET_INT(last_y), 
-                                        ET_INT(MENU_RIGHT), 
-                                        ET_INT(p_text));
-        
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-        if(save_back)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-      
-        last_x += last_dx;
-        last_y += last_dy;
+        align = MENU_RIGHT;
       }
       break;
     case MENU_CENTER_NO_ARROW:
       {
-        p_font->alignment_set(MENU_CENTER);
-        p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x, last_y, p_text);
-      
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED),
-                                        ET_INT(last_x),
-                                        ET_INT(last_y),
-                                        ET_INT(MENU_CENTER),
-                                        ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
-                                        ET_INT(last_x), 
-                                        ET_INT(last_y), 
-                                        ET_INT(MENU_CENTER), 
-                                        ET_INT(p_text));
-        
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-        if(save_back)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-      
-        last_x += last_dx;
-        last_y += last_dy;
+        align = MENU_CENTER;
       }
       break;
     default:
+      // WTF??
+      assert(0);
+      align = MENU_LEFT;
       break;
   }
+
+  p_font->alignment_set(align);
+  p_font->select(FONT_DEFAULT);
+  p_font->print(&r, last_x, last_y, p_text);
+
+  LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                  ET_INT(last_x), 
+                                  ET_INT(last_y), 
+                                  ET_INT(align),
+                                  ET_INT(p_text));
+  LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
+                                  ET_INT(last_x), 
+                                  ET_INT(last_y), 
+                                  ET_INT(align),
+                                  ET_INT(p_text));
+
+  input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+  input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+  if(save_back)
+    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
+  else
+    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+  
+  last_x += last_dx;
+  last_y += last_dy;
 }
 
 void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
@@ -315,8 +276,9 @@ void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back,
     
     case MENU_CENTER:
       {
-        // not implemented
-        assert(0);
+        menu_item_draw_sprite(p_text, MENU_CENTER_SPRITE, save_back,
+                              MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_L,
+                              click1, click2, click3);
       }      
       break;
     

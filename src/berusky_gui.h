@@ -66,6 +66,7 @@ public:
   void menu_new_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_profiles(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_profile_create(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_profile_select(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_settings(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_hint(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_help(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
@@ -92,10 +93,7 @@ public:
   void menu_dialog_error(char *p_text,...);
 
   void run_editor(void);
-
-  // Profiles
-  bool profile_select(void);
-
+  
 } GAME_GUI;
 
 #endif
