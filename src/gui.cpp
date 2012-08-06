@@ -191,6 +191,8 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
       break;
     case MENU_CENTER_SPRITE:
       {
+        // not implemented
+        assert(0);
       }
       break;
     default:
@@ -259,6 +261,34 @@ void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_
         last_y += last_dy;
       }
       break;
+    case MENU_CENTER_NO_ARROW:
+      {
+        p_font->alignment_set(MENU_CENTER);
+        p_font->select(FONT_DEFAULT);
+        p_font->print(&r, last_x, last_y, p_text);
+      
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED),
+                                        ET_INT(last_x),
+                                        ET_INT(last_y),
+                                        ET_INT(MENU_CENTER),
+                                        ET_INT(p_text));
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),  
+                                        ET_INT(last_x), 
+                                        ET_INT(last_y), 
+                                        ET_INT(MENU_CENTER), 
+                                        ET_INT(p_text));
+        
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+        if(save_back)
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH), click1, click2));
+        else
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+      
+        last_x += last_dx;
+        last_y += last_dy;
+      }
+      break;
     default:
       break;
   }
@@ -292,14 +322,9 @@ void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back,
     
     case MENU_LEFT_NO_ARROW:
     case MENU_RIGHT_NO_ARROW:
-      {
-        menu_item_draw_text(p_text, spr_align, save_back, click1, click2, click3);
-      }
-      break;
     case MENU_CENTER_NO_ARROW:
       {
-        // not implemented
-        assert(0);
+        menu_item_draw_text(p_text, spr_align, save_back, click1, click2, click3);
       }
       break;
     default:

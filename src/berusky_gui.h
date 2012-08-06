@@ -64,8 +64,8 @@ public:
   // Run menu (create menu background) in GUI
   void menu_main(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_new_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
-  void menu_password(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
-  void menu_password_check(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_profiles(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_profile_create(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_settings(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_hint(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_help(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
@@ -94,7 +94,7 @@ public:
   void run_editor(void);
 
   // Profiles
-  bool profiles_load(void);
+  bool profile_select(void);
 
 } GAME_GUI;
 

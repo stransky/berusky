@@ -204,10 +204,14 @@ typedef enum {
   // format: [GC_MENU_END_LEVEL_SET, level_set]
   GC_MENU_END_LEVEL_SET,
   
-  // check given password and run level (if it matches)
-  // format: [GC_MENU_PASSWORD_CHECK, password]
-  GC_MENU_PASSWORD_CHECK,
+  // create a new profile with given name
+  // format: [GC_MENU_PROFILE_CREATE, profile_name]
+  GC_MENU_PROFILE_CREATE,
 
+  // select from loaded profiles
+  // format: [GC_MENU_PROFILE_SELECT, profile_number]
+  GC_MENU_PROFILE_SELECT,
+  
   // suspend/restore playing level
   // format: [GC_SUSPEND_LEVEL/GC_RESTORE_LEVEL]
   GC_SUSPEND_LEVEL,
@@ -226,7 +230,7 @@ typedef enum {
   // format: [message ID, page]
   GC_MENU_START,
   GC_MENU_NEW_GAME,
-  GC_MENU_PASSWORD,
+  GC_MENU_PROFILES,
   GC_MENU_SETTINGS,
   GC_MENU_SETTINGS_FULSCREEN_SWITCH,
   GC_MENU_SETTINGS_DOUBLESIZE_SWITCH,

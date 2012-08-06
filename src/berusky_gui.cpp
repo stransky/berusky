@@ -69,9 +69,6 @@ game_gui::game_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)
 
   // Set window title
   window_set_title(GAME_TITLE);
-
-  /* Player profiles */
-  profiles_load();
 }
 
 game_gui::~game_gui(void)
@@ -118,8 +115,8 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
       
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
 
-        static char *new_game = _("new game");
-        static char *password = _("password");
+        static char *new_game = _("play");
+        static char *profiles = _("change profile");
         static char *settings = _("settings");
         static char *help = _("help");
         static char *editor = _("editor");
@@ -136,7 +133,7 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_start();
 
         menu_item_draw(new_game, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_NEW_GAME));
-        menu_item_draw(password, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_PASSWORD));
+        menu_item_draw(profiles, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_PROFILES));
         menu_item_draw(settings, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_SETTINGS));
         menu_item_draw(help, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_HELP,FALSE));
         menu_item_draw(editor, MENU_LEFT, TRUE, LEVEL_EVENT(GC_RUN_EDITOR));      
@@ -228,6 +225,7 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
   }
 }
 
+/*
 #undef LOGO_START
 #undef MENU_X_START
 #undef MENU_Y_START
@@ -381,6 +379,187 @@ void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr dat
           p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
           p_grf->flip();                  
         }
+      }
+      break;
+    case MENU_LEAVE:
+      input.mevent_clear();
+      break;
+    default:
+      break;
+  }
+}
+*/
+
+#undef LOGO_START
+#undef MENU_X_START
+#undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
+
+void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+  #define MAX_PROFILE_NAME MAX_FILENAME
+  static char profile_name[MAX_PROFILE_NAME] = "";
+
+  switch(state) {
+    case MENU_RETURN:
+    case MENU_ENTER:
+      {
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_profiles, data, data1);
+
+        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+        
+        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
+
+        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+
+        if(DOUBLE_SIZE) {
+          p_grf->draw(menu_background_get(),0,0);
+        }
+
+        p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+      
+        // Create a new profile
+        #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
+        p_font->select(FONT_DEFAULT);
+        p_font->alignment_set(MENU_CENTER);
+        p_font->start_set(0, INSERT_START);
+        p_font->print(_("Create a new player profile:\n"));
+        p_font->print(NULL, 0, INSERT_START+50, "_");
+        profile_name[0] = '\0';
+
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
+        #define MENU_Y_START (DOUBLE_SIZE ? (INSERT_START+100) : (INSERT_START+120))        
+        #define MENU_Y_DIFF  35
+
+        static char *create = _("create");
+        static char *back = _("back");
+
+        menu_item_start();
+        menu_item_draw(MENU_X_START, MENU_Y_START, create, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_PROFILE_CREATE, profile_name));
+        menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+
+        #define PROFILE_LIST_START    (DOUBLE_SIZE ? 500 : 300)
+        #define PROFILE_MENU_Y_START  (DOUBLE_SIZE ? (PROFILE_LIST_START+40) : (PROFILE_LIST_START+40))
+        p_font->alignment_set(MENU_CENTER);
+        p_font->start_set(0, PROFILE_LIST_START);
+        p_font->print(_("Saved profiles:\n"));
+
+        // Load profiles from disc
+        BERUSKY_PROFILE *p_profiles;
+        int profile_num;
+        profiles_load(INI_USER_PROFILES, &p_profiles, &profile_num);
+
+        for(int i = 0; i < profile_num; i++) {
+          menu_item_draw(MENU_X_START, PROFILE_MENU_Y_START+MENU_Y_DIFF*i, p_profiles[i].filename,
+                         MENU_CENTER_NO_ARROW, FALSE, LEVEL_EVENT(GC_MENU_PROFILE_SELECT, INT_TO_POINTER(i), p_profiles));
+        }
+
+        p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
+        p_grf->flip();
+
+        menu_key_input.set((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_profiles);
+      }
+      break;
+    case MENU_KEY_INPUT:
+      {
+        char ascii_char;
+        bool character = key_to_ascii(data,&ascii_char);
+        int  len = strlen(profile_name);
+      
+        if(character && ascii_char >= ' ') {
+          if(len < MAX_PASSWORD-2) {
+            profile_name[len] = ascii_char;
+            profile_name[len+1] = '\0';
+          }        
+        } else {
+          switch(data) {
+            case K_BKSP:
+            case K_DEL:
+              if(len > 0) {
+                profile_name[--len] = '\0';
+              }
+              break;
+            case K_ENTER:
+              break;
+            default:
+              break;
+          }
+        }
+      
+        p_font->select(FONT_DEFAULT);
+        p_font->alignment_set(MENU_CENTER);        
+        p_grf->fill(0,INSERT_START+50,GAME_RESOLUTION_X,20,0);
+        p_font->print(NULL, 0, INSERT_START+50, "%s_", profile_name);
+        p_grf->redraw_add(0,INSERT_START+50,GAME_RESOLUTION_X,20);
+        p_grf->flip();
+      }
+      break;
+    case MENU_LEAVE:    
+      input.mevent_clear();
+      menu_key_input.clear();
+      break;
+    default:
+      break;
+  }
+}
+
+#undef LOGO_START
+#undef MENU_X_START
+#undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
+#undef INSERT_START
+
+void game_gui::menu_profile_create(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+  switch(state) {
+    case MENU_RETURN:
+    case MENU_ENTER:
+      {
+/*
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_profiles_check, data, data1);
+
+        int set, level;
+
+        if(p_ber->levelset_search((char *)data, &set, &level)) {
+          menu_level_run(MENU_ENTER,set,level);
+        } else {
+          p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+
+          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+
+          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
+
+          if(DOUBLE_SIZE) {
+            p_grf->draw(menu_background_get(),0,0);
+          }
+
+          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
+
+          #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
+          p_font->select(FONT_DEFAULT);
+          p_font->alignment_set(MENU_CENTER);
+          p_font->start_set(0, INSERT_START);
+          p_font->print(_("Cha cha cha!!!\n"));
+          p_font->print(_("Would you like to cheat?\n"));
+          p_font->print(_("Try me again!"));
+
+
+          #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
+          #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
+          #define MENU_X_DIFF  90
+          #define MENU_Y_DIFF  35
+  
+          static char *back = _("back");
+          
+          menu_item_start();
+          menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+                
+          p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
+          p_grf->flip();
+        }
+*/
       }
       break;
     case MENU_LEAVE:
@@ -2347,11 +2526,11 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       case GC_MENU_NEW_GAME:
         menu_new_game(MENU_ENTER);
         break;      
-      case GC_MENU_PASSWORD:
-        menu_password(MENU_ENTER);
+      case GC_MENU_PROFILES:
+        menu_profiles(MENU_ENTER);
         break;
-      case GC_MENU_PASSWORD_CHECK:
-        menu_password_check(MENU_ENTER, ev.param_int_get(PARAM_0));
+      case GC_MENU_PROFILE_CREATE:
+        menu_profile_create(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_SETTINGS:
         menu_settings(MENU_ENTER, ev.param_int_get(PARAM_0));
@@ -2498,14 +2677,8 @@ void game_gui::menu_dialog_error(char *p_text,...)
 */  
 }
 
-bool game_gui::profiles_load(void)
+bool game_gui::profile_select(void)
 {  
-  // BERUSKY_PROFILE *p_profiles array has to be released by delete []
-  BERUSKY_PROFILE *p_profiles;
-  int profile_num;
-
-  if(!::profiles_load(INI_USER_PROFILES, &p_profiles, &profile_num))
-    return(FALSE);
 
   return(TRUE);
 }
