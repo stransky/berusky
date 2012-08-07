@@ -437,8 +437,9 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
         static char *create = _("create");
 
         menu_item_start();
-        menu_item_draw(MENU_X_START, MENU_Y_START, create, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_PROFILE_CREATE, profile_name));
-      
+        menu_item_draw(MENU_X_START, MENU_Y_START, create, MENU_LEFT, FALSE, 
+                       LEVEL_EVENT(GC_MENU_PROFILE_CREATE, profile_name), 
+                       LEVEL_EVENT(GI_MENU_BACK_POP));
 
         #define PROFILE_LIST_START    (DOUBLE_SIZE ? 500 : 300)
         #define PROFILE_MENU_Y_START  (DOUBLE_SIZE ? (PROFILE_LIST_START+50) : (PROFILE_LIST_START+50))
@@ -460,10 +461,11 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
         if(profile_num > PROFILE_MAX)
           profile_num = PROFILE_MAX;
 
-        TODO - is p_profile still valid?
         for(int i = 0; i < profile_num; i++) {
           menu_item_draw(MENU_X_START, PROFILE_MENU_Y_START+PROFILE_Y_DIFF*i, p_profiles[i].filename,
-                         MENU_CENTER_NO_ARROW, TRUE, LEVEL_EVENT(GC_MENU_PROFILE_SELECT, INT_TO_POINTER(i), p_profiles));
+                         MENU_CENTER_NO_ARROW, FALSE, 
+                         LEVEL_EVENT(GC_MENU_PROFILE_SELECT, INT_TO_POINTER(i), p_profiles), 
+                         LEVEL_EVENT(GI_MENU_BACK_POP));
         }
 
         #define MENU_BACK_Y_START (GAME_RESOLUTION_Y - 90)
@@ -531,122 +533,16 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
 #undef MENU_Y_DIFF
 #undef INSERT_START
 
-void game_gui::menu_profile_create(MENU_STATE state, size_ptr data, size_ptr data1)
+void game_gui::menu_profile_create(size_ptr data)
 {
-  switch(state) {
-    case MENU_RETURN:
-    case MENU_ENTER:
-      {
-/*
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_profiles_check, data, data1);
-
-        int set, level;
-
-        if(p_ber->levelset_search((char *)data, &set, &level)) {
-          menu_level_run(MENU_ENTER,set,level);
-        } else {
-          p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
-
-          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
-
-          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-
-          if(DOUBLE_SIZE) {
-            p_grf->draw(menu_background_get(),0,0);
-          }
-
-          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
-
-          #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
-          p_font->select(FONT_DEFAULT);
-          p_font->alignment_set(MENU_CENTER);
-          p_font->start_set(0, INSERT_START);
-          p_font->print(_("Cha cha cha!!!\n"));
-          p_font->print(_("Would you like to cheat?\n"));
-          p_font->print(_("Try me again!"));
-
-
-          #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
-          #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
-          #define MENU_X_DIFF  90
-          #define MENU_Y_DIFF  35
-  
-          static char *back = _("back");
-          
-          menu_item_start();
-          menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
-                
-          p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
-          p_grf->flip();
-        }
-*/
-      }
-      break;
-    case MENU_LEAVE:
-      input.mevent_clear();
-      break;
-    default:
-      break;
-  }
+  // Create a new profile
+  profile.create((char *)data);
 }
 
-void game_gui::menu_profile_select(MENU_STATE state, size_ptr data, size_ptr data1)
+void game_gui::menu_profile_select(size_ptr data, size_ptr data1)
 {
-  switch(state) {
-    case MENU_RETURN:
-    case MENU_ENTER:
-      {
-/*
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_profiles_check, data, data1);
-
-        int set, level;
-
-        if(p_ber->levelset_search((char *)data, &set, &level)) {
-          menu_level_run(MENU_ENTER,set,level);
-        } else {
-          p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
-
-          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
-
-          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-
-          if(DOUBLE_SIZE) {
-            p_grf->draw(menu_background_get(),0,0);
-          }
-
-          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
-
-          #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
-          p_font->select(FONT_DEFAULT);
-          p_font->alignment_set(MENU_CENTER);
-          p_font->start_set(0, INSERT_START);
-          p_font->print(_("Cha cha cha!!!\n"));
-          p_font->print(_("Would you like to cheat?\n"));
-          p_font->print(_("Try me again!"));
-
-
-          #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
-          #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
-          #define MENU_X_DIFF  90
-          #define MENU_Y_DIFF  35
-  
-          static char *back = _("back");
-          
-          menu_item_start();
-          menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
-                
-          p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
-          p_grf->flip();
-        }
-*/
-      }
-      break;
-    case MENU_LEAVE:
-      input.mevent_clear();
-      break;
-    default:
-      break;
-  }
+  // Set the current profile
+  profile = ((BERUSKY_PROFILE *)data1)[data];
 }
 
 #undef LOGO_START
@@ -2609,10 +2505,10 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_profiles(MENU_ENTER);
         break;
       case GC_MENU_PROFILE_CREATE:
-        menu_profile_create(MENU_ENTER, ev.param_int_get(PARAM_0));
+        menu_profile_create(ev.param_int_get(PARAM_0));
         break;
-      case GC_MENU_PROFILE_SELECT:
-        menu_profile_select(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+      case GC_MENU_PROFILE_SELECT:        
+        menu_profile_select(ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
         break;
       case GC_MENU_SETTINGS:
         menu_settings(MENU_ENTER, ev.param_int_get(PARAM_0));
