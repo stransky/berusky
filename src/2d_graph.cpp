@@ -987,6 +987,21 @@ void font::print(RECT *p_res, tpos x, tpos y, const char *p_text,...)
   print(text,p_res);
 }
 
+void font::print(RECT *p_res, const char *p_text,...)
+{
+  char      text[2000];
+  va_list   arguments;  
+
+  if(!p_text)
+    return;
+
+  va_start(arguments,p_text);
+  vsnprintf(text,2000,p_text,arguments);
+  va_end(arguments);
+  
+  print(text,p_res);
+}
+
 void font::print(RECT *p_res, tpos x, tpos y, int lines, const char *p_text,...)
 {
   char      text[2000];

@@ -1,3 +1,10 @@
+- draw menu path according to selected profile
+- TODO -> TMP name for profile ini file
+- save finished level to profile
+- run profile screen after start?
+- load last used profile? (in ini file)
+- save last used profile
+
 - Last profile
 - new profile
 - change profile? (max 15 profiles?)

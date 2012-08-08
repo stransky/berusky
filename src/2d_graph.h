@@ -944,6 +944,7 @@ public:
   }
 
   void print(char *p_string, RECT *p_res = NULL, int lines = 0);
+  void print(RECT *p_res, const char *p_text,...);
   void print(RECT *p_res, tpos x, tpos y, const char *p_text,...);
   void print(RECT *p_res, tpos x, tpos y, int lines, const char *p_text,...);  
 

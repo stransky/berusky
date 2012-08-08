@@ -106,6 +106,7 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
 
         tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
+        tpos height = p_grf->sprite_get_height(MENU_SPRIT_LOGO);
       
         #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
       
@@ -143,6 +144,11 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         p_font->start_set(0, GAME_RESOLUTION_Y - 60);
         p_font->print(_("berusky (C) Anakreon 1997-2007\n"));
         p_font->print(_("distributed under GPL\n"));
+        
+        #define PROFILE_Y_DIFF  (DOUBLE_SIZE ? 70 : 40)
+        p_font->alignment_set(MENU_CENTER);
+        p_font->start_set(0, LOGO_START+height+PROFILE_Y_DIFF);
+        p_font->print(NULL, _("Selected profile: %s"), profile.profile_name);
         
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();              
@@ -204,13 +210,12 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         
         // udelat na to ulozeni tady flag -> prejdi a uloz!! (Zprava -> menu_back_save)
-        // TODO - switch to profiles
         menu_item_start();
-        menu_item_draw(training, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 0, 0));
-        menu_item_draw(easy, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 1, 0));
-        menu_item_draw(intermediate, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 2, 0));
-        menu_item_draw(advanced, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 3, 0));
-        menu_item_draw(impossible, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 4, 0));
+        menu_item_draw(training, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 0));
+        menu_item_draw(easy, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 1));
+        menu_item_draw(intermediate, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 2));
+        menu_item_draw(advanced, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 3));
+        menu_item_draw(impossible, MENU_LEFT, TRUE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 4));
         menu_item_draw(back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
               
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
@@ -225,176 +230,12 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
   }
 }
 
-/*
 #undef LOGO_START
 #undef MENU_X_START
 #undef MENU_Y_START
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
-
-void game_gui::menu_password(MENU_STATE state, size_ptr data, size_ptr data1)
-{
-  #define MAX_PASSWORD 10
-  static char password[MAX_PASSWORD] = "";
-
-  switch(state) {
-    case MENU_RETURN:
-    case MENU_ENTER:
-      {
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_password, data, data1);
-    
-        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
-        
-        tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);        
-
-        #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-
-        if(DOUBLE_SIZE) {
-          p_grf->draw(menu_background_get(),0,0);
-        }
-
-        p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
-      
-        #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
-        p_font->select(FONT_DEFAULT);
-        p_font->alignment_set(MENU_CENTER);
-        p_font->start_set(0, INSERT_START);
-        p_font->print(_("please insert a password to level:"));
-        password[0] = '\0';
-        p_font->print(NULL, 0, INSERT_START+50, "_");
-
-        #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
-        #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
-      
-        #define MENU_X_DIFF  90
-        #define MENU_Y_DIFF  35
-
-        static char *play = _("play");
-        static char *back = _("back");
-              
-        menu_item_start();
-        menu_item_draw(MENU_X_START + MENU_X_DIFF, MENU_Y_START, play, MENU_RIGHT, TRUE, LEVEL_EVENT(GC_MENU_PASSWORD_CHECK, password));
-        menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
-              
-        p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
-        p_grf->flip();
-        
-        menu_key_input.set((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_password);
-      }
-      break;
-    case MENU_KEY_INPUT:
-      {
-        char ascii_char;
-        bool character = key_to_ascii(data,&ascii_char);
-        int  len = strlen(password);
-      
-        if(character && ascii_char >= ' ') {
-          if(len < MAX_PASSWORD-2) {
-            password[len] = ascii_char;
-            password[len+1] = '\0';
-          }        
-        } else {
-          switch(data) {
-            case K_BKSP:
-            case K_DEL:
-              if(len > 0) {
-                password[--len] = '\0';
-              }
-              break;
-            case K_ENTER:
-              break;
-            default:
-              break;
-          }
-        }
-      
-        p_font->select(FONT_DEFAULT);
-        p_font->alignment_set(MENU_CENTER);        
-        p_grf->fill(0,INSERT_START+50,GAME_RESOLUTION_X,20,0);
-        p_font->print(NULL, 0, INSERT_START+50, "%s_", password);
-        p_grf->redraw_add(0,INSERT_START+50,GAME_RESOLUTION_X,20);
-        p_grf->flip();
-      }
-      break;
-    case MENU_LEAVE:    
-      input.mevent_clear();
-      menu_key_input.clear();
-      break;
-    default:
-      break;
-  }
-}
-
-#undef LOGO_START
-#undef MENU_X_START
-#undef MENU_Y_START
-#undef MENU_X_DIFF
-#undef MENU_Y_DIFF
-#undef INSERT_START
-
-void game_gui::menu_password_check(MENU_STATE state, size_ptr data, size_ptr data1)
-{
-  switch(state) {
-    case MENU_RETURN:
-    case MENU_ENTER:
-      {
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_password_check, data, data1);
-              
-        int set, level;
-      
-        if(p_ber->levelset_search((char *)data, &set, &level)) {
-          menu_level_run(MENU_ENTER,set,level);
-        } else {
-          p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
-          
-          tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
-  
-          #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
-
-          if(DOUBLE_SIZE) {
-            p_grf->draw(menu_background_get(),0,0);
-          }
-
-          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
-        
-          #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
-          p_font->select(FONT_DEFAULT);
-          p_font->alignment_set(MENU_CENTER);
-          p_font->start_set(0, INSERT_START);
-          p_font->print(_("Cha cha cha!!!\n"));
-          p_font->print(_("Would you like to cheat?\n"));
-          p_font->print(_("Try me again!"));
-        
-  
-          #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
-          #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 120 : 80))
-          #define MENU_X_DIFF  90
-          #define MENU_Y_DIFF  35
-  
-          static char *back = _("back");
-          
-          menu_item_start();
-          menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
-                
-          p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
-          p_grf->flip();                  
-        }
-      }
-      break;
-    case MENU_LEAVE:
-      input.mevent_clear();
-      break;
-    default:
-      break;
-  }
-}
-*/
-
-#undef LOGO_START
-#undef MENU_X_START
-#undef MENU_Y_START
-#undef MENU_X_DIFF
-#undef MENU_Y_DIFF
+#undef PROFILE_Y_DIFF
 
 void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
 {
@@ -462,7 +303,7 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
           profile_num = PROFILE_MAX;
 
         for(int i = 0; i < profile_num; i++) {
-          menu_item_draw(MENU_X_START, PROFILE_MENU_Y_START+PROFILE_Y_DIFF*i, p_profiles[i].filename,
+          menu_item_draw(MENU_X_START, PROFILE_MENU_Y_START+PROFILE_Y_DIFF*i, p_profiles[i].profile_name,
                          MENU_CENTER_NO_ARROW, FALSE, 
                          LEVEL_EVENT(GC_MENU_PROFILE_SELECT, INT_TO_POINTER(i), p_profiles), 
                          LEVEL_EVENT(GI_MENU_BACK_POP));
@@ -532,6 +373,7 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
 #undef INSERT_START
+#undef PROFILE_Y_DIFF
 
 void game_gui::menu_profile_create(size_ptr data)
 {
@@ -1260,97 +1102,6 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
 #undef MENU_X_START_L
 #undef MENU_X_START_R
 
-void game_gui::menu_level_run(MENU_STATE state, size_ptr data, size_ptr data1)
-{
-  switch(state) {
-    case MENU_RETURN:
-    case MENU_ENTER:
-      {            
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run, data, data1);
-
-        int set = data;
-        int level = data1;
-      
-        bool ret = p_ber->levelset_load(set);
-        assert(ret);
-        p_ber->levelset_set_level(level);
-      
-        p_grf->fill(0,0,GAME_RESOLUTION_X,GAME_RESOLUTION_Y,0);
-        p_font->alignment_set(MENU_CENTER);
-        p_font->select(FONT_DEFAULT);
-
-        #define IMAGE_START (DOUBLE_SIZE ? 100 : 50)        
-        #define TEXT_START  (DOUBLE_SIZE ? 400 : 250)
-
-        if(DOUBLE_SIZE) {
-          p_grf->draw(menu_background_get(),0,0);
-        }
-      
-        switch(set) {
-          case 0:
-            p_grf->draw(MENU_SPRIT_START+0,GAME_RESOLUTION_X/2-320,IMAGE_START);
-            p_font->print(NULL, 0, IMAGE_START/2,_("difficulty training"));
-            p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-            p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-            break;
-          case 1:
-            p_grf->draw(MENU_SPRIT_START+1,GAME_RESOLUTION_X/2-320,IMAGE_START);
-            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty easy"));
-            p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-            p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-            break;
-          case 2:
-            p_grf->draw(MENU_SPRIT_START+2,GAME_RESOLUTION_X/2-320,IMAGE_START);
-            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty intermediate"));
-            p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-            p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-            break;
-          case 3:
-            p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
-            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty advanced"));
-            p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-            p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-            break;
-          case 4:
-            p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
-            p_font->print(NULL, 0, IMAGE_START/2, _("difficulty impossible"));
-            p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-            p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-            break;
-          default:
-            assert(0);
-            break;
-        }
-      
-        #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
-        #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
-        #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
-        #define MENU_X_DIFF     0
-        #define MENU_Y_DIFF     35
-        
-        static char *play_string = _("play level");
-        static char *level_hint  = _("level hint");
-        static char *back_string = _("back");
-      
-        menu_item_start();
-        menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET, set, level));
-        menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint, MENU_RIGHT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
-        menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
-
-        p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
-        p_grf->flip();              
-      }
-      break;
-    
-    case MENU_LEAVE:
-      input.mevent_clear();
-      break;      
-    
-    default:
-      break;
-  }
-}
-
 #define LEVEL  'V' // Draw level - V+two digits of level number, so the first one will be "V01"
 #define PIPE   'P' // Draw pipe
 
@@ -1896,14 +1647,14 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr data, size_ptr data
       {            
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run_new, data, data1);
 
-        int set = data;
-        int level = data1;
-      
+        int set = data;      
         bool ret = p_ber->levelset_load(set);
         assert(ret);
-        p_ber->levelset_set_level(level);
-
-        menu_level_run_path_draw(set, level, p_ber->levelset_get_levelnum(), level);
+      
+        p_ber->levelset_set_level(profile.level_set[set].level_selected);
+        menu_level_run_path_draw(set, profile.level_set[set].level_selected, 
+                                 p_ber->levelset_get_levelnum(), 
+                                 profile.level_set[set].level_last);
       }
       break;
     
@@ -2044,7 +1795,7 @@ void game_gui::level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu)
         p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL_CUSTOM));
       } else {
         if(level+1 < p_ber->levelset_get_levelnum()) {
-          p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL, set, level));
+          p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL, set));
         } else {        
           p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL_SET, set));
         }    
@@ -2055,7 +1806,7 @@ void game_gui::level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu)
         p_queue->add(LEVEL_EVENT(GC_MENU_QUIT));
       } else {
         /* if we run it from set, return to menu */
-        p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL, set, level));
+        p_queue->add(LEVEL_EVENT(GC_MENU_END_LEVEL, set));
       }
     }
   }
@@ -2572,14 +2323,13 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         break;
      
       case GC_MENU_RUN_LEVEL:
-        menu_level_run_new(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
-        //menu_level_run(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        menu_level_run_new(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_END_LEVEL:
-        menu_level_end(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        menu_level_end(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_END_LEVEL_CUSTOM:
-        menu_level_end_custom(MENU_ENTER, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        menu_level_end_custom(MENU_ENTER);
         break;
       case GC_MENU_END_LEVEL_SET:
         menu_levelset_end(MENU_ENTER, ev.param_int_get(PARAM_0));
