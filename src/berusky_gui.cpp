@@ -262,17 +262,21 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
 
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
-        // Create a new profile
-        #define INSERT_START (DOUBLE_SIZE ? 300 : 200)
         p_font->select(FONT_DEFAULT);
         p_font->alignment_set(MENU_CENTER);
+        #define PROFILE_NAME_START (DOUBLE_SIZE ? 250 : 100)
+        p_font->start_set(0, PROFILE_NAME_START);
+        p_font->print(NULL, _("Current profile is: %s"), profile.profile_name);
+      
+        // Create a new profile
+        #define INSERT_START       (DOUBLE_SIZE ? 300 : 200)
         p_font->start_set(0, INSERT_START);
         p_font->print(_("Create a new player profile:\n"));
         p_font->print(NULL, 0, INSERT_START+50, "_");
         profile_name[0] = '\0';
 
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 50)
-        #define MENU_Y_START (DOUBLE_SIZE ? (INSERT_START+100) : (INSERT_START+120))
+        #define MENU_Y_START (DOUBLE_SIZE ? (INSERT_START+100) : (INSERT_START+100))
         #define MENU_Y_DIFF  35
 
         static char *create = _("create");
@@ -289,7 +293,7 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
 
         p_font->alignment_set(MENU_CENTER);
         p_font->start_set(0, PROFILE_LIST_START);
-        p_font->print(_("Saved profiles:\n"));
+        p_font->print(_("Choose saved profile:\n"));
 
         // Load profiles from disc
         if(p_profiles) {
@@ -1652,7 +1656,7 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr data, size_ptr data
         assert(ret);
       
         p_ber->levelset_set_level(profile.level_set[set].level_selected);
-        menu_level_run_path_draw(set, profile.level_set[set].level_selected, 
+        menu_level_run_path_draw(set, profile.level_set[set].level_selected,
                                  p_ber->levelset_get_levelnum(), 
                                  profile.level_set[set].level_last);
       }
