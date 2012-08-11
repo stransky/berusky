@@ -106,41 +106,45 @@ void gui_base::menu_item_start(void)
   input.mevent_clear();
 }
 
+/*
+  MENU_TEXT_DIFF_X, MENU_TEXT_DIFF_Y
+*/
+
 void gui_base::menu_item_draw_sprite_set(spr_handle active, spr_handle inactive, 
-                                         int menu_text_diff_x, int menu_text_diff_y)
+                                         int menu_text_diff_x_, int menu_text_diff_y_)
 {
-
-}
-
-void gui_base::menu_item_draw_sprite_reset(void)
-{
-
+  menu_spr_active = active;
+  menu_spr_inactive = inactive;
+  menu_text_diff_x = menu_text_diff_x_;
+  menu_text_diff_y = menu_text_diff_y_;
+  menu_spr_diff_dx = p_grf->sprite_get_width(active);
+  menu_spr_diff_dy = p_grf->sprite_get_height(active);
 }
 
 void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,
-                                     
                                      LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
   switch(spr_align)
   {
     case MENU_LEFT_SPRITE:
       {
-        p_grf->draw(MENU_SPRIT_ARROW_L, last_x, last_y);
+        p_grf->draw(menu_spr_inactive, last_x, last_y);
         p_font->alignment_set(MENU_LEFT);
         p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x + 17 + MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
+        p_font->print(&r, last_x + menu_spr_diff_dx + menu_text_diff_x, 
+                          last_y + menu_text_diff_y, p_text);
       
-        RECT r_arrow = {last_x, last_y, 17, 34};
+        RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, active, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, inactive,  last_x, last_y);
+        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), 
-                             ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
-                             ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x), 
+                             ET_INT(last_y + menu_text_diff_y), 
                              ET_INT(MENU_LEFT), ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
-                             ET_INT(last_x + 17 + MENU_TEXT_DIFF_X), 
-                             ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x), 
+                             ET_INT(last_y + menu_text_diff_y), 
                              ET_INT(MENU_LEFT), ET_INT(p_text));
     
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
@@ -163,24 +167,24 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
       break;
     case MENU_RIGHT_SPRITE:
       {
-        p_grf->draw(MENU_SPRIT_ARROW_R, last_x, last_y);
+        p_grf->draw(menu_spr_inactive, last_x, last_y);
         p_font->alignment_set(MENU_RIGHT);
         p_font->select(FONT_DEFAULT);
-        p_font->print(&r, last_x - MENU_TEXT_DIFF_X, last_y + MENU_TEXT_DIFF_Y, p_text);
+        p_font->print(&r, last_x - menu_text_diff_x, last_y + menu_text_diff_y, p_text);
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, active, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, inactive,  last_x, last_y);
+        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
                                         ET_INT(FONT_SELECTED), 
-                                        ET_INT(last_x - MENU_TEXT_DIFF_X), 
-                                        ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                                        ET_INT(last_x - menu_text_diff_x), 
+                                        ET_INT(last_y + menu_text_diff_y), 
                                         ET_INT(MENU_RIGHT), ET_INT(p_text));
         LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, 
                                         ET_INT(FONT_DEFAULT),  
-                                        ET_INT(last_x - MENU_TEXT_DIFF_X), 
-                                        ET_INT(last_y + MENU_TEXT_DIFF_Y), 
+                                        ET_INT(last_x - menu_text_diff_x), 
+                                        ET_INT(last_y + menu_text_diff_y), 
                                         ET_INT(MENU_RIGHT), ET_INT(p_text));
-        RECT r_arrow = {last_x, last_y, 17, 34};
+        RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
       
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
@@ -212,13 +216,11 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
 }
 
 void gui_base::menu_item_draw_sprite(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, bool save_back,
-                                     spr_handle active, spr_handle inactive,
                                      LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
   menu_item_set_pos(x,y);
-  menu_item_draw_sprite(p_text, spr_align, save_back, active, inactive, click1, click2, click3);
+  menu_item_draw_sprite(p_text, spr_align, save_back, click1, click2, click3);
 }
-
 
 void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
                                    LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
@@ -281,23 +283,26 @@ void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, bool save_back,
   {
     case MENU_LEFT:
       {      
-        menu_item_draw_sprite(p_text, MENU_LEFT_SPRITE, save_back, 
-                              MENU_SPRIT_ARROW_LC, MENU_SPRIT_ARROW_L, 
+        menu_item_draw_sprite_set(MENU_SPRIT_ARROW_LC, MENU_SPRIT_ARROW_L, 
+                                  MENU_TEXT_DIFF_X, MENU_TEXT_DIFF_Y);
+        menu_item_draw_sprite(p_text, MENU_LEFT_SPRITE, save_back,
                               click1, click2, click3);
       }
       break;
     case MENU_RIGHT:
       {
+        menu_item_draw_sprite_set(MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_R,
+                                  MENU_TEXT_DIFF_X, MENU_TEXT_DIFF_Y);
         menu_item_draw_sprite(p_text, MENU_RIGHT_SPRITE, save_back,
-                              MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_R,
                               click1, click2, click3);
       }          
       break;
     
     case MENU_CENTER:
       {
+        menu_item_draw_sprite_set(MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_L,
+                                  MENU_TEXT_DIFF_X, MENU_TEXT_DIFF_Y);
         menu_item_draw_sprite(p_text, MENU_CENTER_SPRITE, save_back,
-                              MENU_SPRIT_ARROW_RC, MENU_SPRIT_ARROW_L,
                               click1, click2, click3);
       }      
       break;

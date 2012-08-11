@@ -1198,11 +1198,14 @@ void game_gui::menu_level_draw_level(int lev,
                         p_ber->levelset_get_passwd(lev));
   }
   else {
+    menu_item_draw_sprite_set(LEVEL_NEXT, LEVEL_DONE,
+                              TEXT_SHIFT_HORIZONTAL-ITEM_SIZE, TEXT_SHIFT_VERTICAL);
     menu_item_draw_sprite((x)*ITEM_SIZE,(y)*ITEM_SIZE, 
                          p_ber->levelset_get_passwd(lev), MENU_LEFT_SPRITE, FALSE, 
-                         LEVEL_NEXT, LEVEL_DONE, LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, level_set));
+                         LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, level_set));
   }
 }
+
 /*
     int spr = (lev < level_last) ? LEVEL_DONE : ((lev == level_act) ? LEVEL_NEXT : LEVEL_CLOSED);
     p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);

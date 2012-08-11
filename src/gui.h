@@ -200,6 +200,14 @@ public:
 
 private:
   
+  /* Menu sprites */
+  spr_handle menu_spr_active;
+  spr_handle menu_spr_inactive;
+  tpos       menu_text_diff_x;
+  tpos       menu_text_diff_y;
+  tpos       menu_spr_diff_dx;
+  tpos       menu_spr_diff_dy;
+
   /* Last used coordinates */
   tpos last_x;
   tpos last_y;
@@ -236,18 +244,18 @@ public:
 
   void menu_item_start(void);
 
-  void menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,
-                             spr_handle active, spr_handle inactive,
+  void menu_item_draw_sprite_set(spr_handle active, spr_handle inactive, 
+                                 int menu_text_diff_x, int menu_text_diff_y);
+  void menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,                             
                              LEVEL_EVENT click1,
                              LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                              LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
   void menu_item_draw_sprite(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, bool save_back,
-                             spr_handle active, spr_handle inactive,
                              LEVEL_EVENT click1, 
                              LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                              LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
   void menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
-                           LEVEL_EVENT click1, 
+                           LEVEL_EVENT click1,
                            LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                            LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
 
