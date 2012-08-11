@@ -1172,35 +1172,53 @@ static int translate_direction(DIRECTION_INDEX last, DIRECTION_INDEX next)
   return(pipe_table[last][next]);
 }
 
+#define FIRST_PIPE            (FIRST_CLASSIC_LEVEL+13)
+
+#define LEVEL_DONE            (FIRST_CLASSIC_LEVEL+43)
+#define LEVEL_NEXT            (FIRST_CLASSIC_LEVEL+45)
+#define LEVEL_CLOSED          (FIRST_CLASSIC_LEVEL+42)
+
+#define ITEM_SIZE             (DOUBLE_SIZE ? 40 : 20)
+#define TEXT_SHIFT_VERTICAL   (DOUBLE_SIZE ? 10 : 0)
+#define TEXT_SHIFT_HORIZONTAL (DOUBLE_SIZE ? 50 : 20)
+
+void game_gui::menu_level_draw_level(int lev, 
+                                     int level_act, int level_num, int level_last, int level_set, 
+                                     int x, int y)
+{
+  assert(lev < level_num);
+
+  if(lev >= level_last) {
+    // Draw as inactive sprite
+    int spr = LEVEL_CLOSED;
+    p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);
+    p_font->select(FONT_DEFAULT);
+    p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                        (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,
+                        p_ber->levelset_get_passwd(lev));
+  }
+  else {
+    menu_item_draw_sprite((x)*ITEM_SIZE,(y)*ITEM_SIZE, 
+                         p_ber->levelset_get_passwd(lev), MENU_LEFT_SPRITE, FALSE, 
+                         LEVEL_NEXT, LEVEL_DONE, LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, level_set));
+  }
+}
+/*
+    int spr = (lev < level_last) ? LEVEL_DONE : ((lev == level_act) ? LEVEL_NEXT : LEVEL_CLOSED);
+    p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);
+    p_font->select((lev == level_act) ? FONT_SELECTED : FONT_DEFAULT);
+    p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
+                        (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,
+                        p_ber->levelset_get_passwd(lev));
+*/
 
 /*
   The level path is encoded from those paths + two digits of level number
 */
 int game_gui::menu_level_run_path_draw_line(const char *p_path,
-                                            int level_act, int level_num, int level_last,
+                                            int level_act, int level_num, int level_last, int level_set,
                                             int sx, int sy)
 {
-
-  #define FIRST_PIPE            (FIRST_CLASSIC_LEVEL+13)
-
-  #define LEVEL_DONE            (FIRST_CLASSIC_LEVEL+43)
-  #define LEVEL_NEXT            (FIRST_CLASSIC_LEVEL+45)
-  #define LEVEL_CLOSED          (FIRST_CLASSIC_LEVEL+42)
-
-  #define ITEM_SIZE             (DOUBLE_SIZE ? 40 : 20)
-  #define TEXT_SHIFT_VERTICAL   (DOUBLE_SIZE ? 10 : 0)
-  #define TEXT_SHIFT_HORIZONTAL (DOUBLE_SIZE ? 50 : 20)
-
-  #define draw_level(lev,x,y)                                 \
-  {                                                           \
-    assert(lev < level_num);                                  \
-    int spr = (lev < level_last) ? LEVEL_DONE : ((lev == level_act) ? LEVEL_NEXT : LEVEL_CLOSED); \
-    p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);             \
-    p_font->select((lev == level_act) ? FONT_SELECTED : FONT_DEFAULT); \
-    p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,  \
-                        (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,    \
-                        p_ber->levelset_get_passwd(lev));     \
-  }
   #define draw_pipe(pip,x,y)                                  \
   {                                                           \
     p_grf->draw(FIRST_PIPE+pip,                               \
@@ -1229,7 +1247,6 @@ int game_gui::menu_level_run_path_draw_line(const char *p_path,
     }                                                         \
   }
 
-
   DIRECTION_INDEX index_last = LEFT_I;
   tpos lx = sx,
        ly = sy;
@@ -1245,7 +1262,7 @@ int game_gui::menu_level_run_path_draw_line(const char *p_path,
           tmp[1] = p_path[2];
           tmp[2] = '\0';          
           int level = atoi(tmp);
-          draw_level(level,sx,sy);
+          menu_level_draw_level(level,level_act,level_num,level_last,level_set,sx,sy);
           p_path += 3;
           levels++;
         }
@@ -1292,40 +1309,43 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
     p_grf->draw(menu_background_get(),0,0);
   }
 
+  // Levels are drawn as menu
+  menu_item_start();
+
   switch(level_set) {
     case 0:
       {
         // Draw top of the pipe
         draw_pipe(2,14,0);
         draw_pipe(2,14,1);
-        draw_level(0,14,2);
+        menu_level_draw_level(0,level_act,level_num,level_last,level_set,14,2);
       
         draw_pipe(3,14,3);
         draw_pipe(4,13,3);
-        draw_level(1,13,4);
+        menu_level_draw_level(1,level_act,level_num,level_last,level_set,13,4);
       
         draw_pipe(3,13,5);
         draw_pipe(0,12,5);
         draw_pipe(4,11,5);
-        draw_level(2,11,6);
+        menu_level_draw_level(2,level_act,level_num,level_last,level_set,11,6);
       
         draw_pipe(2,11,7);
-        draw_level(3,11,8);
+        menu_level_draw_level(3,level_act,level_num,level_last,level_set,11,8);
       
         draw_pipe(2,11,9);
-        draw_level(4,11,10);
+        menu_level_draw_level(4,level_act,level_num,level_last,level_set,11,10);
       
         draw_pipe(3,11,11);
         draw_pipe(0,10,11);
         draw_pipe(4,9,11);
-        draw_level(5,9,12);
+        menu_level_draw_level(5,level_act,level_num,level_last,level_set,9,12);
 
         draw_pipe(3,9,13);
         draw_pipe(0,8,13);
         draw_pipe(0,7,13);
         draw_pipe(0,6,13);
         draw_pipe(4,5,13);
-        draw_level(6,5,14);
+        menu_level_draw_level(6,level_act,level_num,level_last,level_set,5,14);
         draw_pipe(0,4,14);
         draw_pipe(0,3,14);
         draw_pipe(0,2,14);
@@ -1334,13 +1354,13 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
 
         draw_pipe(2,5,15);
         draw_pipe(2,5,16);
-        draw_level(7,5,17);
+        menu_level_draw_level(7,level_act,level_num,level_last,level_set,5,17);
         
         draw_pipe(2,5,18);
         draw_pipe(5,5,19);
         draw_pipe(0,6,19);
         draw_pipe(0,7,19);
-        draw_level(8,8,19);
+        menu_level_draw_level(8,level_act,level_num,level_last,level_set,8,19);
 
         draw_pipe(0,10,6);
         draw_pipe(0,9,6);
@@ -1348,7 +1368,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(5,7,6);
         draw_pipe(2,7,5);
         draw_pipe(2,7,4);
-        draw_level(9,7,3);
+        menu_level_draw_level(9,level_act,level_num,level_last,level_set,7,3);
         draw_pipe(2,7,2);
         draw_pipe(2,7,1);
         draw_pipe(2,7,0);
@@ -1360,31 +1380,31 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         int lev = 0;
       
         lev += menu_level_run_path_draw_line("V01LPUPUV02UPLPUPV03UPRPRV13UPUV04UPUV05UPRPRV06UPUPU",
-                                             level_act, level_num, level_last, 15, 12);
+                                             level_act, level_num, level_last, level_set, 15, 12);
         lev += menu_level_run_path_draw_line("LPLPUPUV07LPUPUPV08UPUPUPUPU",
-                                             level_act, level_num, level_last, 13, 8);
+                                             level_act, level_num, level_last, level_set, 13, 8);
         lev += menu_level_run_path_draw_line("UPUV09UPUV10UPLPUPU",
-                                             level_act, level_num, level_last, 6, 5);
+                                             level_act, level_num, level_last, level_set, 6, 5);
         lev += menu_level_run_path_draw_line("UPRPRPRPRV00UPRV11UPUV12UPRPUV13UPUV14UPUV15UPRPUPU",
-                                             level_act, level_num, level_last, 15, 12);
+                                             level_act, level_num, level_last, level_set, 15, 12);
         lev += menu_level_run_path_draw_line("DPRV16DPDV17DPRPRPRPDPV18DPDV19DPLPDV20",
-                                             level_act, level_num, level_last, 15, 12);
+                                             level_act, level_num, level_last, level_set, 15, 12);
         lev += menu_level_run_path_draw_line("LPLPLPLPUV21UPLPLPLPLPDV22DPDV23DPDV24LPDV25DPDV26",
-                                             level_act, level_num, level_last, 16, 15);
+                                             level_act, level_num, level_last, level_set, 16, 15);
         lev += menu_level_run_path_draw_line("DPDV27DPLPDV28DPDV29DPDPLPDPDV30DPDPDV31LPLPLPLPLPLPU",
-                                             level_act, level_num, level_last, 27, -1);
+                                             level_act, level_num, level_last, level_set, 27, -1);
         lev += menu_level_run_path_draw_line("DPLPDV32DPLPDPDPV33DPRPRPRPDPV34DPDV35",
-                                             level_act, level_num, level_last, 25, 12);
+                                             level_act, level_num, level_last, level_set, 25, 12);
         lev += menu_level_run_path_draw_line("LPLPLPLPDV36LPLPL",
-                                             level_act, level_num, level_last, 6, 3);
+                                             level_act, level_num, level_last, level_set, 6, 3);
         lev += menu_level_run_path_draw_line("DPDPV37DPDV38DPDV39DPDV40LPLPL",
-                                             level_act, level_num, level_last, 2, 4);
+                                             level_act, level_num, level_last, level_set, 2, 4);
         lev += menu_level_run_path_draw_line("DPDV41DPRPRPRPRPDPRPR",
-                                             level_act, level_num, level_last, 2, 12);
+                                             level_act, level_num, level_last, level_set, 2, 12);
         lev += menu_level_run_path_draw_line("LPDPDPV43DPDV44DPDV49DPDPD",
-                                             level_act, level_num, level_last, 2, 14);
+                                             level_act, level_num, level_last, level_set, 2, 14);
         lev += menu_level_run_path_draw_line("LPLPDPDPLPLPLPLPLPUV45UPUV46UPUV47LPUPUV48",
-                                             level_act, level_num, level_last, 14, 10);
+                                             level_act, level_num, level_last, level_set, 14, 10);
         assert(lev == 50);
       }
       break;
@@ -1398,7 +1418,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
                            "27UPUV28UPUV29UPRPUPV30UPUV31UPLPLPDPDPLPLPLPDPV32DPDV33DPLPDPDV34DPLP"
         int lev = 0;
       
-        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, 27, -1);
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 27, -1);
 
         assert(lev == 35);
       }
@@ -1409,19 +1429,19 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         #define ADV_START_X 15
         #define ADV_START_Y 10
       
-        draw_level(0,ADV_START_X, ADV_START_Y);
+        menu_level_draw_level(0,level_act,level_num,level_last,level_set,ADV_START_X, ADV_START_Y);
       
         draw_pipe(2, ADV_START_X, ADV_START_Y-1);
-        draw_level(1,ADV_START_X, ADV_START_Y-2);
+        menu_level_draw_level(1,level_act,level_num,level_last,level_set,ADV_START_X, ADV_START_Y-2);
       
         draw_pipe(2, ADV_START_X, ADV_START_Y-3);
         draw_pipe(2, ADV_START_X, ADV_START_Y-4);
-        draw_level(3,ADV_START_X, ADV_START_Y-5);
+        menu_level_draw_level(3,level_act,level_num,level_last,level_set,ADV_START_X, ADV_START_Y-5);
       
         draw_pipe(0, ADV_START_X-1, ADV_START_Y-5);
         draw_pipe(5, ADV_START_X-2, ADV_START_Y-5);
         draw_pipe(2, ADV_START_X-2, ADV_START_Y-6);
-        draw_level(3,ADV_START_X-2, ADV_START_Y-7);
+        menu_level_draw_level(3,level_act,level_num,level_last,level_set,ADV_START_X-2, ADV_START_Y-7);
       
         draw_pipe(2, ADV_START_X-2, ADV_START_Y-8);
         draw_pipe(2, ADV_START_X-2, ADV_START_Y-9);
@@ -1431,50 +1451,50 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(2, ADV_START_X, ADV_START_Y+2);
         draw_pipe(5, ADV_START_X, ADV_START_Y+3);
         draw_pipe(0, ADV_START_X+1, ADV_START_Y+3);
-        draw_level(4,ADV_START_X+2, ADV_START_Y+3);
+        menu_level_draw_level(4,level_act,level_num,level_last,level_set,ADV_START_X+2, ADV_START_Y+3);
 
         draw_pipe(4, ADV_START_X+2, ADV_START_Y+2);
         draw_pipe(0, ADV_START_X+3, ADV_START_Y+2);
         draw_pipe(0, ADV_START_X+4, ADV_START_Y+2);        
-        draw_level(5,ADV_START_X+5, ADV_START_Y+2);
+        menu_level_draw_level(5,level_act,level_num,level_last,level_set,ADV_START_X+5, ADV_START_Y+2);
 
         draw_pipe(2, ADV_START_X+5, ADV_START_Y+1);
         draw_pipe(2, ADV_START_X+5, ADV_START_Y);
-        draw_level(6,ADV_START_X+5, ADV_START_Y-1);
+        menu_level_draw_level(6,level_act,level_num,level_last,level_set,ADV_START_X+5, ADV_START_Y-1);
 
         draw_pipe(4, ADV_START_X+5, ADV_START_Y-2);
         draw_pipe(0, ADV_START_X+6, ADV_START_Y-2);
         draw_pipe(0, ADV_START_X+7, ADV_START_Y-2);
         draw_pipe(0, ADV_START_X+8, ADV_START_Y-2);
-        draw_level(7,ADV_START_X+9, ADV_START_Y-2);
+        menu_level_draw_level(7,level_act,level_num,level_last,level_set,ADV_START_X+9, ADV_START_Y-2);
 
         draw_pipe(2, ADV_START_X+9, ADV_START_Y-3);
         draw_pipe(2, ADV_START_X+9, ADV_START_Y-4);
         draw_pipe(2, ADV_START_X+9, ADV_START_Y-5);
-        draw_level(8,ADV_START_X+9, ADV_START_Y-6);
+        menu_level_draw_level(8,level_act,level_num,level_last,level_set,ADV_START_X+9, ADV_START_Y-6);
 
         draw_pipe(2, ADV_START_X+9, ADV_START_Y-1);
         draw_pipe(2, ADV_START_X+9, ADV_START_Y);
-        draw_level(9,ADV_START_X+9, ADV_START_Y+1);
+        menu_level_draw_level(9,level_act,level_num,level_last,level_set,ADV_START_X+9, ADV_START_Y+1);
         
         draw_pipe(5, ADV_START_X+2, ADV_START_Y+4);
         draw_pipe(0, ADV_START_X+3, ADV_START_Y+4);
-        draw_level(10,ADV_START_X+4, ADV_START_Y+4);
+        menu_level_draw_level(10,level_act,level_num,level_last,level_set,ADV_START_X+4, ADV_START_Y+4);
         
         draw_pipe(2, ADV_START_X+4, ADV_START_Y+5);
         draw_pipe(2, ADV_START_X+4, ADV_START_Y+6);
-        draw_level(11,ADV_START_X+4, ADV_START_Y+7);
+        menu_level_draw_level(11,level_act,level_num,level_last,level_set,ADV_START_X+4, ADV_START_Y+7);
         
         draw_pipe(5, ADV_START_X+4, ADV_START_Y+8);
         draw_pipe(0, ADV_START_X+5, ADV_START_Y+8);
-        draw_level(12,ADV_START_X+6, ADV_START_Y+8);
+        menu_level_draw_level(12,level_act,level_num,level_last,level_set,ADV_START_X+6, ADV_START_Y+8);
 
         draw_pipe(0, ADV_START_X-1, ADV_START_Y);
         draw_pipe(0, ADV_START_X-2, ADV_START_Y);
         draw_pipe(0, ADV_START_X-3, ADV_START_Y);
         draw_pipe(0, ADV_START_X-4, ADV_START_Y);
         draw_pipe(5, ADV_START_X-5, ADV_START_Y);
-        draw_level(13,ADV_START_X-5, ADV_START_Y-1);
+        menu_level_draw_level(13,level_act,level_num,level_last,level_set,ADV_START_X-5, ADV_START_Y-1);
         draw_pipe(0, ADV_START_X-1, ADV_START_Y-2);
         draw_pipe(0, ADV_START_X-2, ADV_START_Y-2);
         draw_pipe(0, ADV_START_X-3, ADV_START_Y-2);
@@ -1486,32 +1506,32 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(0, ADV_START_X-8, ADV_START_Y-1);
         draw_pipe(0, ADV_START_X-9, ADV_START_Y-1);
         draw_pipe(5, ADV_START_X-10, ADV_START_Y-1);
-        draw_level(14,ADV_START_X-10, ADV_START_Y-2);
+        menu_level_draw_level(14,level_act,level_num,level_last,level_set,ADV_START_X-10, ADV_START_Y-2);
 
         draw_pipe(2, ADV_START_X-10, ADV_START_Y-3);
         draw_pipe(2, ADV_START_X-10, ADV_START_Y-4);
-        draw_level(15,ADV_START_X-10, ADV_START_Y-5);
+        menu_level_draw_level(15,level_act,level_num,level_last,level_set,ADV_START_X-10, ADV_START_Y-5);
 
         draw_pipe(2, ADV_START_X+6, ADV_START_Y+9);
         draw_pipe(2, ADV_START_X+6, ADV_START_Y+10);
-        draw_level(16,ADV_START_X+6, ADV_START_Y+11);
+        menu_level_draw_level(16,level_act,level_num,level_last,level_set,ADV_START_X+6, ADV_START_Y+11);
         
         draw_pipe(2, ADV_START_X-10, ADV_START_Y-6);
         draw_pipe(2, ADV_START_X-10, ADV_START_Y-7);
-        draw_level(17,ADV_START_X-10, ADV_START_Y-8);
+        menu_level_draw_level(17,level_act,level_num,level_last,level_set,ADV_START_X-10, ADV_START_Y-8);
         
         draw_pipe(4, ADV_START_X-11, ADV_START_Y-2);
         draw_pipe(2, ADV_START_X-11, ADV_START_Y-1);
         draw_pipe(2, ADV_START_X-11, ADV_START_Y);
         draw_pipe(2, ADV_START_X-11, ADV_START_Y+1);
-        draw_level(18,ADV_START_X-11, ADV_START_Y+2);
+        menu_level_draw_level(18,level_act,level_num,level_last,level_set,ADV_START_X-11, ADV_START_Y+2);
         
         draw_pipe(3, ADV_START_X-11, ADV_START_Y+3);
         draw_pipe(0, ADV_START_X-12, ADV_START_Y+3);        
         draw_pipe(4, ADV_START_X-13, ADV_START_Y+3);
         draw_pipe(2, ADV_START_X-13, ADV_START_Y+4);
         draw_pipe(2, ADV_START_X-13, ADV_START_Y+5);
-        draw_level(19,ADV_START_X-13, ADV_START_Y+6);
+        menu_level_draw_level(19,level_act,level_num,level_last,level_set,ADV_START_X-13, ADV_START_Y+6);
         
         draw_pipe(0, ADV_START_X-14, ADV_START_Y+6);
         draw_pipe(0, ADV_START_X-15, ADV_START_Y+6);
@@ -1525,15 +1545,15 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         #define IMP_START_Y 6
       
         draw_pipe(5,IMP_START_X+1,IMP_START_Y);
-        draw_level(0,IMP_START_X+2, IMP_START_Y);
+        menu_level_draw_level(0,level_act,level_num,level_last,level_set,IMP_START_X+2, IMP_START_Y);
       
         draw_pipe(2,IMP_START_X+2,IMP_START_Y+1);
-        draw_level(1,IMP_START_X+2, IMP_START_Y+2);
+        menu_level_draw_level(1,level_act,level_num,level_last,level_set,IMP_START_X+2, IMP_START_Y+2);
       
         draw_pipe(5,IMP_START_X+2,IMP_START_Y+3);
         draw_pipe(0,IMP_START_X+3,IMP_START_Y+3);
         draw_pipe(1,IMP_START_X+4,IMP_START_Y+3);
-        draw_level(2,IMP_START_X+4, IMP_START_Y+4);
+        menu_level_draw_level(2,level_act,level_num,level_last,level_set,IMP_START_X+4, IMP_START_Y+4);
       
         draw_pipe(2,IMP_START_X+4,IMP_START_Y+5);
         draw_pipe(3,IMP_START_X+4,IMP_START_Y+6);
@@ -1546,12 +1566,12 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(0,IMP_START_X-1,IMP_START_Y+7);
         draw_pipe(5,IMP_START_X-2,IMP_START_Y+7);
         draw_pipe(2,IMP_START_X-2,IMP_START_Y+6);
-        draw_level(3,IMP_START_X-2, IMP_START_Y+5);
+        menu_level_draw_level(3,level_act,level_num,level_last,level_set,IMP_START_X-2, IMP_START_Y+5);
 
         draw_pipe(1,IMP_START_X-2,IMP_START_Y+4);
         draw_pipe(0,IMP_START_X-3,IMP_START_Y+4);
         draw_pipe(5,IMP_START_X-4,IMP_START_Y+4);
-        draw_level(4,IMP_START_X-4, IMP_START_Y+3);
+        menu_level_draw_level(4,level_act,level_num,level_last,level_set,IMP_START_X-4, IMP_START_Y+3);
 
         draw_pipe(4,IMP_START_X-4,IMP_START_Y+2);
         draw_pipe(0,IMP_START_X-3,IMP_START_Y+2);
@@ -1633,7 +1653,6 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
   static char *level_hint  = _("level hint");
   static char *back_string = _("back");
 
-  menu_item_start();
   menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET, level_set, level_act));
   menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint, MENU_RIGHT, TRUE, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
   menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));

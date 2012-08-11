@@ -55,6 +55,7 @@ const char * level_event::translation_table[] =
   "AN_GENERATE_AND_RUN",
   "AN_STOP_AND_CLEAR",
   "GC_RUN_LEVEL_SET",
+  "GC_RUN_LEVEL_SELECT",
   "GC_RUN_LEVEL_LINE",
   "GC_RUN_EDITOR",
   "GC_STOP_LEVEL",

@@ -106,8 +106,19 @@ void gui_base::menu_item_start(void)
   input.mevent_clear();
 }
 
+void gui_base::menu_item_draw_sprite_set(spr_handle active, spr_handle inactive, 
+                                         int menu_text_diff_x, int menu_text_diff_y)
+{
+
+}
+
+void gui_base::menu_item_draw_sprite_reset(void)
+{
+
+}
+
 void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,
-                                     spr_handle active, spr_handle inactive,
+                                     
                                      LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
   switch(spr_align)
@@ -199,7 +210,16 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
       break;
   }
 }
-    
+
+void gui_base::menu_item_draw_sprite(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, bool save_back,
+                                     spr_handle active, spr_handle inactive,
+                                     LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
+{
+  menu_item_set_pos(x,y);
+  menu_item_draw_sprite(p_text, spr_align, save_back, active, inactive, click1, click2, click3);
+}
+
+
 void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
                                    LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
