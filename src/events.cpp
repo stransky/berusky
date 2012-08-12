@@ -41,6 +41,7 @@ const char * level_event::translation_table[] =
   "GI_SPRITE_DRAW",
   "GI_STRING_DRAW",
   "GI_CHECKBOX_SWITCH",
+  "GI_HIGHLIGHT_EVENT",
   "GL_PLAYER_MOVE",
   "GL_PLAYER_MOVE_FAST",
   "GL_PLAYER_SWITCH",

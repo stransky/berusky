@@ -111,6 +111,10 @@ typedef enum {
   // format: [GI_CHECKBOX_SWITCH, checkbox_id]
   GI_CHECKBOX_SWITCH,
   
+  // Launch an event for the previous menu and set the next event
+  // format: [GI_HIGHLIGHT_EVENT, group]
+  GI_HIGHLIGHT_EVENT,
+  
   // ------------------------------------------------------------------------
   // Game events
   
@@ -629,9 +633,9 @@ public:
           bool safe = TRUE)
   {
     assert(p_event);
-  
+   
     int i;
-  
+
     for(i = 0; i < num; i++, p_event += direction) {
       if(full()) {
         if(safe)

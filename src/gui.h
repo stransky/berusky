@@ -178,6 +178,48 @@ typedef struct checkbox_config {
 
 } CHECKBOX_CONFIG;
 
+typedef struct highlight_event {
+  
+  bool               active;
+  int                event_num;
+  LEVEL_EVENT        event[MEVENTS];
+
+  highlight_event(void)
+  {
+    active = FALSE;
+  }
+
+  highlight_event(LEVEL_EVENT ev)
+  {
+    active = TRUE;
+    event[0] = ev;
+    event_num = 1;
+  }
+
+  highlight_event(LEVEL_EVENT ev, LEVEL_EVENT ev1)
+  {
+    active = TRUE;
+    event[0] = ev;
+    event[1] = ev1;
+    event_num = 2;
+  }
+
+  highlight_event(LEVEL_EVENT ev, LEVEL_EVENT ev1, LEVEL_EVENT ev2)
+  {    
+    active = TRUE;
+    event[0] = ev;
+    event[1] = ev1;
+    event[2] = ev2;
+    event_num = 3;
+  }
+
+  void clear(void)
+  {
+    active = FALSE;
+  }
+
+} HIGHLIGHT_EVENT;
+
 typedef class gui_base {
 
 public:
@@ -221,6 +263,13 @@ private:
   #define CHECKBOX_NUM 10
   CHECKBOX_CONFIG checkbox[CHECKBOX_NUM];
 
+  /* Events launched when another menu from the group is selected */
+  #define HIGHLIGHT_GROUP_NUM   10
+  HIGHLIGHT_EVENT highlight_group[HIGHLIGHT_GROUP_NUM];
+  
+  #define HIGHLIGHT_GROUP_NONE  0
+  int         highlight_group_next;
+
 public:
 
   gui_base(void);
@@ -243,6 +292,13 @@ public:
   void menu_item_set_diff(tpos dx, tpos dy);
 
   void menu_item_start(void);
+
+  // keep the menu high-lighted, unless another one with this group
+  // is selected
+  void menu_item_highlight(int group)
+  {
+    highlight_group_next = group;
+  }
 
   void menu_item_draw_sprite_set(spr_handle active, spr_handle inactive, 
                                  int menu_text_diff_x, int menu_text_diff_y);

@@ -1182,13 +1182,15 @@ static int translate_direction(DIRECTION_INDEX last, DIRECTION_INDEX next)
 #define TEXT_SHIFT_VERTICAL   (DOUBLE_SIZE ? 10 : 0)
 #define TEXT_SHIFT_HORIZONTAL (DOUBLE_SIZE ? 50 : 20)
 
+#define MENU_PATH_GROUP       1
+
 void game_gui::menu_level_draw_level(int lev, 
                                      int level_act, int level_num, int level_last, int level_set, 
                                      int x, int y)
 {
   assert(lev < level_num);
 
-  if(lev >= level_last) {
+  if(lev > level_last) {
     // Draw as inactive sprite
     int spr = LEVEL_CLOSED;
     p_grf->draw(spr,(x)*ITEM_SIZE,(y)*ITEM_SIZE);
@@ -1198,6 +1200,7 @@ void game_gui::menu_level_draw_level(int lev,
                         p_ber->levelset_get_passwd(lev));
   }
   else {
+    menu_item_highlight(MENU_PATH_GROUP);
     menu_item_draw_sprite_set(LEVEL_NEXT, LEVEL_DONE,
                               TEXT_SHIFT_HORIZONTAL-ITEM_SIZE, TEXT_SHIFT_VERTICAL);
     menu_item_draw_sprite((x)*ITEM_SIZE,(y)*ITEM_SIZE, 
