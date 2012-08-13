@@ -284,7 +284,7 @@ public:
   void back_pop(void);
 
   // Menu support functions
-  void menu_services(LEVEL_EVENT ev);
+  void menu_services(LEVEL_EVENT_QUEUE *p_read_queue, LEVEL_EVENT_QUEUE *p_write_queue, LEVEL_EVENT ev);
   void menu_dummy(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
 
   void menu_item_set_pos(tpos x, tpos y);

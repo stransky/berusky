@@ -448,6 +448,10 @@ public:
   {
     depend_events += num;
   }
+  int depends_get(void)
+  {
+    return(depend_events);
+  }
 
   void action_set(EVENT_TYPE act)
   {

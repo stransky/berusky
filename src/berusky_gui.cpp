@@ -686,7 +686,6 @@ meaning now.\n"));
               p_repo->draw(x, y, P_MATTOCK, i, 0);
               x += DOUBLE_SIZE ? 50 : 30;
             }
-                              
             break;
       
           case 2:
@@ -2382,8 +2381,9 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       case GI_SPRITE_DRAW:
       case GI_STRING_DRAW:
       case GI_CHECKBOX_SWITCH:
+      case GI_HIGHLIGHT_EVENT:
       case GI_KEY_DOWN:
-        menu_services(ev);
+        menu_services(p_queue, &tmp_queue, ev);
         break;
             
       default:

@@ -1497,11 +1497,11 @@ bool editor_gui::event_handler(void)
         case GI_STRING_DRAW:
         case GI_CHECKBOX_SWITCH:
         case GI_KEY_DOWN:
-          menu_services(ev);
+          menu_services(&queue, &tmp_queue, ev);
           break;
         
         case GI_MOUSE_EVENT:
-          mouse_handler(&tmp_queue,ev);
+          mouse_handler(&tmp_queue, ev);
           break;          
         
         default:

@@ -150,7 +150,7 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
         if(!highlight_group_next)
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
         else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
         if(save_back)
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
@@ -159,7 +159,7 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
         if(!highlight_group_next)
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
         else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
         if(save_back)
           input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
@@ -275,6 +275,7 @@ void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_
                                   ET_INT(align),
                                   ET_INT(p_text));
   LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+  u_text_highlight.depends_add(1);
 
   // event - release the saved highlighted event (if any)
   input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
@@ -405,7 +406,7 @@ void gui_base::menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool c
    }
 }
 
-void gui_base::menu_services(LEVEL_EVENT ev)
+void gui_base::menu_services(LEVEL_EVENT_QUEUE *p_read_queue, LEVEL_EVENT_QUEUE *p_write_queue, LEVEL_EVENT ev)
 {
   switch(ev.action_get()) {
     case GI_SPRITE_DRAW:
@@ -436,15 +437,30 @@ void gui_base::menu_services(LEVEL_EVENT ev)
         assert(id < CHECKBOX_NUM);
       
         checkbox[id].check_switch();
-        checkbox[id].draw_all();      
+        checkbox[id].draw_all();
       }
       break;
     case GI_HIGHLIGHT_EVENT:
       {
+        // format: [GI_HIGHLIGHT_EVENT, group]
+
         // launch the event if there's any active
+        int group = ev.param_int_get(PARAM_0);
+        if(highlight_group[group].active) {          
+          p_write_queue->add(highlight_group[group].event, highlight_group[group].event_num);          
+          p_write_queue->commit();
+          highlight_group[group].active = FALSE;
+        }      
+        
+        int highlight_events = ev.depends_get();
         // store the next one to the slot
-      
-      
+        assert(highlight_events > 0);
+        for(int i = 0; i < highlight_events; i++) {
+          assert(!p_read_queue->empty());
+          highlight_group[group].event[i] = p_read_queue->get();
+        }
+        highlight_group[group].event_num = highlight_events;
+        highlight_group[group].active = TRUE;
       }
       break;
     case GI_KEY_DOWN:
