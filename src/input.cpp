@@ -282,7 +282,7 @@ void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
   else {
     ret = SDL_PollEvent(&event);
   }
-    
+
   while(ret) {
     switch (event.type) {
       case SDL_KEYDOWN:
@@ -331,7 +331,7 @@ void input::events_loop(LEVEL_EVENT_QUEUE *p_queue)
       default:
         break;
     }
-  
+
     ret = SDL_PollEvent(&event);
   }  
 

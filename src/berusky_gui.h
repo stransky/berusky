@@ -51,6 +51,9 @@ public:
   void player_profile_save(void);
 
   // Run level in GUI
+  void level_set_select(int level_set);
+  void level_select(int level);
+
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, char *p_level);
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, int set, int level);  
   void level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu);
@@ -79,7 +82,7 @@ public:
   void menu_in_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
 
   // Level screens
-  void menu_level_run_new(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_level_run_new(MENU_STATE state, size_ptr level_set = 0, size_ptr unused = 0);
   void menu_level_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_end_custom(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
   void menu_levelset_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);

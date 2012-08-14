@@ -309,9 +309,9 @@ void * file_load(const char * p_dir, const char * p_file, t_off *p_lenght, t_off
 }
 
 /* save file from memory */
-bool file_save(const char * p_dir, const char * p_file, void *p_buffer, t_off lenght)
+bool file_save(const char * p_dir, const char * p_file, void *p_buffer, t_off lenght, const char *p_mode)
 {  
-  FHANDLE f = file_open(p_dir, p_file, "wb");
+  FHANDLE f = file_open(p_dir, p_file, p_mode);
   t_off wrt = fwrite(p_buffer, 1, lenght, f);
   fclose(f);  
   return(wrt == lenght);

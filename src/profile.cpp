@@ -32,6 +32,35 @@ berusky_profile::berusky_profile(void)
   create("Default");
 }
 
+void berusky_profile::selected_level_set(int level)
+{
+  level_selected = level;
+  if(level_selected > level_set[level_set_selected].level_last)
+    level_selected = level_set[level_set_selected].level_last;
+}
+
+int  berusky_profile::selected_level_get(void)
+{
+  return(level_set[level_set_selected].level_selected);
+}
+
+void berusky_profile::last_level_set(int level)
+{
+  level_set[level_set_selected].level_last = level;
+}
+
+int  berusky_profile::last_level_get(void)
+{
+  return(level_set[level_set_selected].level_last);
+}
+
+void berusky_profile::level_set_select(int level_set_num)
+{
+  assert(level_set_num >= 0 && level_set_num < LEVEL_SET_NUM);
+  level_set_selected = level_set_num;
+  selected_level_set(level_set[level_set_num].level_selected);
+}
+
 void berusky_profile::load(const char *p_dir, const char *p_file)
 {
   char tmp[MAX_FILENAME];
@@ -43,6 +72,20 @@ void berusky_profile::load(const char *p_dir, const char *p_file)
   level_set[2].level_last = ini_read_int_file(tmp, PROFILE_LAST_INTERMEDIATE, 0);
   level_set[3].level_last = ini_read_int_file(tmp, PROFILE_LAST_ADVANCED, 0);
   level_set[4].level_last = ini_read_int_file(tmp, PROFILE_LAST_IMPOSSIBLE, 0);
+}
+
+void berusky_profile::save(void)
+{ 
+  char buffer[1024];
+  snprintf(buffer, 1024,
+           "name = %s\nl0 = %d\nl1 = %d\nl2 = %d\nl3 = %d\nl4 = %d\n",
+           profile_name,
+           level_set[0].level_last,
+           level_set[1].level_last,
+           level_set[2].level_last,
+           level_set[3].level_last,
+           level_set[4].level_last);
+  file_save(INI_USER_PROFILES, profile_name, (void *)buffer, 1024, "w");
 }
 
 void berusky_profile::create(const char *p_name)

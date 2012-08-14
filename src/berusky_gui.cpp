@@ -102,7 +102,24 @@ void game_gui::player_profile_load(void)
 
 void game_gui::player_profile_save(void)
 {
+  profile.save();
   ini_write_string(INI_FILE, LAST_PLAYER_PROFILE, profile.profile_name);
+}
+
+void game_gui::level_set_select(int level_set)
+{
+  bool ret = p_ber->levelset_load(level_set);
+  if(!ret) {
+    berror("Unable to load levelset %d\n",level_set);
+    return;
+  }
+  profile.level_set_select(level_set);
+}
+
+void game_gui::level_select(int level)
+{  
+  p_ber->levelset_set_level(level);
+  profile.selected_level_set(level);
 }
 
 /*
@@ -1228,7 +1245,7 @@ void game_gui::menu_level_draw_level(int lev,
                               TEXT_SHIFT_HORIZONTAL-ITEM_SIZE, TEXT_SHIFT_VERTICAL);
     menu_item_draw_sprite((x)*ITEM_SIZE,(y)*ITEM_SIZE, 
                          p_ber->levelset_get_passwd(lev), MENU_LEFT_SPRITE, FALSE, 
-                         LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, level_set));
+                         LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev));
   }
 }
 
@@ -1691,22 +1708,19 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
 }
 
 // New level set - based on profiles
-void game_gui::menu_level_run_new(MENU_STATE state, size_ptr data, size_ptr data1)
+void game_gui::menu_level_run_new(MENU_STATE state, size_ptr level_set, size_ptr unused)
 {
   switch(state) {
     case MENU_RETURN:
     case MENU_ENTER:
       {            
-        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run_new, data, data1);
-
-        int set = data;      
-        bool ret = p_ber->levelset_load(set);
-        assert(ret);
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run_new, level_set, unused);
       
-        p_ber->levelset_set_level(profile.level_set[set].level_selected);
-        menu_level_run_path_draw(set, profile.level_set[set].level_selected,
+        level_set_select(level_set);
+        menu_level_run_path_draw(level_set, 
+                                 profile.selected_level_get(),
                                  p_ber->levelset_get_levelnum(), 
-                                 profile.level_set[set].level_last);
+                                 profile.last_level_get());
       }
       break;
     
@@ -2346,6 +2360,9 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_level_hint(MENU_ENTER, ev.param_int_get(PARAM_0));
         break;
       
+      case GC_RUN_LEVEL_SELECT:
+        level_select(ev.param_int_get(PARAM_0));
+        break;
       case GC_RUN_LEVEL_LINE:
         level_run(&tmp_queue, (char *)ev.param_point_get(PARAM_0));
         break;

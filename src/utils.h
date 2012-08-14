@@ -132,7 +132,7 @@ int       file_load_text(FHANDLE f, char * p_mem, t_off max_lenght, t_off start_
 
 void *    file_load(const char *p_dir, const char *p_file, t_off *p_lenght, t_off start_address = 0, bool safe = TRUE);
 
-bool      file_save(const char *p_dir, const char *p_file, void *p_buffer, t_off lenght);
+bool      file_save(const char *p_dir, const char *p_file, void *p_buffer, t_off lenght, const char *p_mode = "wb");
 
 bool      file_exists(const char *p_dir, const char *p_file);
 

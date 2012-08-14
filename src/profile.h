@@ -51,10 +51,25 @@ typedef struct berusky_profile {
   char              profile_name[MAX_FILENAME];
   PROFILE_LEVEL_SET level_set[LEVEL_SET_NUM];
 
+  int               level_set_selected;
+  int               level_selected;
+
+public:
+
+  // fill level_set_selected and level_selected
+  void level_set_select(int level_set_num);
+
+  void selected_level_set(int level);
+  int  selected_level_get(void);
+
+  void last_level_set(int level);
+  int  last_level_get(void);
+
 public:
   
   void create(const char *p_name);
-  void load(const char *p_dir, const char *p_file); 
+  void load(const char *p_dir, const char *p_file);
+  void save(void);
 
 public:
   

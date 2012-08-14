@@ -145,6 +145,7 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
                              ET_INT(last_y + menu_text_diff_y), 
                              ET_INT(MENU_LEFT), ET_INT(p_text));
         LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+        u_text_highlight.depends_add(1);
     
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         if(!highlight_group_next)
@@ -165,7 +166,9 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
         
         last_x += last_dx;
-        last_y += last_dy;      
+        last_y += last_dy;
+        
+        highlight_group_next = HIGHLIGHT_GROUP_NONE;
       }
       break;
     case MENU_RIGHT_SPRITE:
@@ -190,6 +193,7 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
                                         ET_INT(last_y + menu_text_diff_y), 
                                         ET_INT(MENU_RIGHT), ET_INT(p_text));
         LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+        u_text_highlight.depends_add(1);
 
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         if(!highlight_group_next)
@@ -210,7 +214,9 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool sav
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
 
         last_x += last_dx;
-        last_y += last_dy;      
+        last_y += last_dy;
+        
+        highlight_group_next = HIGHLIGHT_GROUP_NONE;
       }
       break;
     case MENU_CENTER_SPRITE:
@@ -451,7 +457,7 @@ void gui_base::menu_services(LEVEL_EVENT_QUEUE *p_read_queue, LEVEL_EVENT_QUEUE 
           p_write_queue->commit();
           highlight_group[group].active = FALSE;
         }      
-        
+
         int highlight_events = ev.depends_get();
         // store the next one to the slot
         assert(highlight_events > 0);
