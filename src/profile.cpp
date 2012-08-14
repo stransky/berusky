@@ -52,7 +52,7 @@ void berusky_profile::create(const char *p_name)
 }
 
 // Scan the directory for all profile files
-bool profiles_load(const char *p_dir, BERUSKY_PROFILE **p_profiles, int *p_num)
+bool profiles_load(BERUSKY_PROFILE **p_profiles, int *p_num)
 {
   #define PROFILE_FILE_MASK "*.ini"
   DIRECTORY_ENTRY *p_profile_names;
@@ -60,18 +60,45 @@ bool profiles_load(const char *p_dir, BERUSKY_PROFILE **p_profiles, int *p_num)
   *p_profiles = NULL;
   *p_num = 0;
 
-  int files = file_list_get(p_dir, PROFILE_FILE_MASK, &p_profile_names);
+  int files = file_list_get(INI_USER_PROFILES, PROFILE_FILE_MASK, &p_profile_names);
   if(!files)
     return(FALSE);
   
   BERUSKY_PROFILE *p_list = new BERUSKY_PROFILE[files];
   for(int i = 0; i < files; i++) {
-    p_list[i].load(p_dir, p_profile_names[i].name);
+    p_list[i].load(INI_USER_PROFILES, p_profile_names[i].name);
   }
   ffree(p_profile_names);
   
   *p_profiles = p_list;
   *p_num = files;
 
+  return(TRUE);
+}
+
+// Try to load last used profile (defined by p_name, if it fails load the first one, 
+// if it fails return an error
+bool profile_load_last(char *p_name, BERUSKY_PROFILE &profile)
+{
+  BERUSKY_PROFILE *p_profiles = NULL;
+  int profile_num = 0;
+
+  if(!profiles_load(&p_profiles, &profile_num))
+    return(FALSE);   
+  
+  int i;
+  for(i = 0; i < profile_num; i++) {
+    if(!strncmp(p_profiles[i].profile_name, p_name, MAX_FILENAME)) {
+      profile = p_profiles[i];
+      break;
+    }
+  }
+
+  if(i == profile_num) {
+    // select the first one
+    profile = p_profiles[0];
+  }
+
+  delete [] p_profiles;
   return(TRUE);
 }

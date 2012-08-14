@@ -69,10 +69,15 @@ game_gui::game_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)
 
   // Set window title
   window_set_title(GAME_TITLE);
+
+  // Load last used profile
+  player_profile_load();
 }
 
 game_gui::~game_gui(void)
 {
+  player_profile_save();
+
   if(p_ber)
     delete p_ber;
    
@@ -80,6 +85,25 @@ game_gui::~game_gui(void)
   SDL_Quit();
 }
 
+#define LAST_PLAYER_PROFILE "last_profile"
+
+void game_gui::player_profile_load(void)
+{
+  char last_profile[MAX_FILENAME];
+  ini_read_string_file(INI_FILE, LAST_PLAYER_PROFILE,
+                       last_profile, sizeof(last_profile), "none");
+
+  // Load last used profile
+  BERUSKY_PROFILE prf;
+  if(profile_load_last(last_profile, prf)) {
+    profile = prf;
+  }
+}
+
+void game_gui::player_profile_save(void)
+{
+  ini_write_string(INI_FILE, LAST_PLAYER_PROFILE, profile.profile_name);
+}
 
 /*
   MENU_ENTER = 0,
@@ -301,7 +325,7 @@ void game_gui::menu_profiles(MENU_STATE state, size_ptr data, size_ptr data1)
           p_profiles = NULL;
           profile_num = 0;
         }
-        profiles_load(INI_USER_PROFILES, &p_profiles, &profile_num);
+        profiles_load(&p_profiles, &profile_num);
 
         if(profile_num > PROFILE_MAX)
           profile_num = PROFILE_MAX;

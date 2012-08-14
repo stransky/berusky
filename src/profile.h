@@ -48,7 +48,7 @@ typedef struct profile_level_set {
 typedef struct berusky_profile {
 
   char              filename[MAX_FILENAME];  
-  char              profile_name[MAX_FILENAME];  
+  char              profile_name[MAX_FILENAME];
   PROFILE_LEVEL_SET level_set[LEVEL_SET_NUM];
 
 public:
@@ -63,6 +63,10 @@ public:
 } BERUSKY_PROFILE;
 
 // BERUSKY_PROFILE *p_profiles array has to be released by delete []
-bool profiles_load(const char *p_dir, BERUSKY_PROFILE **p_profiles, int *p_num);
+bool profiles_load(BERUSKY_PROFILE **p_profiles, int *p_num);
+
+// Try to load last used profile (defined by p_name, if it fails load the first one,
+// if it fails return an error
+bool profile_load_last(char *p_name, BERUSKY_PROFILE &profile);
 
 #endif // __PROFILE_H__

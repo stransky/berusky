@@ -47,6 +47,9 @@ public:
   game_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_);
   ~game_gui(void);
 
+  void player_profile_load(void);
+  void player_profile_save(void);
+
   // Run level in GUI
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, char *p_level);
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, int set, int level);  
