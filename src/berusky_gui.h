@@ -30,6 +30,18 @@
 
 #include "gui.h"
 
+#define FIRST_PIPE            (FIRST_CLASSIC_LEVEL+13)
+
+#define LEVEL_DONE            (FIRST_CLASSIC_LEVEL+43)
+#define LEVEL_NEXT            (FIRST_CLASSIC_LEVEL+45)
+#define LEVEL_CLOSED          (FIRST_CLASSIC_LEVEL+42)
+
+#define ITEM_SIZE             (DOUBLE_SIZE ? 40 : 20)
+#define TEXT_SHIFT_VERTICAL   (DOUBLE_SIZE ? 10 : 0)
+#define TEXT_SHIFT_HORIZONTAL (DOUBLE_SIZE ? 50 : 20)
+
+#define MENU_PATH_GROUP       1
+
 // -------------------------------------------------------
 // Game UI
 // -------------------------------------------------------
@@ -52,7 +64,7 @@ public:
 
   // Run level in GUI
   void level_set_select(int level_set);
-  void level_select(int level);
+  void level_select(int level, tpos spr_x, tpos spr_y);
 
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, char *p_level);
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, int set, int level);  

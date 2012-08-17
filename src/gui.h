@@ -30,6 +30,10 @@
 
 #include "stack.h"
 
+#define  MENU_NO_SPRITE         0x1
+#define  MENU_DONT_DRAW_SPRITE  0x2
+#define  MENU_SAVE_BACK         0x4
+
 typedef enum _MENU_STATE {
 
   MENU_ENTER,
@@ -300,32 +304,37 @@ public:
     highlight_group_next = group;
   }
 
-  void menu_item_draw_sprite_set(spr_handle active, spr_handle inactive, 
+  void menu_item_draw_sprite_set(spr_handle active, spr_handle inactive,
                                  int menu_text_diff_x, int menu_text_diff_y);
-  void menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, bool save_back,                             
+
+  void menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flags,
                              LEVEL_EVENT click1,
                              LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                              LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
-  void menu_item_draw_sprite(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, bool save_back,
+  void menu_item_draw_sprite(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, int flags,
                              LEVEL_EVENT click1, 
                              LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                              LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
-  void menu_item_draw_text(char *p_text, MENU_TYPE spr_align, bool save_back,
+
+  void menu_item_draw_text(char *p_text, MENU_TYPE spr_align, int flags,
                            LEVEL_EVENT click1,
                            LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                            LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
+  void menu_item_draw_text(tpos x, tpos y, char *p_text, MENU_TYPE align, int flags,
+                           LEVEL_EVENT click1, 
+                           LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
+                           LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
 
-  void menu_item_draw(char *p_text,
-                      MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1,
+  void menu_item_draw(char *p_text, MENU_TYPE spr_align, int flags, 
+                      LEVEL_EVENT click1,
                       LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                       LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
-  void menu_item_draw(tpos x, tpos y, char *p_text,
-                      MENU_TYPE spr_align, bool save_back, LEVEL_EVENT click1,
+  void menu_item_draw(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, int flags, 
+                      LEVEL_EVENT click1,
                       LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE), 
                       LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));
 
-  void menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align,
-                               bool checked, int checkbox_id,
+  void menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool checked, int checkbox_id,
                                LEVEL_EVENT click1,
                                LEVEL_EVENT click2 = LEVEL_EVENT(EV_NONE),
                                LEVEL_EVENT click3 = LEVEL_EVENT(EV_NONE));

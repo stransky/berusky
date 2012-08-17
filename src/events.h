@@ -177,7 +177,7 @@ typedef enum {
   // Game control events
   
   // play level
-  // format: [GC_RUN_LEVEL_SELECT, level_number]
+  // format: [GC_RUN_LEVEL_SELECT, level_number, x, y]
   GC_RUN_LEVEL_SELECT,
   
   // play level

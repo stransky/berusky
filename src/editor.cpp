@@ -555,17 +555,17 @@ void editor_gui::side_menu_create(void)
   menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
   menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
 
-  menu_item_draw(side_menu[0], MENU_LEFT, TRUE, LEVEL_EVENT(ED_HELP));
-  menu_item_draw(side_menu[1], MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_NEW));
-  menu_item_draw(side_menu[2], MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SAVE));
-  menu_item_draw(side_menu[3], MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SAVE_AS));
-  menu_item_draw(side_menu[4], MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_LOAD));
-  menu_item_draw(side_menu[5], MENU_LEFT, TRUE, LEVEL_EVENT(ED_QUIT));
-  menu_item_draw(side_menu[6], MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_RUN));
-  menu_item_draw(side_menu[7], MENU_LEFT, TRUE, LEVEL_EVENT(ED_UNDO));
-  menu_item_draw(side_menu[9], MENU_LEFT, TRUE, LEVEL_EVENT(ED_ROTATE_SELECTION));
-  menu_item_draw(side_menu[10],MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_SHADER));
-  menu_item_draw(side_menu[11],MENU_LEFT, TRUE, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
+  menu_item_draw(side_menu[0], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_HELP));
+  menu_item_draw(side_menu[1], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_NEW));
+  menu_item_draw(side_menu[2], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SAVE));
+  menu_item_draw(side_menu[3], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SAVE_AS));
+  menu_item_draw(side_menu[4], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_LOAD));
+  menu_item_draw(side_menu[5], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_QUIT));
+  menu_item_draw(side_menu[6], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_RUN));
+  menu_item_draw(side_menu[7], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_UNDO));
+  menu_item_draw(side_menu[9], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_ROTATE_SELECTION));
+  menu_item_draw(side_menu[10],MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SHADER));
+  menu_item_draw(side_menu[11],MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
 
   p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
@@ -645,7 +645,7 @@ void editor_gui::layer_menu_draw(void)
 
   int i;
   for(i = 0; i < ALL_LEVEL_LAYERS; i++) {
-    menu_item_draw(layer_names[i], MENU_LEFT_NO_ARROW, FALSE, LEVEL_EVENT(ED_LEVEL_LAYER,layer_handle[i],LAYER_CHANGE));
+    menu_item_draw_text(layer_names[i], MENU_LEFT, 0, LEVEL_EVENT(ED_LEVEL_LAYER,layer_handle[i],LAYER_CHANGE));
     menu_get_last_rect(config.coord+i);
   }
 

@@ -54,6 +54,10 @@ typedef struct berusky_profile {
   int               level_set_selected;
   int               level_selected;
 
+  // Coordinates of selected level
+  tpos              level_spr_x;
+  tpos              level_spr_y;
+
 public:
 
   // fill level_set_selected and level_selected

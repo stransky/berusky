@@ -720,29 +720,11 @@ public:
 
 } FONT_LOOKUP_TABLE;
 
-/*
-#define FALIGN_LEFT             0
-#define FALIGN_CENTER           1
-#define FALIGN_RIGHT            2
-
-#define FALIGN_LEFT_NO_ARROW    3
-#define FALIGN_CENTER_NO_ARROW  4
-#define FALIGN_RIGHT_NO_ARROW   5
-*/
-
 typedef enum _MENU_TYPE {
 
   MENU_LEFT,
   MENU_CENTER,
   MENU_RIGHT,
-
-  MENU_LEFT_NO_ARROW,
-  MENU_CENTER_NO_ARROW,
-  MENU_RIGHT_NO_ARROW,
-
-  MENU_LEFT_SPRITE,
-  MENU_CENTER_SPRITE,
-  MENU_RIGHT_SPRITE
 
 } MENU_TYPE;
 

@@ -406,7 +406,6 @@
 #define ANIM_QUEUE_FIRST            1
 #define ANIM_QUEUE_LENGHT           100
 
-
 // Basic types
 typedef int item_handle;
 

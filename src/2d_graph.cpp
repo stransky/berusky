@@ -930,17 +930,11 @@ void font::print(char *p_string, RECT *p_res, int lines)
     
     switch(align) {
       case MENU_LEFT:
-      case MENU_LEFT_NO_ARROW:
-      case MENU_LEFT_SPRITE:
         break;
       case MENU_CENTER:
-      case MENU_CENTER_NO_ARROW:
-      case MENU_CENTER_SPRITE:
         px = (width_screen - width_string) / 2;
         break;
       case MENU_RIGHT:
-      case MENU_RIGHT_NO_ARROW:
-      case MENU_RIGHT_SPRITE:
         px -= width_string;
         break;
     }
