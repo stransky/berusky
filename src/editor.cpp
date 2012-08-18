@@ -1505,8 +1505,9 @@ bool editor_gui::event_handler(void)
           break;          
         
         default:
-          assert(ev.valid());
-          tmp_queue.add(ev);
+          if(ev.valid()) {
+            tmp_queue.add(ev);
+          }
           break;
       }
     }

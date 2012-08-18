@@ -126,7 +126,9 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
   {
     case MENU_LEFT:
       {
-        p_grf->draw(menu_spr_inactive, last_x, last_y);
+        if(!(flags&MENU_DONT_DRAW_SPRITE)) {
+          p_grf->draw(menu_spr_inactive, last_x, last_y);
+        }
         p_font->alignment_set(MENU_LEFT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x + menu_spr_diff_dx + menu_text_diff_x, 
@@ -134,18 +136,27 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
       
         RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
       
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED), 
-                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x), 
-                             ET_INT(last_y + menu_text_diff_y), 
+        LEVEL_EVENT s_spr;
+        LEVEL_EVENT u_spr;
+
+        if(flags&MENU_DONT_DRAW_SPRITE) {
+          u_spr = s_spr = LEVEL_EVENT(EV_NONE);
+        }
+        else {
+          s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+          u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
+        }
+
+        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED),
+                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
+                             ET_INT(last_y + menu_text_diff_y),
                              ET_INT(MENU_LEFT), ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
-                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x), 
-                             ET_INT(last_y + menu_text_diff_y), 
+        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),
+                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
+                             ET_INT(last_y + menu_text_diff_y),
                              ET_INT(MENU_LEFT), ET_INT(p_text));
         LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
-        u_text_highlight.depends_add(1);
+        u_text_highlight.depends_add(2);
     
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         if(!highlight_group_next)
@@ -173,15 +184,26 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
       break;
     case MENU_RIGHT:
       {
-        p_grf->draw(menu_spr_inactive, last_x, last_y);
+        if(!(flags&MENU_DONT_DRAW_SPRITE)) {
+          p_grf->draw(menu_spr_inactive, last_x, last_y);
+        }
         p_font->alignment_set(MENU_RIGHT);
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x - menu_text_diff_x, last_y + menu_text_diff_y, p_text);
 
         RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
 
-        LEVEL_EVENT s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
-        LEVEL_EVENT u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
+        LEVEL_EVENT s_spr;
+        LEVEL_EVENT u_spr;
+
+        if(flags&MENU_DONT_DRAW_SPRITE) {
+          u_spr = s_spr = LEVEL_EVENT(EV_NONE);
+        }
+        else {
+          s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+          u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
+        }
+        
         LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
                                         ET_INT(FONT_SELECTED), 
                                         ET_INT(last_x - menu_text_diff_x), 
@@ -194,7 +216,7 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
                                         ET_INT(MENU_RIGHT), ET_INT(p_text));
 
         LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
-        u_text_highlight.depends_add(1);
+        u_text_highlight.depends_add(2);
 
         input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
         if(!highlight_group_next)

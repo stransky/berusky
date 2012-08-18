@@ -179,7 +179,7 @@ typedef enum {
   // play level
   // format: [GC_RUN_LEVEL_SELECT, level_number, x, y]
   GC_RUN_LEVEL_SELECT,
-  
+    
   // play level
   // format: [GC_RUN_LEVEL_SET, sevel_set, level_number]  
   GC_RUN_LEVEL_SET,

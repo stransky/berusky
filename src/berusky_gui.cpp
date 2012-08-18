@@ -1226,7 +1226,7 @@ static int translate_direction(DIRECTION_INDEX last, DIRECTION_INDEX next)
   return(pipe_table[last][next]);
 }
 
-void game_gui::menu_level_draw_level(int lev, 
+void game_gui::menu_level_draw_level(int lev,
                                      int level_act, int level_num, int level_last, int level_set, 
                                      int x, int y)
 {
@@ -1256,11 +1256,13 @@ void game_gui::menu_level_draw_level(int lev,
     }
   
     p_grf->draw(spr, spr_x, spr_y);
-    menu_item_draw_text(spr_x+TEXT_SHIFT_HORIZONTAL,
-                        spr_y+TEXT_SHIFT_VERTICAL,
-                        p_ber->levelset_get_passwd(lev), 
-                        MENU_LEFT, FALSE,
-                        LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, spr_x, spr_y));
+    menu_item_draw_sprite_set(spr, spr,
+                              TEXT_SHIFT_HORIZONTAL-ITEM_SIZE, TEXT_SHIFT_VERTICAL);
+    menu_item_draw_sprite(spr_x,
+                          spr_y,
+                          p_ber->levelset_get_passwd(lev), 
+                          MENU_LEFT, MENU_DONT_DRAW_SPRITE,
+                          LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, spr_x, spr_y));
   }
 }
 
@@ -1643,44 +1645,6 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
       break;
   }
 
-/*  
-  switch(set) {
-    case 0:
-      p_grf->draw(MENU_SPRIT_START+0,GAME_RESOLUTION_X/2-320,IMAGE_START);
-      p_font->print(NULL, 0, IMAGE_START/2,_("difficulty training"));
-      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-      break;
-    case 1:
-      p_grf->draw(MENU_SPRIT_START+1,GAME_RESOLUTION_X/2-320,IMAGE_START);
-      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty easy"));
-      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-      break;
-    case 2:
-      p_grf->draw(MENU_SPRIT_START+2,GAME_RESOLUTION_X/2-320,IMAGE_START);
-      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty intermediate"));
-      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-      break;
-    case 3:
-      p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
-      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty advanced"));
-      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-      break;
-    case 4:
-      p_grf->draw(MENU_SPRIT_START+3,GAME_RESOLUTION_X/2-320,IMAGE_START);
-      p_font->print(NULL, 0, IMAGE_START/2, _("difficulty impossible"));
-      p_font->print(NULL, 0, TEXT_START+35, _("Level: %d"),level);
-      p_font->print(NULL, 0, TEXT_START+35+25, _("Password: %s"),p_ber->levelset_get_passwd(level));
-      break;
-    default:
-      assert(0);
-      break;
-  }
-*/
-
   #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
   #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
   #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
@@ -1689,11 +1653,21 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
 
   static char *play_string = _("play level");
   static char *level_hint  = _("level hint");
+  static char *select_string = _("select last");
   static char *back_string = _("back");
 
-  menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET, level_set, level_act));
-  menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint, MENU_RIGHT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
-  menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+  menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
+                 MENU_RIGHT, FALSE, 
+                 LEVEL_EVENT(GC_RUN_LEVEL_SET, level_set, level_act));
+  menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint,
+                 MENU_RIGHT, MENU_SAVE_BACK, 
+                 LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
+  menu_item_draw(MENU_X_START_R, MENU_Y_START+2*MENU_Y_DIFF, select_string,
+                 MENU_RIGHT, MENU_SAVE_BACK, 
+                 LEVEL_EVENT(GC_RUN_LEVEL_SELECT, level_last, profile.level_spr_x ,profile.level_spr_y));
+  menu_item_draw(MENU_X_START_L, MENU_Y_START+3*MENU_Y_DIFF, back_string,
+                 MENU_LEFT, FALSE, 
+                 LEVEL_EVENT(GI_MENU_BACK_POP));
 
   p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
   p_grf->flip();
@@ -1709,10 +1683,11 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr level_set, size_ptr
         menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_level_run_new, level_set, unused);
       
         level_set_select(level_set);
-        menu_level_run_path_draw(level_set, 
+        menu_level_run_path_draw(level_set,
                                  profile.selected_level_get(),
-                                 p_ber->levelset_get_levelnum(), 
+                                 p_ber->levelset_get_levelnum(),
                                  profile.last_level_get());
+        menu_level_name_print();
       }
       break;
     
@@ -1723,6 +1698,47 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr level_set, size_ptr
     default:
       break;
   }
+}
+
+/* Print selected level name 
+*/
+void game_gui::menu_level_name_print(void)
+{
+  int  level_set = profile.level_set_selected;
+  int  level = profile.level_selected;
+  RECT r;
+
+  p_font->select(FONT_DEFAULT);
+  p_font->alignment_set(MENU_LEFT);
+
+  switch(level_set) {
+    case 0:
+      p_font->print(&r, 0, 0, _("Selected Level: %d - %s"),level, 
+                    p_ber->levelset_get_passwd(level));
+      break;
+    case 1:
+      p_font->print(&r, 0, 0, _("Selected Level: %d - %s"),level,
+                    p_ber->levelset_get_passwd(level));
+      break;
+    case 2:
+      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
+                    p_ber->levelset_get_passwd(level));
+      break;
+    case 3:
+      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
+                    p_ber->levelset_get_passwd(level));
+      break;
+    case 4:
+      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
+                    p_ber->levelset_get_passwd(level));
+      break;
+    default:
+      assert(0);
+      break;
+  }
+
+  p_grf->redraw_add(&r);
+  p_grf->flip();
 }
 
 /* Load a hint for given level */
@@ -2354,6 +2370,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       
       case GC_RUN_LEVEL_SELECT:
         level_select(ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1), ev.param_int_get(PARAM_2));
+        menu_level_name_print();
         break;
       case GC_RUN_LEVEL_LINE:
         level_run(&tmp_queue, (char *)ev.param_point_get(PARAM_0));
@@ -2420,9 +2437,11 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         break;
             
       default:
-        assert(ev.valid());
-        tmp_queue.add(ev);
-        tmp_queue.commit();
+        // Copy only valid events
+        if(ev.valid()) {
+          tmp_queue.add(ev);
+          tmp_queue.commit();
+        }
         break;
     }
   }
