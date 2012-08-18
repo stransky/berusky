@@ -152,6 +152,7 @@ public:
   surface(class surface &src, bool deep_copy = false);
   surface(tpos width, tpos height, bool display_format = true);
   surface(class surface *p_src, int scale = 1, bool display_format = true);
+  surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height, bool display_format = true);
   ~surface(void);
 
   
@@ -580,6 +581,14 @@ public:
     return(p_dst->color_map(r,g,b));
   }
 
+  // Draw surface to screen or another surface
+  void draw(surface *p_src, tpos tx, tpos ty, surface *p_dst = NULL)
+  {    
+    SURFACE *p_dest = p_dst ? p_dst : p_screen_surface;
+    assert(p_src && p_dest);
+    p_src->blit(p_dest, tx, ty);
+  }
+
   void draw(spr_handle spr, tpos tx, tpos ty, spr_handle dst = 0)
   {
     SPRITE *p_spr = store.sprite_get(spr);
@@ -607,6 +616,11 @@ public:
   SPRITE * screen_get(void)
   {
     return(p_screen);
+  }
+
+  SURFACE * screen_surface_get(void)
+  {
+    return(p_screen_surface);
   }
   
   void redraw_set(int red_) 
@@ -800,10 +814,11 @@ public:
     return extra_height;
   }
 
-  tpos print(int c, tpos px, tpos py)
-  {
+  tpos print(int c, tpos px, tpos py, bool draw = TRUE)
+  {  
     spr_handle spr = font_sprite_first+ftable.lookup(c);
-    p_grf->draw(spr, px, py);
+    if(draw)
+      p_grf->draw(spr, px, py);
     return(p_grf->sprite_get_width(spr));
   }
 
@@ -837,6 +852,9 @@ typedef class font {
   // offset for print functions
   tpos              offset_x;
   tpos              offset_y;
+
+  // Don't print anything, just return requested rectangle
+  bool              try_run;
 
 public:
 
@@ -923,6 +941,11 @@ public:
   void free(int font_index)
   {
     finfo[font_index].free();
+  }
+
+  void try_run_set(bool try_)
+  {
+    try_run = try_;
   }
 
   void print(char *p_string, RECT *p_res = NULL, int lines = 0);

@@ -264,6 +264,14 @@ surface::surface(tpos width, tpos height, bool display_format)
   create(width, height, display_format);
 }
 
+surface::surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height, bool display_format)
+: used(0), p_surf(NULL)
+{ 
+  // Fill this surface from the source one
+  create(width, height, display_format);
+  p_src->blit(sx,sy,width,height,this,0,0);
+}
+
 surface::surface(class surface *p_src, int scale, bool display_format)
 : used(0), p_surf(NULL)
 {  
@@ -311,7 +319,7 @@ void surface::blit(class surface *p_dst, tpos tx, tpos ty)
   SDL_BlitSurface(p_surf, NULL, p_dst->p_surf, &dst_rec);
 }
 
-// blit part of source surface to destination surface
+// blit part of this surface to a destination (target) surface
 void surface::blit(tpos sx, tpos sy, tpos dx, tpos dy, class surface *p_dst, tpos tx, tpos ty)
 {
   assert(p_surf);
@@ -948,7 +956,7 @@ void font::print(char *p_string, RECT *p_res, int lines)
     }
   
     while(*p_tmp) {
-      px += p_font->print(*p_tmp,px,py);
+      px += p_font->print(*p_tmp,px,py,!try_run);
       p_tmp++;
     }
  

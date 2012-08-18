@@ -1663,7 +1663,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
                  MENU_RIGHT, MENU_SAVE_BACK, 
                  LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
   menu_item_draw(MENU_X_START_R, MENU_Y_START+2*MENU_Y_DIFF, select_string,
-                 MENU_RIGHT, MENU_SAVE_BACK, 
+                 MENU_RIGHT, FALSE, 
                  LEVEL_EVENT(GC_RUN_LEVEL_SELECT, level_last, profile.level_spr_x ,profile.level_spr_y));
   menu_item_draw(MENU_X_START_L, MENU_Y_START+3*MENU_Y_DIFF, back_string,
                  MENU_LEFT, FALSE, 
@@ -1700,42 +1700,63 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr level_set, size_ptr
   }
 }
 
+#undef MENU_X_START
+#undef MENU_Y_START
+
 /* Print selected level name 
 */
 void game_gui::menu_level_name_print(void)
-{
+{  
   int  level_set = profile.level_set_selected;
   int  level = profile.level_selected;
-  RECT r;
+
+  static int last_level_set = -1;
+  static int last_level = -1;
+
+  if(level_set == last_level_set && level == last_level)
+    return;
+  
+  last_level_set = level_set;
+  last_level = level;
 
   p_font->select(FONT_DEFAULT);
-  p_font->alignment_set(MENU_LEFT);
+  p_font->alignment_set(MENU_CENTER);
 
-  switch(level_set) {
-    case 0:
-      p_font->print(&r, 0, 0, _("Selected Level: %d - %s"),level, 
-                    p_ber->levelset_get_passwd(level));
-      break;
-    case 1:
-      p_font->print(&r, 0, 0, _("Selected Level: %d - %s"),level,
-                    p_ber->levelset_get_passwd(level));
-      break;
-    case 2:
-      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
-                    p_ber->levelset_get_passwd(level));
-      break;
-    case 3:
-      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
-                    p_ber->levelset_get_passwd(level));
-      break;
-    case 4:
-      p_font->print(&r, 0, 0, _("Selected Level: %d - %"),level,
-                    p_ber->levelset_get_passwd(level));
-      break;
-    default:
-      assert(0);
-      break;
+  #define MENU_X_START (GAME_RESOLUTION_X/2 - 17 - 60)  
+  #define MENU_Y_START (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 150))
+
+  RECT r;
+  p_font->try_run_set(TRUE);
+  p_font->print(&r, MENU_X_START, MENU_Y_START, _("Level: %d - %s"),level,
+                p_ber->levelset_get_passwd(level));
+  p_font->try_run_set(FALSE);
+
+  // Adjust the stored rectange
+  #define NAME_MARGIN 50
+  r.x -= NAME_MARGIN;
+  r.w += NAME_MARGIN*2;
+  
+  static SURFACE *p_background = NULL;
+  static tpos     background_x;
+  static tpos     background_y;
+  
+  // We have stored background here - restore it first
+  if(p_background) {
+    p_grf->draw(p_background, background_x, background_y);
+    delete p_background;
+    p_background = NULL;
   }
+
+  assert(!p_background);
+
+  // Store the background
+  p_background = new SURFACE(p_grf->screen_surface_get(), r.x, r.y, r.w, r.h);
+  background_x = r.x;
+  background_y = r.y;
+
+  // And print the level name
+  p_font->print(NULL, MENU_X_START, MENU_Y_START, _("Level: %d - %s"),level,
+                p_ber->levelset_get_passwd(level));
 
   p_grf->redraw_add(&r);
   p_grf->flip();
@@ -1976,6 +1997,7 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
   }
 }
 
+#undef MENU_X_START
 #undef MENU_X_START_L
 #undef MENU_X_START_R
 #undef MENU_Y_START
@@ -2047,8 +2069,13 @@ void game_gui::menu_level_end_custom(MENU_STATE state, size_ptr data, size_ptr d
   }
 }
 
+#undef MENU_X_START
 #undef MENU_X_START_L
+#undef MENU_X_START_R
 #undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
+
 #undef SCROLL_START_X
 #undef SCROLL_START_Y
 #undef SCROLL_LINES
