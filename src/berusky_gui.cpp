@@ -1441,8 +1441,12 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
                                              level_act, level_num, level_last, level_set, 6, 5);
         lev += menu_level_run_path_draw_line("UPRPRPRPRV00UPRV11UPUV12UPRPUV13UPUV14UPUV15UPRPUPU",
                                              level_act, level_num, level_last, level_set, 15, 12);
-        lev += menu_level_run_path_draw_line("DPRV16DPDV17DPRPRPRPDPV18DPDV19DPLPDV20",
+        lev += menu_level_run_path_draw_line("DPRV16DPDV17",
                                              level_act, level_num, level_last, level_set, 15, 12);
+        lev += menu_level_run_path_draw_line("LPLPDPDV18DPDV19DPD",
+                                             level_act, level_num, level_last, level_set, 23, 17);
+        lev += menu_level_run_path_draw_line("DPDV20DPRPDPRPR",
+                                             level_act, level_num, level_last, level_set, 12, -1);
         lev += menu_level_run_path_draw_line("LPLPLPLPUV21UPLPLPLPLPDV22DPDV23DPDV24LPDV25DPDV26",
                                              level_act, level_num, level_last, level_set, 16, 15);
         lev += menu_level_run_path_draw_line("DPDV27DPLPDV28DPDV29DPDPLPDPDV30DPDPDV31LPLPLPLPLPLPU",
@@ -1468,7 +1472,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         // 35 levels
         #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPLPDV06DPDV07DPDV08DPLPLPLPLPUV09UP" \
                            "UV10UPUV11UPLPUV12UPLPUV13UPUV14UPUV15LPUPUPUV16UPLPLPDPLPDPLPLPDV17DPDV18" \
-                           "DPDV19DPDV20DPLPDPDV21DPDV22DPDV23DPLPLPDPLPLPLPUPUPUV24UPUV25UPLPUV26UPUV" \
+                           "DPDV19DPDV20DPLPDPDV21DPDV22LPDPDPDPLPDPDPLPLPLPUPUPUV23UPUV24UPUV25UPLPUV26UPUV" \
                            "27UPUV28UPUV29UPRPUPV30UPUV31UPLPLPDPDPLPLPLPDPV32DPDV33DPLPDPDV34DPLP"
         int lev = 0;
       
@@ -1535,12 +1539,8 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         draw_pipe(0, ADV_START_X+3, ADV_START_Y+4);
         menu_level_draw_level(10,level_act,level_num,level_last,level_set,ADV_START_X+4, ADV_START_Y+4);
         
-        draw_pipe(2, ADV_START_X+4, ADV_START_Y+5);
-        draw_pipe(2, ADV_START_X+4, ADV_START_Y+6);
-        menu_level_draw_level(11,level_act,level_num,level_last,level_set,ADV_START_X+4, ADV_START_Y+7);
-        
-        draw_pipe(5, ADV_START_X+4, ADV_START_Y+8);
-        draw_pipe(0, ADV_START_X+5, ADV_START_Y+8);
+        menu_level_run_path_draw_line("DPRPRPDPV11DPD",
+                                      level_act, level_num, level_last, level_set, ADV_START_X+4, ADV_START_Y+4);
         menu_level_draw_level(12,level_act,level_num,level_last,level_set,ADV_START_X+6, ADV_START_Y+8);
 
         draw_pipe(0, ADV_START_X-1, ADV_START_Y);
@@ -1589,7 +1589,6 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         
         draw_pipe(0, ADV_START_X-14, ADV_START_Y+6);
         draw_pipe(0, ADV_START_X-15, ADV_START_Y+6);
-        
       }
       break;
     case 4:
@@ -1658,7 +1657,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
 
   menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
                  MENU_RIGHT, FALSE, 
-                 LEVEL_EVENT(GC_RUN_LEVEL_SET, level_set, level_act));
+                 LEVEL_EVENT(GC_RUN_LEVEL_SET));
   menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint,
                  MENU_RIGHT, MENU_SAVE_BACK, 
                  LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
@@ -1706,18 +1705,8 @@ void game_gui::menu_level_run_new(MENU_STATE state, size_ptr level_set, size_ptr
 /* Print selected level name 
 */
 void game_gui::menu_level_name_print(void)
-{  
-  int  level_set = profile.level_set_selected;
+{
   int  level = profile.level_selected;
-
-  static int last_level_set = -1;
-  static int last_level = -1;
-
-  if(level_set == last_level_set && level == last_level)
-    return;
-  
-  last_level_set = level_set;
-  last_level = level;
 
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_CENTER);
@@ -1732,7 +1721,7 @@ void game_gui::menu_level_name_print(void)
   p_font->try_run_set(FALSE);
 
   // Adjust the stored rectange
-  #define NAME_MARGIN 50
+  #define NAME_MARGIN 20
   r.x -= NAME_MARGIN;
   r.w += NAME_MARGIN*2;
   
@@ -1852,11 +1841,14 @@ bool game_gui::level_run(LEVEL_EVENT_QUEUE *p_queue, char *p_level)
 }
 
 /* Load specified level from level set */
-bool game_gui::level_run(LEVEL_EVENT_QUEUE *p_queue, int set, int level)
+bool game_gui::level_run(LEVEL_EVENT_QUEUE *p_queue)
 {
   assert(p_ber);
 
   menu_leave();
+
+  int set = profile.level_set_selected;
+  int level = profile.level_selected;
 
   /* Run a menu if it fails */
   if(p_ber->levelset_load(set) && p_ber->level_play(p_queue, level)) {
@@ -2212,7 +2204,7 @@ void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
         static char *hint    = _("level hint (CTRL+F1)");
         static char *help    = _("help (F1)");
         
-        static char *menu    = _("back to main menu");
+        static char *menu    = _("back to menu");
         static char *quit    = _("quit (CTRL+X)");
       
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
@@ -2403,7 +2395,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         level_run(&tmp_queue, (char *)ev.param_point_get(PARAM_0));
         break;
       case GC_RUN_LEVEL_SET:
-        level_run(&tmp_queue, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
+        level_run(&tmp_queue);
         break;
       case GC_STOP_LEVEL:
         level_stop(&tmp_queue, ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));

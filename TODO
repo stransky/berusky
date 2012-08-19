@@ -1,14 +1,10 @@
-- draw menu path according to selected profile
+- Main menu - back to level path
+  - level end - the end page is not rendered!!
+
 - TODO -> TMP name for profile ini file
 - save finished level to profile
 - run profile screen after start?
-- load last used profile? (in ini file)
-- save last used profile
 
-- level screen -> select last level (unlocked)
-
-- Last profile
-- new profile
 - change profile? (max 15 profiles?)
 
 - Menu path
@@ -16,8 +12,7 @@
   - you can choose a different one
   - level name is printed above the menu
   - you can play this level or seek for help or go back
-  
-
+  - when the level is finished
 
 - better level map
   - a cave?

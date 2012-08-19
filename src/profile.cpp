@@ -66,12 +66,14 @@ void berusky_profile::load(const char *p_dir, const char *p_file)
   char tmp[MAX_FILENAME];
   return_path(p_dir, p_file, tmp, MAX_FILENAME);
 
-  ini_read_string_file(tmp, PROFILE_NAME, profile_name, sizeof(profile_name), "Default");
-  level_set[0].level_last = ini_read_int_file(tmp, PROFILE_LAST_TRAINING, 0);
-  level_set[1].level_last = ini_read_int_file(tmp, PROFILE_LAST_EASY, 0);
-  level_set[2].level_last = ini_read_int_file(tmp, PROFILE_LAST_INTERMEDIATE, 0);
-  level_set[3].level_last = ini_read_int_file(tmp, PROFILE_LAST_ADVANCED, 0);
-  level_set[4].level_last = ini_read_int_file(tmp, PROFILE_LAST_IMPOSSIBLE, 0);
+  ini_read_string_file(tmp, PROFILE_NAME, 
+                       profile_name, sizeof(profile_name), "Default");
+
+  level_set[0].level_selected = level_set[0].level_last = ini_read_int_file(tmp, PROFILE_LAST_TRAINING, 0);
+  level_set[1].level_selected = level_set[1].level_last = ini_read_int_file(tmp, PROFILE_LAST_EASY, 0);
+  level_set[2].level_selected = level_set[2].level_last = ini_read_int_file(tmp, PROFILE_LAST_INTERMEDIATE, 0);
+  level_set[3].level_selected = level_set[3].level_last = ini_read_int_file(tmp, PROFILE_LAST_ADVANCED, 0);
+  level_set[4].level_selected = level_set[4].level_last = ini_read_int_file(tmp, PROFILE_LAST_IMPOSSIBLE, 0);
 }
 
 void berusky_profile::save(void)
