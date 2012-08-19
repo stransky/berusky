@@ -67,7 +67,7 @@ public:
   void level_select(int level, tpos spr_x, tpos spr_y);
 
   bool level_run(LEVEL_EVENT_QUEUE *p_queue, char *p_level);
-  bool level_run(LEVEL_EVENT_QUEUE *p_queue, int set, int level);  
+  bool level_run(LEVEL_EVENT_QUEUE *p_queue);
   void level_stop(LEVEL_EVENT_QUEUE *p_queue, int cheat, int menu);
   void level_suspend(LEVEL_EVENT_QUEUE *p_queue);
   void level_restore(LEVEL_EVENT_QUEUE *p_queue);
