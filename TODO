@@ -1,6 +1,7 @@
 - Main menu - back to level path
-- level end - the end page is not rendered!!
-- second enter to the same menu (easy...) - menu name is not printed!!
+- Level end screen -> add menu "play next level"
+- save finished level to profile
+
 - draw menu path according to selected profile
 - TODO -> TMP name for profile ini file
 - save finished level to profile

@@ -67,7 +67,7 @@ EVENT_KEY game_key_array[] =
   {LEVEL_EVENT(GC_MENU_QUIT),LEVEL_EVENT(EV_NONE), K_X, 0,1,0,KEY_CLEAR_AFTER_PRESS},
 
   // A key for cheating - E+SHIFT
-  // {LEVEL_EVENT(GC_STOP_LEVEL, TRUE, TRUE),LEVEL_EVENT(EV_NONE), K_E, 0,0,1, KEY_CLEAR_AFTER_PRESS}
+  {LEVEL_EVENT(GC_STOP_LEVEL, TRUE, TRUE),LEVEL_EVENT(EV_NONE), K_E, 0,0,1, KEY_CLEAR_AFTER_PRESS}
 };
 
 EVENT_KEY_SET game_keys = { game_key_array , sizeof(game_key_array) / sizeof(game_key_array[0]) };

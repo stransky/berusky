@@ -1970,10 +1970,10 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         if(p_status->resolved()) {
           int set = data;
           int level = data1;
-          menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, set, level+1));
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_MENU_RUN_LEVEL));
         }
         
-        menu_item_draw(MENU_X_START_L, MENU_Y_START+1*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
+        menu_item_draw(MENU_X_START_L, MENU_Y_START+1*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GC_MENU_RUN_LEVEL));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();        
@@ -2221,7 +2221,7 @@ void game_gui::menu_in_game(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_draw(hint, MENU_LEFT,  MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
         menu_item_draw(help, MENU_LEFT,  MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_HELP, FALSE));
         
-        menu_item_draw(menu, MENU_LEFT, FALSE, LEVEL_EVENT(GC_STOP_LEVEL, FALSE, FALSE), LEVEL_EVENT(GC_MENU_START));
+        menu_item_draw(menu, MENU_LEFT, FALSE, LEVEL_EVENT(GC_STOP_LEVEL, FALSE, FALSE), LEVEL_EVENT(GC_MENU_RUN_LEVEL));
         menu_item_draw(quit, MENU_LEFT, FALSE, LEVEL_EVENT(GC_STOP_LEVEL, FALSE, FALSE), LEVEL_EVENT(GC_MENU_QUIT));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
