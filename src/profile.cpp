@@ -34,9 +34,10 @@ berusky_profile::berusky_profile(void)
 
 void berusky_profile::selected_level_set(int level)
 {
-  level_selected = level;
-  if(level_selected > level_set[level_set_selected].level_last)
-    level_selected = level_set[level_set_selected].level_last;
+  if(level > level_set[level_set_selected].level_last)
+    level = level_set[level_set_selected].level_last;
+  
+  level_set[level_set_selected].level_selected = level;
 }
 
 int  berusky_profile::selected_level_get(void)
@@ -54,11 +55,27 @@ int  berusky_profile::last_level_get(void)
   return(level_set[level_set_selected].level_last);
 }
 
-void berusky_profile::level_set_select(int level_set_num)
+void berusky_profile::level_set_set(int level_set_num)
 {
   assert(level_set_num >= 0 && level_set_num < LEVEL_SET_NUM);
   level_set_selected = level_set_num;
   selected_level_set(level_set[level_set_num].level_selected);
+}
+
+int  berusky_profile::level_set_get(void)
+{
+  return(level_set_selected);
+}
+
+void berusky_profile::selected_level_finished(void)
+{
+  int selected_level = selected_level_get();
+
+  if(selected_level == last_level_get()) {
+    selected_level += 1;
+    last_level_set(selected_level);
+    selected_level_set(selected_level);
+  }
 }
 
 void berusky_profile::load(const char *p_dir, const char *p_file)

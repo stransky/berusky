@@ -45,14 +45,15 @@ typedef struct profile_level_set {
 } PROFILE_LEVEL_SET;
 
 // Player profile
-typedef struct berusky_profile {
+typedef class berusky_profile {
 
   char              filename[MAX_FILENAME];  
-  char              profile_name[MAX_FILENAME];
   PROFILE_LEVEL_SET level_set[LEVEL_SET_NUM];
-
   int               level_set_selected;
-  int               level_selected;
+
+public:
+  
+  char              profile_name[MAX_FILENAME];
 
   // Coordinates of selected level
   tpos              level_spr_x;
@@ -61,13 +62,17 @@ typedef struct berusky_profile {
 public:
 
   // fill level_set_selected and level_selected
-  void level_set_select(int level_set_num);
+  void level_set_set(int level_set_num);
+  int  level_set_get(void);
 
   void selected_level_set(int level);
   int  selected_level_get(void);
 
   void last_level_set(int level);
   int  last_level_get(void);
+
+  // The selected level has been successfuly finished
+  void selected_level_finished(void);
 
 public:
   

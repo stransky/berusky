@@ -94,7 +94,7 @@ public:
   void menu_in_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
 
   // Level screens
-  void menu_level_run_new(MENU_STATE state, size_ptr level_set = 0, size_ptr unused = 0);
+  void menu_level_run_new(MENU_STATE state, size_ptr level_set = 0, size_ptr unused = 0);  
   void menu_level_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_level_end_custom(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);  
   void menu_levelset_end(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);

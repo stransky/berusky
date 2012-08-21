@@ -199,9 +199,9 @@ typedef enum {
   // play level with welcome screen
   // format: [GC_MENU_RUN_LEVEL, level_set]  
   GC_MENU_RUN_LEVEL,
-    
+  
   // end screen for a level
-  // format: [GC_MENU_END_LEVEL, level_set]
+  // format: [GC_MENU_END_LEVEL]
   GC_MENU_END_LEVEL,
   
   // end screen for a custom level
