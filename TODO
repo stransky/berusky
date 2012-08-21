@@ -1,11 +1,6 @@
-- Main menu - back to level path
-- Level end screen -> add menu "play next level"
-- save finished level to profile
-
-- draw menu path according to selected profile
+- finished levels are not saved to profile
 - TODO -> TMP name for profile ini file
-- save finished level to profile
-- run profile screen after start?
+- run profile screen after start? (default profile?)
 
 - change profile? (max 15 profiles?)
 
