@@ -75,6 +75,9 @@ void berusky_profile::selected_level_finished(void)
     selected_level += 1;
     last_level_set(selected_level);
     selected_level_set(selected_level);
+  
+    // save the profile
+    save();
   }
 }
 
@@ -82,6 +85,8 @@ void berusky_profile::load(const char *p_dir, const char *p_file)
 {
   char tmp[MAX_FILENAME];
   return_path(p_dir, p_file, tmp, MAX_FILENAME);
+
+  strcpy(filename, p_file);
 
   ini_read_string_file(tmp, PROFILE_NAME, 
                        profile_name, sizeof(profile_name), "Default");
@@ -104,7 +109,7 @@ void berusky_profile::save(void)
            level_set[2].level_last,
            level_set[3].level_last,
            level_set[4].level_last);
-  file_save(INI_USER_PROFILES, profile_name, (void *)buffer, 1024, "w");
+  file_save(INI_USER_PROFILES, filename, (void *)buffer, strlen(buffer), "w");
 }
 
 void berusky_profile::create(const char *p_name)
