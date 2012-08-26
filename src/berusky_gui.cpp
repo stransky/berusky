@@ -1101,8 +1101,8 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
         bool from_game = data;
       
         if(!p_ber->levelset_is_custom()) {
-          int set = p_ber->levelset_get_set();
-          int level = p_ber->levelset_get_level();
+          int set = profile.level_set_get();
+          int level = profile.selected_level_get();
         
           // ... Load & print hint for level ...
           p_hint = level_hint_load(set, level);
@@ -1112,28 +1112,28 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
         tpos start_y;
       
         if(DOUBLE_SIZE) {
-          start_x = GAME_RESOLUTION_X/2;
+          start_x = GAME_RESOLUTION_X/2-60;
           start_y = GAME_RESOLUTION_Y/2;
         }
         else {
           start_x = 0;
           start_y = 0;
         }
-      
+
         if(p_hint) {
           p_font->print(NULL, start_x+20, start_y+100, _("Level hint:"));
         } else {
           p_hint = _("\nSorry dude, no hint available for this\nlevel.");
         }
         p_font->print(NULL, start_x+20, start_y+120, p_hint);
-      
+
         #define MENU_X_START (start_x+270)
         #define MENU_Y_START ((DOUBLE_SIZE) ? GAME_RESOLUTION_Y - 90 : 400)
         #define MENU_X_DIFF  90
         #define MENU_Y_DIFF  35
 
         static char *back = _("back");
-      
+
         menu_item_start();
         menu_item_draw(MENU_X_START, MENU_Y_START+MENU_Y_DIFF, 
                        back, MENU_LEFT, FALSE, LEVEL_EVENT(from_game ? GC_RESTORE_LEVEL : GI_MENU_BACK_POP));
@@ -1749,7 +1749,7 @@ void game_gui::menu_level_name_print(void)
   background_y = r.y;
 
   // And print the level name
-  p_font->print(NULL, MENU_X_START, MENU_Y_START, _("Level: %d - %s"),level,
+  p_font->print(NULL, MENU_X_START, MENU_Y_START, _("Level: %d - %s"),level+1,
                 p_ber->levelset_get_passwd(level));
 
   p_grf->redraw_add(&r);

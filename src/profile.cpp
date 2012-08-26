@@ -116,6 +116,9 @@ void berusky_profile::create(const char *p_name)
 {
   memset(this,0,sizeof(*this));
   strcpy(profile_name, p_name);
+  strcpy(filename,"profileXXXXXX");
+  mktemp(filename);
+  strcat(filename,".ini");
 }
 
 // Scan the directory for all profile files
