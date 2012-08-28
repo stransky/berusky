@@ -197,8 +197,8 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
       
         p_font->alignment_set(MENU_CENTER);
         p_font->start_set(0, GAME_RESOLUTION_Y - 60);
-        p_font->print(_("berusky (C) Anakreon 1997-2007\n"));
-        p_font->print(_("distributed under GPL\n"));
+        p_font->print(NULL,_("berusky version %s (C) Anakreon 1997-2012\n"), VERSION);
+        p_font->print(_("distributed under GPLv2\n"));
         
         #define PROFILE_Y_DIFF  (DOUBLE_SIZE ? 70 : 40)
         p_font->alignment_set(MENU_CENTER);

@@ -32,8 +32,6 @@
 #ifndef __PORTABILITY_H__
 #define __PORTABILITY_H__
 
-#define BERUSKY_VERSION   "1.4"
-
 /*
  * Defines for windows
  */
