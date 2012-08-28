@@ -1,6 +1,3 @@
-- vyhodit ten single-size rezim?
-- check all in old (not double size) mode
-
 - windows - add MSVC dll
 - game -> in_game menu -> help -> credits -> returns back to main menu
 instead of the in-game menu
@@ -9,26 +6,15 @@ instead of the in-game menu
 - double-size mode, new items (from B2)
 - put settings to in-game menu
 
-- profile save - fullscreen
-
 - better animations - explosions and so
 
 - load file path from configure scripts?
 
-Nove prvky:
+New Items:
 
-- Nove pozadi
-- lehka bedna
-- dira v zemi
-  - muze tam spadnout bedna nebo vybusnina
-
-Bugs:
-
-Berusky V1.1 crashes sometimes with this error:
-berusky: 2d_graph.h:344: surf_handle sprite_store::surface_insert(char*):
-Assertion `surface_last < surface_num' failed.
-
--> game/editor switch?
+- new backgrounds
+- light box
+- a hole  
 
 Game:
 
