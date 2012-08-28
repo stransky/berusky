@@ -552,9 +552,9 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
       
         bool from_game = (bool)data;
       
-        static char *fulscreen = _("fulscreen");
-        static char *double_size = _("double size");
+        static char *fulscreen = _("fulscreen");      
 /*
+        static char *double_size = _("double size");
         static char *sound = _("sound");
         static char *music = _("music");
 */
@@ -564,8 +564,10 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_start();
         menu_item_draw_checkbox(fulscreen, MENU_LEFT, p_grf->fullscreen_get(), 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
+/*
         menu_item_draw_checkbox(double_size, MENU_LEFT, berusky_config::double_size, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_DOUBLESIZE_SWITCH));
+*/
 /*
         menu_item_draw_checkbox(sound, MENU_LEFT, p_ber->sound.sound_on, 1,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_SOUND_SWITCH));
@@ -1227,10 +1229,12 @@ static int translate_direction(DIRECTION_INDEX last, DIRECTION_INDEX next)
 }
 
 void game_gui::menu_level_draw_level(int lev,
-                                     int level_act, int level_num, int level_last, int level_set, 
+                                     int level_act, int level_num, int level_last, int level_set,
                                      int x, int y)
 {
   assert(lev < level_num);
+
+  char *p_level_name = DOUBLE_SIZE ? p_ber->levelset_get_passwd(lev) : (char*)"";
 
   if(lev > level_last) {
     // Draw as inactive sprite
@@ -1239,7 +1243,7 @@ void game_gui::menu_level_draw_level(int lev,
     p_font->select(FONT_DEFAULT);
     p_font->print(NULL, (x)*ITEM_SIZE+TEXT_SHIFT_HORIZONTAL,
                         (y)*ITEM_SIZE+TEXT_SHIFT_VERTICAL,
-                        p_ber->levelset_get_passwd(lev));
+                        p_level_name);
   }
   else {
     tpos spr_x = (x)*ITEM_SIZE;
@@ -1260,7 +1264,7 @@ void game_gui::menu_level_draw_level(int lev,
                               TEXT_SHIFT_HORIZONTAL-ITEM_SIZE, TEXT_SHIFT_VERTICAL);
     menu_item_draw_sprite(spr_x,
                           spr_y,
-                          p_ber->levelset_get_passwd(lev), 
+                          p_level_name,
                           MENU_LEFT, MENU_DONT_DRAW_SPRITE,
                           LEVEL_EVENT(GC_RUN_LEVEL_SELECT, lev, spr_x, spr_y));
   }
@@ -1651,7 +1655,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
 
   #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60)
   #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60)
-  #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 120))
+  #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 180))
   #define MENU_X_DIFF     0
   #define MENU_Y_DIFF     35
 

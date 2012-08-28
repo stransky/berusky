@@ -88,7 +88,7 @@ void berusky_profile::load(const char *p_dir, const char *p_file)
 
   strcpy(filename, p_file);
 
-  ini_read_string_file(tmp, PROFILE_NAME, 
+  ini_read_string_file(tmp, PROFILE_NAME,
                        profile_name, sizeof(profile_name), "Default");
 
   level_set[0].level_selected = level_set[0].level_last = ini_read_int_file(tmp, PROFILE_LAST_TRAINING, 0);
