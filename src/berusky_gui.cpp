@@ -208,7 +208,7 @@ void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();              
       }
-      break;    
+      break;
     case MENU_LEAVE:
       input.mevent_clear();
       break;
