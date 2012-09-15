@@ -267,6 +267,7 @@ void user_directory_create(void)
   // Check ~./berusky
   dir_create(INI_USER_DIRECTORY);
   dir_create(INI_USER_LEVELS);
+  dir_create(INI_USER_PROFILES);
 
   // Check ~./berusky/berusky.ini
   bprintfnl(_("Checking %s/%s..."),INI_USER_DIRECTORY,INI_FILE_NAME);
