@@ -405,7 +405,7 @@ public:
     *******************************************************
   */
 
-  spr_handle sprite_insert(const char *p_file, spr_handle first, spr_handle num = 1, spr_handle *p_last = NULL);
+  spr_handle sprite_insert(const char *p_file, spr_handle first, spr_handle *p_last = NULL);
   spr_handle sprite_insert(surf_handle sf_handle, tflag flag_ = 0, RECT *p_rect = NULL, spr_handle first = INSERT_APPEND);
   spr_handle sprite_insert(SURFACE *p_surf, tflag flag_ = 0, RECT *p_rect = NULL, spr_handle first = INSERT_APPEND);
   spr_handle sprite_insert(SPRITE *p_spr, int num = 1, spr_handle first = INSERT_APPEND);
@@ -455,8 +455,8 @@ public:
 //   the graph_2d store class
 // -------------------------------------------------------
 
-#define SURFACES 100
-#define SPRITES  10000
+#define SURFACES 1000
+#define SPRITES  100000
 #define RECT_NUM      (2*800)
 #define RECT_NUM_ALERT 800
 
@@ -524,14 +524,14 @@ public:
     return((p_screen->get_height() - store.sprite_get_height(spr)) / 2);
   }
 
-  spr_handle sprite_insert(const char *p_file, spr_handle first, spr_handle num = 1, spr_handle *p_last = NULL)
+  spr_handle sprite_insert(const char *p_file, spr_handle first, spr_handle *p_last = NULL)
   {
-    return(store.sprite_insert(p_file,first,num,p_last));
+    return(store.sprite_insert(p_file,first,p_last));
   }
 
-  spr_handle sprite_insert(SPRITE *p_spr, int num = 1, spr_handle first = INSERT_APPEND)
+  spr_handle sprite_insert(SPRITE *p_spr, spr_handle first = INSERT_APPEND)
   {
-    return(store.sprite_insert(p_spr,num,first));
+    return(store.sprite_insert(p_spr,first));
   }
 
   spr_handle sprite_copy(spr_handle dst_handle, spr_handle src_handle, bool surface_copy = false)

@@ -87,8 +87,8 @@ void berusky_config::double_size_set(void)
   level_screen_start_x = 0;
   level_screen_start_y = 40;
 
-  editor_resolution_x = 1024;
-  editor_resolution_y = 768;
+  editor_resolution_x = 1280;
+  editor_resolution_y = 960;
 
   cell_size_x = 40;
   cell_size_y = 40;

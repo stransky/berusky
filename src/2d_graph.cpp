@@ -604,7 +604,7 @@ static RECT rect_scale(RECT src)
   return(src);
 }
 
-spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr_handle num, spr_handle *p_last)
+spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr_handle *p_last)
 {  
   spr_handle i, j, max;
   int x, y, w, h;
@@ -623,7 +623,7 @@ spr_handle sprite_store::sprite_insert(const char *p_file, spr_handle first, spr
   RECT rec = {0,0,0,0};
 
   i = first;
-  while (fgets(line, 200, f) && i < first+num)
+  while (fgets(line, 200, f))
   {
     if (line[0] == ';')
       continue;
@@ -879,7 +879,7 @@ bool font_info::load(int font_index, int first, int num)
   char  tmp[2000];
   sprintf(tmp, "font%d.spr", font_index);
   
-  int i = p_grf->sprite_insert(tmp, first, num, NULL);
+  int i = p_grf->sprite_insert(tmp, first);
   if(i != num)
     return(FALSE);
   

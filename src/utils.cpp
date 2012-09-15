@@ -434,7 +434,7 @@ bool dir_create(const char *p_dir)
   bprintfnl("Checking %s...",tmp_dir);
   if(stat(tmp_dir,&st) == -1 && errno == ENOENT) {
     bprintfnl("missing, try to create it...");
-    if(mkdir(tmp_dir) != -1) {
+    if(mkdirm(tmp_dir) != -1) {
       bprintf("ok");
       return(TRUE);
     } else {

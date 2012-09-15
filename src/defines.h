@@ -138,7 +138,7 @@
 #define CYBER_SPRITES             98
 #define GAME_SPRITES              59
 #define PLAYER_SPRITES            50
-#define BACKGROUND_SPRITES        2
+#define BACKGROUND_SPRITES        7
 #define MENU_SPRITES              58
 #define TEXT_LENGHT               70000
 #define FONT_SPRITES              61
@@ -155,8 +155,30 @@
 #define FIRST_MENU                700
 #define FIRST_LOGO                800
 #define FIRST_FONT                1000
+#define FIRST_BOX_BRIGHT          1100
+#define FIRST_BOX_DARK            1150
+#define FIRST_BOX_PAPER           1200
+#define FIRST_BOX_SNOW            1250
+#define FIRST_FLOOR_DANGER        1300
+#define FIRST_FLOOR_ELEVATORS     1350
+#define FIRST_FLOOR_GRAY          1400
+#define FIRST_LIGHT_BOX           1450
+#define FIRST_TNT_BRIGHT          1500
+#define FIRST_TNT_DARK            1550
+#define FIRST_TNT_PAPER           1600
+#define FIRST_TNT_SNOW            1650
+#define FIRST_TNT_SWAMP           1700
+#define FIRST_WALL_IRON_BLUE      1750
+#define FIRST_WALL_IRON_BROWN     1800
+#define FIRST_WALL_IRON_DARK      1850
+#define FIRST_WALL_IRON_GRAY      1900
+#define FIRST_WALL_MACHINE        1950
+#define FIRST_WALL_REPRO          2000
+#define FIRST_WALL_SNOW           2050
+#define FIRST_WALL_SWAMP          2100
+#define FIRST_WALL_WOOD           2150
 
-#define ROT_SHIFT                 2000
+#define ROT_SHIFT                 10000
 
 #define MENU_SPRIT_ROCK           FIRST_MENU
 #define MENU_SPRIT_END            (FIRST_MENU+1)

@@ -44,7 +44,7 @@
 
 #define random()          rand()
 #define snprintf          _snprintf
-#define mkdir             _mkdir
+#define mkdirm            _mkdir
 
 // Stupid VC2010
 #pragma warning(disable: 4996 4800)
@@ -63,7 +63,7 @@
 
 #include <unistd.h>
 
-#define mkdir(d)  mkdir(d,DEFAULT_DIR_MASK)
+#define mkdirm(d)  mkdir(d,DEFAULT_DIR_MASK)
 
 #endif // ! _WIN32
 

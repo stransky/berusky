@@ -1,5 +1,11 @@
-- windows - add MSVC dll
+void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
+void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
+- fix for double size
+- editor fix
+- menu - icon - editor?
 
+- windows - add MSVC dll
+- generate shadows to floor automatically when level is loaded
 - New backgrounds (from B2)
 - double-size mode, new items (from B2)
 

@@ -2110,7 +2110,7 @@ void game_gui::menu_levelset_end(MENU_STATE state, size_ptr data, size_ptr data1
       
         char line[1000];
         snprintf(line, 1000, SET_END_FILE_BACK, set+1);
-        p_grf->sprite_insert(line, MENU_SPRIT_END, 1, NULL);
+        p_grf->sprite_insert(line, MENU_SPRIT_END);
       
         input.keyset_set(&menu_keys);
         

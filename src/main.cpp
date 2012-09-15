@@ -24,7 +24,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
+#include "portability.h"
+#ifdef LINUX
+#include <gtk/gtk.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -32,7 +35,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
 #include "berusky.h"
 #include "berusky_gui.h"
 #include "main.h"
@@ -204,7 +206,7 @@ void run_editor(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
   EDITOR_GUI *p_editor_gui = new EDITOR_GUI(&repo, p_dir);
 
   /* Run editor */  
-  p_editor_gui->event_add(p_garg ? LEVEL_EVENT(ED_LEVEL_LOAD,p_garg) : LEVEL_EVENT(ED_LEVEL_NEW,TRUE));    
+  p_editor_gui->event_add(p_garg ? LEVEL_EVENT(ED_LEVEL_LOAD,p_garg) : LEVEL_EVENT(ED_LEVEL_NEW,TRUE));
   p_editor_gui->keyset_set(&editor_keys);
   
   /* Run editor loop */
@@ -294,7 +296,11 @@ int main(int argc, char *argv[])
   setbuf(stdout, NULL);
   setbuf(stderr, NULL);
   srand(clock());
-  
+
+#ifdef LINUX
+  gtk_parse_args(&argc, &argv);
+#endif
+
   banner();
   
   /* Run help */
@@ -407,7 +413,7 @@ bool graphics_logos_load(DIR_LIST *p_dir)
   p_grf->graphics_dir_set(p_dir->graphics_get());
 
   sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("logo.spr", FIRST_LOGO, 1, NULL);
+  i  += p_grf->sprite_insert("logo.spr", FIRST_LOGO);
 
   return(i);
 }
@@ -428,30 +434,53 @@ bool graphics_game_load(DIR_LIST *p_dir)
 
   sprite::color_key_set(COLOR_KEY_GAME);
 
-  i  = p_grf->sprite_insert("global1.spr", FIRST_GLOBAL_LEVEL, GLOBAL_SPRITES, NULL);
-  i += p_grf->sprite_insert("global2.spr", FIRST_GLOBAL_LEVEL + ROT_SHIFT, GLOBAL_SPRITES,NULL);
-  i += p_grf->sprite_insert("global3.spr", FIRST_GLOBAL_LEVEL + 2 * ROT_SHIFT, GLOBAL_SPRITES,NULL);
-  i += p_grf->sprite_insert("global4.spr", FIRST_GLOBAL_LEVEL + 3 * ROT_SHIFT, GLOBAL_SPRITES,NULL);
+  i  = p_grf->sprite_insert("global1.spr", FIRST_GLOBAL_LEVEL);
+  i += p_grf->sprite_insert("global2.spr", FIRST_GLOBAL_LEVEL + ROT_SHIFT);
+  i += p_grf->sprite_insert("global3.spr", FIRST_GLOBAL_LEVEL + 2 * ROT_SHIFT);
+  i += p_grf->sprite_insert("global4.spr", FIRST_GLOBAL_LEVEL + 3 * ROT_SHIFT);
 
-  i += p_grf->sprite_insert("klasik1.spr", FIRST_CLASSIC_LEVEL, CLASSIC_SPRITES,NULL);
-  i += p_grf->sprite_insert("klasik2.spr", FIRST_CLASSIC_LEVEL + ROT_SHIFT, CLASSIC_SPRITES,NULL);
-  i += p_grf->sprite_insert("klasik3.spr", FIRST_CLASSIC_LEVEL + 2 * ROT_SHIFT, CLASSIC_SPRITES,NULL);
-  i += p_grf->sprite_insert("klasik4.spr", FIRST_CLASSIC_LEVEL + 3 * ROT_SHIFT, CLASSIC_SPRITES,NULL);
+  i += p_grf->sprite_insert("klasik1.spr", FIRST_CLASSIC_LEVEL);
+  i += p_grf->sprite_insert("klasik2.spr", FIRST_CLASSIC_LEVEL + ROT_SHIFT);
+  i += p_grf->sprite_insert("klasik3.spr", FIRST_CLASSIC_LEVEL + 2 * ROT_SHIFT);
+  i += p_grf->sprite_insert("klasik4.spr", FIRST_CLASSIC_LEVEL + 3 * ROT_SHIFT);
 
-  i += p_grf->sprite_insert("kyber1.spr", FIRST_CYBER_LEVEL, CYBER_SPRITES,NULL);
-  i += p_grf->sprite_insert("kyber2.spr", FIRST_CYBER_LEVEL + ROT_SHIFT,CYBER_SPRITES,NULL);
-  i += p_grf->sprite_insert("kyber3.spr", FIRST_CYBER_LEVEL + 2 * ROT_SHIFT, CYBER_SPRITES,NULL);
-  i += p_grf->sprite_insert("kyber4.spr", FIRST_CYBER_LEVEL + 3 * ROT_SHIFT, CYBER_SPRITES,NULL);
+  i += p_grf->sprite_insert("kyber1.spr", FIRST_CYBER_LEVEL);
+  i += p_grf->sprite_insert("kyber2.spr", FIRST_CYBER_LEVEL + ROT_SHIFT);
+  i += p_grf->sprite_insert("kyber3.spr", FIRST_CYBER_LEVEL + 2 * ROT_SHIFT);
+  i += p_grf->sprite_insert("kyber4.spr", FIRST_CYBER_LEVEL + 3 * ROT_SHIFT);
   
-  i += p_grf->sprite_insert("herni1.spr",  FIRST_OTHER, GAME_SPRITES, NULL);
-  i += p_grf->sprite_insert("herni2.spr",  FIRST_OTHER + ROT_SHIFT, GAME_SPRITES, NULL);
+  i += p_grf->sprite_insert("herni1.spr",  FIRST_OTHER);
+  i += p_grf->sprite_insert("herni2.spr",  FIRST_OTHER + ROT_SHIFT);
   
-  i += p_grf->sprite_insert("game_cur.spr", FIRST_CURSOR, CURSOR_SPRITES, NULL);
+  i += p_grf->sprite_insert("game_cur.spr", FIRST_CURSOR);
   
-  i += p_grf->sprite_insert("hraci1.spr", FIRST_PLAYER, PLAYER_SPRITES, NULL);
-  i += p_grf->sprite_insert("hraci2.spr", FIRST_PLAYER + ROT_SHIFT, PLAYER_SPRITES, NULL);
-  i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT, PLAYER_SPRITES, NULL);
-  i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT, PLAYER_SPRITES, NULL);
+  i += p_grf->sprite_insert("hraci1.spr", FIRST_PLAYER);
+  i += p_grf->sprite_insert("hraci2.spr", FIRST_PLAYER + ROT_SHIFT);
+  i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT);
+  i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT);
+
+  i += p_grf->sprite_insert("box_bright1.spr", FIRST_BOX_BRIGHT);
+  i += p_grf->sprite_insert("box_dark1.spr", FIRST_BOX_DARK);
+  i += p_grf->sprite_insert("box_paper1.spr", FIRST_BOX_PAPER);
+  i += p_grf->sprite_insert("box_snow1.spr", FIRST_BOX_SNOW);
+  i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER);
+  i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS);
+  i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY);
+  i += p_grf->sprite_insert("light_box1.spr", FIRST_LIGHT_BOX);
+  i += p_grf->sprite_insert("tnt_bright1.spr", FIRST_TNT_BRIGHT);
+  i += p_grf->sprite_insert("tnt_dark1.spr", FIRST_TNT_DARK);
+  i += p_grf->sprite_insert("tnt_paper1.spr", FIRST_TNT_PAPER);
+  i += p_grf->sprite_insert("tnt_snow1.spr", FIRST_TNT_SNOW);
+  i += p_grf->sprite_insert("tnt_swamp1.spr", FIRST_TNT_SWAMP);
+  i += p_grf->sprite_insert("wall_iron_blue1.spr", FIRST_WALL_IRON_BLUE);
+  i += p_grf->sprite_insert("wall_iron_brown1.spr", FIRST_WALL_IRON_BROWN);
+  i += p_grf->sprite_insert("wall_iron_dark1.spr", FIRST_WALL_IRON_DARK);
+  i += p_grf->sprite_insert("wall_iron_gray1.spr", FIRST_WALL_IRON_GRAY);
+  i += p_grf->sprite_insert("wall_machine1.spr", FIRST_WALL_MACHINE);
+  i += p_grf->sprite_insert("wall_repro1.spr", FIRST_WALL_REPRO);
+  i += p_grf->sprite_insert("wall_snow1.spr", FIRST_WALL_SNOW);
+  i += p_grf->sprite_insert("wall_swamp1.spr", FIRST_WALL_SWAMP);
+  i += p_grf->sprite_insert("wall_wood1.spr", FIRST_WALL_WOOD);
 
   if(!i) {
     berror(_("Unable to load data, exiting..."));    
@@ -499,37 +528,35 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   bprintf(_("Loading menu graphics..."));
 
   sprite::color_key_set(COLOR_KEY_BLACK);
-  i   = p_grf->sprite_insert("menu1.spr", MENU_SPRIT_ROCK, 1, NULL);
-  i  += p_grf->sprite_insert("menu2.spr", MENU_SPRIT_LOGO, 1, NULL);
-  i  += p_grf->sprite_insert("menu3.spr", MENU_SPRIT_BACK, 1, NULL);
+  i   = p_grf->sprite_insert("menu1.spr", MENU_SPRIT_ROCK);
+  i  += p_grf->sprite_insert("menu2.spr", MENU_SPRIT_LOGO);
+  i  += p_grf->sprite_insert("menu3.spr", MENU_SPRIT_BACK);
   
   sprite::color_key_set(COLOR_KEY_MENU);
-  i  += p_grf->sprite_insert("menu_back1.spr", MENU_SPRIT_BACK1, 1, NULL);
-  i  += p_grf->sprite_insert("menu_back2.spr", MENU_SPRIT_BACK2, 1, NULL);
-  i  += p_grf->sprite_insert("menu_back3.spr", MENU_SPRIT_BACK3, 1, NULL);
+  i  += p_grf->sprite_insert("menu_back1.spr", MENU_SPRIT_BACK1);
+  i  += p_grf->sprite_insert("menu_back2.spr", MENU_SPRIT_BACK2);
+  i  += p_grf->sprite_insert("menu_back3.spr", MENU_SPRIT_BACK3);
 
   sprite::color_key_set(COLOR_KEY_MENU);
-  i  += p_grf->sprite_insert("menu4.spr", MENU_SPRIT_ARROWS,
-                                          MENU_ARROWS_NUM, NULL);
-  i  += p_grf->sprite_insert("controls.spr", MENU_CHECKBOX_CHECKED,
-                                             MENU_CHECKBOX_NUM, NULL);
-  i  += p_grf->sprite_insert("slidebar.spr", MENU_SLIDEBAR, 1, NULL);
-  i  += p_grf->sprite_insert("slider.spr", MENU_SLIDER, 1, NULL);
+  i  += p_grf->sprite_insert("menu4.spr", MENU_SPRIT_ARROWS);
+  i  += p_grf->sprite_insert("controls.spr", MENU_CHECKBOX_CHECKED);
+  i  += p_grf->sprite_insert("slidebar.spr", MENU_SLIDEBAR);
+  i  += p_grf->sprite_insert("slider.spr", MENU_SLIDER);
 
   sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("menu5.spr", MENU_SPRIT_LOGO_SMALL_1, MENU_SPRIT_LOGO_SMALL_NUM, NULL);
+  i  += p_grf->sprite_insert("menu5.spr", MENU_SPRIT_LOGO_SMALL_1);
 
   sprite::color_key_set(COLOR_KEY_BLACK_FULL);
-  i  += p_grf->sprite_insert("back1.spr", MENU_SPRIT_START,   1, NULL);
+  i  += p_grf->sprite_insert("back1.spr", MENU_SPRIT_START);
   sprite::color_key_set(COLOR_KEY_BLACK);
-  i  += p_grf->sprite_insert("back2.spr", MENU_SPRIT_START+1, 1, NULL);
-  i  += p_grf->sprite_insert("back3.spr", MENU_SPRIT_START+2, 1, NULL);
-  i  += p_grf->sprite_insert("back4.spr", MENU_SPRIT_START+3, 1, NULL);
+  i  += p_grf->sprite_insert("back2.spr", MENU_SPRIT_START+1);
+  i  += p_grf->sprite_insert("back3.spr", MENU_SPRIT_START+2);
+  i  += p_grf->sprite_insert("back4.spr", MENU_SPRIT_START+3);
   
   sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("mask1.spr",  EDITOR_MARK_BLACK, 1, NULL);
-  i  += p_grf->sprite_insert("mask2.spr",  EDITOR_MARK_RED, 1, NULL);
-  i  += p_grf->sprite_insert("mask3.spr",  EDITOR_MARK_YELLOW, 1, NULL);  
+  i  += p_grf->sprite_insert("mask1.spr",  EDITOR_MARK_BLACK);
+  i  += p_grf->sprite_insert("mask2.spr",  EDITOR_MARK_RED);
+  i  += p_grf->sprite_insert("mask3.spr",  EDITOR_MARK_YELLOW);
   
   sprite::color_key_set(COLOR_KEY_MENU);
   
