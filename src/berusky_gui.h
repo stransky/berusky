@@ -104,6 +104,7 @@ public:
   void menu_level_run_path_draw(int level_set, int level_act, int level_num, int level_last);
   int  menu_level_run_path_draw_line(const char *p_path, int level_act, int level_num, int level_last, int level_set, int sx, int sy);
   void menu_level_draw_level(int lev, int level_act, int level_num, int level_last, int level_set, int x, int y);
+  void menu_level_draw_pipe(int pip, int x, int y);
   void menu_level_name_print(void);
 
   // Callback for all

@@ -37,6 +37,7 @@
 /* berusky-config defininitions
 */
 int berusky_config::game_fps;
+int berusky_config::new_gfx;
 
 int berusky_config::screen_depth;
 int berusky_config::fullscreen;
@@ -55,11 +56,16 @@ int berusky_config::level_screen_start_y;
 int berusky_config::editor_resolution_x;
 int berusky_config::editor_resolution_y;
 
+int berusky_config::editor_screen_start_x;
+int berusky_config::editor_screen_start_y;
+
 int berusky_config::cell_size_x;
 int berusky_config::cell_size_y;
 
 void berusky_config::original_size_set(void)
 {
+  new_gfx = false;
+
   game_resolution_x = 640;
   game_resolution_y = 480;
 
@@ -72,23 +78,32 @@ void berusky_config::original_size_set(void)
   editor_resolution_x = 1024;
   editor_resolution_y = 768;
 
+  editor_screen_start_x = EDITOR_LAYER_STATUS_X;
+  editor_screen_start_y = EDITOR_LAYER_STATUS_Y+EDITOR_LAYER_STATUS_DY;
+
   cell_size_x = 20;
   cell_size_y = 20;
 }
 
 void berusky_config::double_size_set(void)
 {
+  new_gfx = true;
+
   game_resolution_x = 1280;
-  game_resolution_y = 900; //960 in fullscreen?
+  game_resolution_y = 900;
 
   level_resolution_x = 1280;
-  level_resolution_y = 840;
+  //level_resolution_y = 840; TODO
+  level_resolution_y = 480;
 
   level_screen_start_x = 0;
   level_screen_start_y = 40;
 
   editor_resolution_x = 1280;
-  editor_resolution_y = 960;
+  editor_resolution_y = 900;
+
+  editor_screen_start_x = 0;
+  editor_screen_start_y = 0;
 
   cell_size_x = 40;
   cell_size_y = 40;

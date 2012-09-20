@@ -222,31 +222,37 @@ void editor_panel::slot_draw(int slot, int item, int variant)
     p_grf->fill(x,y,ITEM_SIZE_X,ITEM_SIZE_Y, p_grf->color_map(COLOR_SELECTED_R,
                 COLOR_SELECTED_G, COLOR_SELECTED_B));
   }
-  
-  p_repo->draw(x+CELL_SIZE_X,y+CELL_SIZE_X,item,variant,0);
+
+  tpos x_shift = ITEM_SIZE_X/2-CELL_SIZE_X/2;
+  tpos y_shift = ITEM_SIZE_Y/2-CELL_SIZE_Y/2;
+
+  p_repo->draw(x+x_shift,y+y_shift,item,variant,0);
 }
 
 void editor_panel::controls_draw(void)
 {
   RECT r = boundary_get();
 
+  tpos x_shift = ITEM_SIZE_X/2-CELL_SIZE_X/2;
+  tpos y_shift = ITEM_SIZE_Y/2-CELL_SIZE_Y/2;
+
   if(dx) { // Panel is horizontal
     {
-      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+CELL_SIZE_Y);
+      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
+      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
     }
     {
-      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
-      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+CELL_SIZE_Y);
+      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
+      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
     }
   } else { // Panel is vertical
     {
-      p_grf->draw(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
-      p_grf->redraw_add(EDIT_ARROW_UP,start_x+CELL_SIZE_X,start_y);
+      p_grf->draw(EDIT_ARROW_UP,start_x+x_shift,start_y);
+      p_grf->redraw_add(EDIT_ARROW_UP,start_x+x_shift,start_y);
     }
     {
-      p_grf->draw(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
-      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+CELL_SIZE_X,r.y+r.h);
+      p_grf->draw(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
+      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
     }
   }  
 }
@@ -347,7 +353,7 @@ void editor_gui::editor_reset(void)
     ipanel[i]->register_controls_events(&input);
   }
   level_config();
-  
+/* TODO
   panel_draw();
   selection_draw();
   layer_menu_draw();
@@ -356,7 +362,7 @@ void editor_gui::editor_reset(void)
   layer_active_set(ALL_LEVEL_LAYERS);
   side_menu_create();
   side_menu_draw();
-
+*/
   level.back_max_set(background_num(p_dir));
 }
 

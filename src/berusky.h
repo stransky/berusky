@@ -71,6 +71,7 @@ typedef struct berusky_config {
   static int fullscreen;
 
   static int double_size;
+  static int new_gfx;
 
   static int game_resolution_x;
   static int game_resolution_y;
@@ -83,6 +84,9 @@ typedef struct berusky_config {
 
   static int editor_resolution_x;
   static int editor_resolution_y;
+
+  static int editor_screen_start_x;
+  static int editor_screen_start_y;
 
   static int cell_size_x;
   static int cell_size_y;

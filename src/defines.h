@@ -73,16 +73,16 @@
 #define CELL_SIZE_X               (berusky_config::cell_size_x)
 #define CELL_SIZE_Y               (berusky_config::cell_size_y)
 
-#define ITEM_SIZE_X               (CELL_SIZE_X*3)
-#define ITEM_SIZE_Y               (CELL_SIZE_Y*3)
+#define ITEM_SIZE_X               (20*3)
+#define ITEM_SIZE_Y               (20*3)
 
 #define EDITOR_LAYER_STATUS_X     (ITEM_SIZE_X*2)
 #define EDITOR_LAYER_STATUS_Y     (ITEM_SIZE_Y*2+5)
 #define EDITOR_LAYER_STATUS_DX    (EDITOR_RESOLUTION_X-EDITOR_LAYER_STATUS_X)
 #define EDITOR_LAYER_STATUS_DY    (30)
 
-#define EDITOR_SCREEN_START_X     (EDITOR_LAYER_STATUS_X)
-#define EDITOR_SCREEN_START_Y     (EDITOR_LAYER_STATUS_Y+EDITOR_LAYER_STATUS_DY)
+#define EDITOR_SCREEN_START_X     (berusky_config::editor_screen_start_x)
+#define EDITOR_SCREEN_START_Y     (berusky_config::editor_screen_start_y)
 
 #define EDIT_COORD_START_X        (EDITOR_SCREEN_START_X)
 #define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+LEVEL_RESOLUTION_Y)
@@ -183,13 +183,14 @@
 #define MENU_SPRIT_ROCK           FIRST_MENU
 #define MENU_SPRIT_END            (FIRST_MENU+1)
 #define MENU_SPRIT_LOGO           (FIRST_MENU+2)
-#define MENU_SPRIT_BACK           (FIRST_MENU+3)
-#define MENU_SPRIT_BACK1          (FIRST_MENU+4)
-#define MENU_SPRIT_BACK2          (FIRST_MENU+5)
-#define MENU_SPRIT_BACK3          (FIRST_MENU+6)
-#define MENU_SPRIT_LOGO_SMALL_1   (FIRST_MENU+7)
-#define MENU_SPRIT_LOGO_SMALL_2   (FIRST_MENU+8)
-#define MENU_SPRIT_LOGO_SMALL_3   (FIRST_MENU+9)
+#define MENU_SPRIT_WALL           (FIRST_MENU+3)
+#define MENU_SPRIT_BACK           (FIRST_MENU+4)
+#define MENU_SPRIT_BACK1          (FIRST_MENU+5)
+#define MENU_SPRIT_BACK2          (FIRST_MENU+6)
+#define MENU_SPRIT_BACK3          (FIRST_MENU+7)
+#define MENU_SPRIT_LOGO_SMALL_1   (FIRST_MENU+8)
+#define MENU_SPRIT_LOGO_SMALL_2   (FIRST_MENU+9)
+#define MENU_SPRIT_LOGO_SMALL_3   (FIRST_MENU+10)
 #define MENU_SPRIT_LOGO_SMALL_NUM 3
 
 #define MENU_SPRIT_ARROWS         (MENU_SPRIT_LOGO_SMALL_1+MENU_SPRIT_LOGO_SMALL_NUM)

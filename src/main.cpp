@@ -460,28 +460,30 @@ bool graphics_game_load(DIR_LIST *p_dir)
   i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT);
   i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT);
 
-  i += p_grf->sprite_insert("box_bright1.spr", FIRST_BOX_BRIGHT);
-  i += p_grf->sprite_insert("box_dark1.spr", FIRST_BOX_DARK);
-  i += p_grf->sprite_insert("box_paper1.spr", FIRST_BOX_PAPER);
-  i += p_grf->sprite_insert("box_snow1.spr", FIRST_BOX_SNOW);
-  i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER);
-  i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS);
-  i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY);
-  i += p_grf->sprite_insert("light_box1.spr", FIRST_LIGHT_BOX);
-  i += p_grf->sprite_insert("tnt_bright1.spr", FIRST_TNT_BRIGHT);
-  i += p_grf->sprite_insert("tnt_dark1.spr", FIRST_TNT_DARK);
-  i += p_grf->sprite_insert("tnt_paper1.spr", FIRST_TNT_PAPER);
-  i += p_grf->sprite_insert("tnt_snow1.spr", FIRST_TNT_SNOW);
-  i += p_grf->sprite_insert("tnt_swamp1.spr", FIRST_TNT_SWAMP);
-  i += p_grf->sprite_insert("wall_iron_blue1.spr", FIRST_WALL_IRON_BLUE);
-  i += p_grf->sprite_insert("wall_iron_brown1.spr", FIRST_WALL_IRON_BROWN);
-  i += p_grf->sprite_insert("wall_iron_dark1.spr", FIRST_WALL_IRON_DARK);
-  i += p_grf->sprite_insert("wall_iron_gray1.spr", FIRST_WALL_IRON_GRAY);
-  i += p_grf->sprite_insert("wall_machine1.spr", FIRST_WALL_MACHINE);
-  i += p_grf->sprite_insert("wall_repro1.spr", FIRST_WALL_REPRO);
-  i += p_grf->sprite_insert("wall_snow1.spr", FIRST_WALL_SNOW);
-  i += p_grf->sprite_insert("wall_swamp1.spr", FIRST_WALL_SWAMP);
-  i += p_grf->sprite_insert("wall_wood1.spr", FIRST_WALL_WOOD);
+  if(berusky_config::new_gfx) {
+    i += p_grf->sprite_insert("box_bright1.spr", FIRST_BOX_BRIGHT);
+    i += p_grf->sprite_insert("box_dark1.spr", FIRST_BOX_DARK);
+    i += p_grf->sprite_insert("box_paper1.spr", FIRST_BOX_PAPER);
+    i += p_grf->sprite_insert("box_snow1.spr", FIRST_BOX_SNOW);
+    i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER);
+    i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS);
+    i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY);
+    i += p_grf->sprite_insert("light_box1.spr", FIRST_LIGHT_BOX);
+    i += p_grf->sprite_insert("tnt_bright1.spr", FIRST_TNT_BRIGHT);
+    i += p_grf->sprite_insert("tnt_dark1.spr", FIRST_TNT_DARK);
+    i += p_grf->sprite_insert("tnt_paper1.spr", FIRST_TNT_PAPER);
+    i += p_grf->sprite_insert("tnt_snow1.spr", FIRST_TNT_SNOW);
+    i += p_grf->sprite_insert("tnt_swamp1.spr", FIRST_TNT_SWAMP);
+    i += p_grf->sprite_insert("wall_iron_blue1.spr", FIRST_WALL_IRON_BLUE);
+    i += p_grf->sprite_insert("wall_iron_brown1.spr", FIRST_WALL_IRON_BROWN);
+    i += p_grf->sprite_insert("wall_iron_dark1.spr", FIRST_WALL_IRON_DARK);
+    i += p_grf->sprite_insert("wall_iron_gray1.spr", FIRST_WALL_IRON_GRAY);
+    i += p_grf->sprite_insert("wall_machine1.spr", FIRST_WALL_MACHINE);
+    i += p_grf->sprite_insert("wall_repro1.spr", FIRST_WALL_REPRO);
+    i += p_grf->sprite_insert("wall_snow1.spr", FIRST_WALL_SNOW);
+    i += p_grf->sprite_insert("wall_swamp1.spr", FIRST_WALL_SWAMP);
+    i += p_grf->sprite_insert("wall_wood1.spr", FIRST_WALL_WOOD);
+  }
 
   if(!i) {
     berror(_("Unable to load data, exiting..."));    
@@ -532,6 +534,7 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   i   = p_grf->sprite_insert("menu1.spr", MENU_SPRIT_ROCK);
   i  += p_grf->sprite_insert("menu2.spr", MENU_SPRIT_LOGO);
   i  += p_grf->sprite_insert("menu3.spr", MENU_SPRIT_BACK);
+  i  += p_grf->sprite_insert("menu6.spr", MENU_SPRIT_WALL);
   
   sprite::color_key_set(COLOR_KEY_MENU);
   i  += p_grf->sprite_insert("menu_back1.spr", MENU_SPRIT_BACK1);
