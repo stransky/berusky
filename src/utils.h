@@ -147,11 +147,6 @@ void      print_errno(bool new_line = FALSE);
 bool      dir_create(const char *p_dir);
 char   *  dir_home_get(char *p_dir, int max);
 
-// Don't use standart I/O
-#define fopen(a,b)
-#define fclose(a)
-#define FILE
-
 #define DEFAULT_DIR_MASK   0755
 #define DEFAULT_FILE_MASK  0644
 

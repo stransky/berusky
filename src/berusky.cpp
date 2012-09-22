@@ -43,6 +43,7 @@ int berusky_config::screen_depth;
 int berusky_config::fullscreen;
 
 int berusky_config::double_size;
+int berusky_config::double_size_gui;
 
 int berusky_config::game_resolution_x;
 int berusky_config::game_resolution_y;
@@ -115,9 +116,9 @@ void berusky_config::config_load(const char *p_ini_file)
 
   fullscreen = get_fullscreen(p_ini_file);
   screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
-  double_size = get_doublesize(p_ini_file);
+  double_size_gui = double_size = get_doublesize(p_ini_file);
 
-  if(double_size) {
+  if(DOUBLE_SIZE) {
     double_size_set();
   }
   else {

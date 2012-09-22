@@ -602,7 +602,8 @@ void game_gui::menu_settings_fullscreen(void)
 
 void game_gui::menu_settings_doublesize(void)
 {
-  set_doublesize(INI_FILE, !berusky_config::double_size);
+  berusky_config::double_size = !berusky_config::double_size;
+  set_doublesize(INI_FILE, berusky_config::double_size);
 
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_CENTER);

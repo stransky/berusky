@@ -46,9 +46,6 @@
 #include "utils.h"
 #include "types.h"
 
-#undef fopen
-#undef fclose
-
 FHANDLE log_file;
 
 void log_close(void)
@@ -144,16 +141,16 @@ bool set_fullscreen(const char *p_ini_file, bool state)
   return(ini_write_string(p_ini_file, INI_FULLSCREEN, itoa(10, tmp, state ? 1 : 0)));
 }
 
-#define INI_DOUBLESIZE "disable_doublesize"
+#define INI_DOUBLESIZE "disable_double_size"
 bool get_doublesize(const char *p_ini_file)
-{  
+{
   return(!ini_read_int_file(p_ini_file, INI_DOUBLESIZE, FALSE));
 }
 
 bool set_doublesize(const char *p_ini_file, bool state)
-{  
+{
   char tmp[100];
-  // it's reversed - disable_doublesize = 0 is the default
+  // it's reversed - disable_double_size = 0 is the default
   return(ini_write_string(p_ini_file, INI_DOUBLESIZE, itoa(10, tmp, !state ? 1 : 0)));
 }
 
