@@ -600,6 +600,19 @@ void game_gui::menu_settings_fullscreen(void)
   set_fullscreen(INI_FILE, p_grf->fullscreen_get());
 }
 
+void game_gui::menu_settings_doublesize(void)
+{
+  set_doublesize(INI_FILE, !berusky_config::double_size);
+
+  p_font->select(FONT_DEFAULT);
+  p_font->alignment_set(MENU_CENTER);
+  p_font->start_set(0, GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 200 : 150));
+  RECT r;
+  p_font->print(&r,_("The game must be restarted\nfor the change to take effect."));
+  p_grf->redraw_add(&r);
+  p_grf->flip();
+}
+
 /*
 */
 #undef LOGO_START
@@ -2551,7 +2564,8 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       case GC_MENU_SETTINGS_FULSCREEN_SWITCH:
         menu_settings_fullscreen();
         break;
-      case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:
+      case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:        
+        menu_settings_doublesize();
         break;
       case GC_MENU_SETTINGS_SOUND_SWITCH:
         //p_ber->sound.sound_on = !p_ber->sound.sound_on;

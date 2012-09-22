@@ -367,6 +367,9 @@ public:
 bool get_fullscreen(const char *p_ini_file);
 bool set_fullscreen(const char *p_ini_file, bool state);
 
+bool get_doublesize(const char *p_ini_file);
+bool set_doublesize(const char *p_ini_file, bool state);
+
 int  get_colors(const char *p_ini_file, int default_color_depth);
 
 // -------------------------------------------------------

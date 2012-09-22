@@ -1,3 +1,5 @@
+- double-size -> save this option
+
 void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
 void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
 - fix for double size

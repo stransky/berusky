@@ -115,7 +115,7 @@ void berusky_config::config_load(const char *p_ini_file)
 
   fullscreen = get_fullscreen(p_ini_file);
   screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
-  double_size = !ini_read_int_file(p_ini_file, "disable_double_size", FALSE);
+  double_size = get_doublesize(p_ini_file);
 
   if(double_size) {
     double_size_set();
