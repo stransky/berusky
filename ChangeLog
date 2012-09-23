@@ -1,3 +1,7 @@
+1.5.2
+    * Fixed single-size mode
+    * Fixed profile save
+
 1.5
     * Fullscreen switch (new settings menu)
     * Double size mode
