@@ -329,6 +329,26 @@ public:
     return(&rec);
   }
 
+  void rect_adjust(RECT *p_rect)
+  {
+    if(p_rect->x < 0) {
+      p_rect->w += p_rect->x;
+      if(p_rect->w < 0)
+        p_rect->w = 0;
+    }
+    if(p_rect->y < 0) {
+      p_rect->h += p_rect->y;
+      if(p_rect->h < 0)
+        p_rect->h = 0;
+    }
+    if(p_rect->x+p_rect->w > rec.w) {
+      p_rect->w = rec.w-p_rect->x;
+    }
+    if(p_rect->y+p_rect->h > rec.h) {
+      p_rect->h = rec.h-p_rect->y;
+    }    
+  }
+
   void rect_check(void);
 
 } SPRITE;
@@ -644,6 +664,8 @@ public:
   
     p_tmp->w = dx;
     p_tmp->h = dy;
+
+    p_screen->rect_adjust(p_tmp);
   }
 
   void redraw_add(spr_handle spr, trec x, trec y)
@@ -657,12 +679,15 @@ public:
   
     p_tmp->w = sprite_get_width(spr);
     p_tmp->h = sprite_get_height(spr);
+
+    p_screen->rect_adjust(p_tmp);
   }
 
   void redraw_add(RECT *p_rect)
   {
     assert(rect_last < RECT_NUM);
     rects[rect_last++] = *p_rect;
+    p_screen->rect_adjust(p_rect);
   }
 
   void redraw_add(void)

@@ -705,6 +705,8 @@ public:
   void level_save_as(char *p_file = NULL, int force = FALSE);
   void level_save_as_callback(void);
 
+  void level_move(tpos dx, tpos dy);
+
 public:
 
   editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_);

@@ -297,6 +297,10 @@ typedef enum {
   // Change background
   // format: [ED_LEVEL_CHANGE_BACKGROUND]
   ED_LEVEL_CHANGE_BACKGROUND,
+  
+  // Move the level area
+  // format: [ED_LEVEL_MOVE, dx, dy]
+  ED_LEVEL_MOVE,
 
   ED_HELP,
   ED_QUIT,

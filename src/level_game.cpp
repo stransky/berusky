@@ -579,6 +579,36 @@ void level_editor::level_populate(void)
   p_scr->flip();
 }
 
+void level_editor::level_move(tpos dx, tpos dy)
+{
+  tpos sx,sy;
+  window_offset_get(sx, sy);
+
+  #define MINIMAL_X_OFFSET (-(LEVEL_CELLS_X/2))
+  #define MINIMAL_Y_OFFSET (-(LEVEL_CELLS_Y/2))
+
+  #define MAXIMAL_X_OFFSET (LEVEL_CELLS_X/2)
+  #define MAXIMAL_Y_OFFSET (LEVEL_CELLS_Y/2)
+
+  // sx and sy are multiples of CELL_SIZE_X/CELL_SIZE_Y
+  tpos offset_x = (sx != 0) ? sx/CELL_SIZE_X : 0;
+  tpos offset_y = (sy != 0) ? sy/CELL_SIZE_Y : 0;
+  
+  offset_x += dx;
+  offset_y += dy;
+
+  if(offset_x < MINIMAL_X_OFFSET || offset_x > MAXIMAL_X_OFFSET)
+    return;
+  if(offset_y < MINIMAL_Y_OFFSET || offset_y > MAXIMAL_Y_OFFSET)
+    return;
+
+  window_offset_set(offset_x*CELL_SIZE_X, offset_y*CELL_SIZE_Y);
+    
+  p_scr->set_redraw();
+  p_scr->draw();
+  p_scr->flip();
+}
+
 void level_editor::import_from_core(LEVEL_CORE *p_core)
 {
   int x,y,l,i;

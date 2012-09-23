@@ -299,9 +299,15 @@ public:
   }
 
   // Set offset of level window
-  void window_offset(tpos start_x, tpos start_y)
+  void window_offset_set(tpos start_x, tpos start_y)
   {
-    p_scr->window_offset(start_x, start_y);
+    p_scr->window_offset_set(start_x, start_y);
+  }
+
+  // Set offset of level window
+  void window_offset_get(tpos &start_x, tpos &start_y)
+  {
+    p_scr->window_offset_get(start_x, start_y);
   }
 
  /***********************************************************************
@@ -1057,6 +1063,8 @@ public:
   }
 
   void level_populate(void);
+
+  void level_move(tpos dx, tpos dy);
 
   // -------------------------------------------------------------------
   // undo/restore interface

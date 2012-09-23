@@ -98,6 +98,7 @@ const char * level_event::translation_table[] =
   "ED_LEVEL_DRAW_CURSOR_VARIATE_ITEM",
   "ED_LEVEL_DRAW_CURSOR_CLEAR_ITEM",
   "ED_LEVEL_CHANGE_BACKGROUND",
+  "ED_LEVEL_MOVE",
   "ED_HELP",
   "ED_QUIT",
   "ED_ROTATE_SELECTION",

@@ -275,7 +275,7 @@ changer(&level,p_dir)
   p_saved = NULL;
 
   // Set coordinates of level
-  level.window_offset(LEVEL_SCREEN_START_X, LEVEL_SCREEN_START_Y);
+  level.window_offset_set(LEVEL_SCREEN_START_X, LEVEL_SCREEN_START_Y);
   
   // Load user levels from user-levels, cwd and w/o path
   if(p_status->user_get()) {

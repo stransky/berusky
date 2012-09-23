@@ -111,6 +111,12 @@ void screen::flip(void)
   p_grf->flip();
 }
 
+screen_editor::screen_editor(tpos cell_x_, tpos cell_y_)
+ : screen(cell_x_,cell_y_)
+{
+
+}
+
 void screen_editor::set_layers(LAYER_CONFIG *p_lconfig)
 {
   lconfig = *p_lconfig;
@@ -191,7 +197,7 @@ void screen_editor::selection_draw(bool clear)
         for(x = sx; x <= ex; x++) {
           sprite_draw(mark, x, sy);
           sprite_draw(mark, x, ey);
-        }  
+        }
         // left & right lines
         for(y = sy; y <= ey; y++) {
           sprite_draw(mark, sx, y);
@@ -248,6 +254,7 @@ void screen_editor::draw(void)
         }
       }
     }
+  
     p_grf->redraw_add(min_x*cell_x+start_x,min_y*cell_y+start_y,dx*cell_x,dy*cell_y);
   }
 
@@ -259,4 +266,19 @@ void screen_editor::draw(void)
 
   // Draw cursors
   selection_draw();
+}
+
+void screen_editor::back_draw_editor(tpos x, tpos y, bool grid)
+{ 
+  tpos sx = x*cell_x + start_x;
+  tpos sy = y*cell_y + start_y;
+
+  if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
+    if(grid) {
+      p_grf->draw(EDIT_ZEME, sx, sy);
+    } else {
+      p_grf->draw(back_original, x*CELL_SIZE_X, y*CELL_SIZE_Y, 
+                  CELL_SIZE_X, CELL_SIZE_Y, 0, sx, sy);
+    }
+  }
 }

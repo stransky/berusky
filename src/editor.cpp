@@ -353,6 +353,7 @@ void editor_gui::editor_reset(void)
     ipanel[i]->register_controls_events(&input);
   }
   level_config();
+
 /* TODO
   panel_draw();
   selection_draw();
@@ -738,7 +739,7 @@ int editor_gui::layer_active_get(tpos x, tpos y)
 void editor_gui::level_config(void)
 {
   // Set coordinates of level
-  level.window_offset(EDITOR_SCREEN_START_X,EDITOR_SCREEN_START_Y);
+  level.window_offset_set(EDITOR_SCREEN_START_X,EDITOR_SCREEN_START_Y);
 
   // in rect
   RECT r = {EDITOR_SCREEN_START_X,EDITOR_SCREEN_START_Y,LEVEL_RESOLUTION_X,LEVEL_RESOLUTION_Y};
@@ -773,6 +774,11 @@ void editor_gui::level_draw(void)
 
   p_grf->redraw_add(EDITOR_SCREEN_START_X,EDITOR_SCREEN_START_Y,
                     LEVEL_RESOLUTION_X,LEVEL_RESOLUTION_Y);  
+}
+
+void editor_gui::level_move(tpos dx, tpos dy)
+{
+  level.level_move(dx, dy);
 }
 
 void editor_gui::event_add(LEVEL_EVENT ev)
@@ -1466,6 +1472,10 @@ bool editor_gui::event_handler(void)
         
         case ED_LEVEL_CHANGE_BACKGROUND:
           level_change_backgroud();
+          break;
+        
+        case ED_LEVEL_MOVE:
+          level_move(ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
           break;
         
         case ED_UNDO:

@@ -32,7 +32,9 @@
 #ifndef __GRAPHICS_H__
 #define __GRAPHICS_H__
 
-#define NO_SPRITE       (-1)
+#define NO_SPRITE                 (-1)
+#define IS_ON_SCREEN(sx,sy,ex,ey) ((sx) >= 0 && (sy) >= 0 && \
+                                   (ex) < GAME_RESOLUTION_X && (ey) < GAME_RESOLUTION_Y)
 
 /*
   Screen class - is composed from cells
@@ -220,12 +222,15 @@ typedef class screen {
 
 protected:
 
+  // coordinates of 0,0 cell on screen
   tpos                screen_start_x;
   tpos                screen_start_y;
 
+  // coordinates of 0,0 cell on screen - recent one
   tpos                start_x;
   tpos                start_y;
 
+  // cell size
   tpos                cell_x;
   tpos                cell_y;
 
@@ -261,10 +266,16 @@ public:
   
   }
   
-  void window_offset(tpos start_x_, tpos start_y_)
+  void window_offset_set(tpos start_x_, tpos start_y_)
   {
     screen_start_x = start_x = start_x_;
     screen_start_y = start_y = start_y_;
+  }
+
+  void window_offset_get(tpos &start_x_, tpos &start_y_)
+  {
+    start_x_ = screen_start_x;
+    start_y_ = screen_start_y;
   }
 
   bool coord_in_area(tpos x, tpos y)
@@ -349,16 +360,20 @@ public:
 protected:
 
   void back_reset(tpos x, tpos y, tpos dx = 1, tpos dy = 1)
-  {          
-    p_grf->draw(back_original, x*CELL_SIZE_X, y*CELL_SIZE_Y, dx*CELL_SIZE_X,
-                dy*CELL_SIZE_Y, back_static, x*CELL_SIZE_X, y*CELL_SIZE_Y);
+  {    
+    p_grf->draw(back_original, x*cell_x, y*cell_y, dx*cell_x,
+                dy*cell_y, back_static, x*cell_x, y*cell_y);
   }
 
   void back_draw(tpos x, tpos y, tpos dx = 1, tpos dy = 1, spr_handle dst = 0)
-  {          
-    p_grf->draw(back_static, x*CELL_SIZE_X, y*CELL_SIZE_Y,
-                dx*CELL_SIZE_X, dy*CELL_SIZE_Y, dst,
-                x*CELL_SIZE_X + start_x, y*CELL_SIZE_Y + start_y);
+  {
+    tpos sx = x*cell_x + start_x;
+    tpos sy = y*cell_y + start_y;
+  
+    if(IS_ON_SCREEN(sx, sy, sx+dx*cell_x, sy+dy*cell_y)) {
+      p_grf->draw(back_static, x*cell_x, y*cell_y,
+                  dx*cell_x, dy*cell_y, dst, sx, sy);
+    }
   }
 
   SCREEN_SPRITE * grid_get(tpos x, tpos y, tpos layer)
@@ -447,9 +462,13 @@ protected:
 
   void grid_draw(tpos x, tpos y, int layer, int flag = 0, spr_handle dst = 0)
   {
-    SCREEN_SPRITE *p_spr = grid[x][y]+layer;
+    SCREEN_SPRITE *p_spr = grid[x][y]+layer;  
     if(!p_spr->match(SPRITE_CLEAR) && p_spr->match(flag)) {
-      p_spr->draw(x*cell_x + start_x, y*cell_y + start_y, dst);
+      tpos sx = x*cell_x + start_x;
+      tpos sy = y*cell_y + start_y;
+      if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
+        p_spr->draw(sx, sy, dst);
+      }
     }
   }
 
@@ -473,9 +492,13 @@ public:
   }
 
   void sprite_draw(spr_handle spr, tpos x, tpos y, spr_handle dst = 0)
-  {      
-    p_grf->draw(spr, x*cell_x + start_x, y*cell_y + start_y, dst);
-    p_grf->redraw_add(spr, x*cell_x + start_x, y*cell_y + start_y);    
+  {
+    tpos sx = x*cell_x + start_x;
+    tpos sy = y*cell_y + start_y;
+    if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
+      p_grf->draw(spr, sx, sy, dst);
+      p_grf->redraw_add(spr, sx, sy);
+    }
   }
 
 protected:
@@ -708,26 +731,12 @@ public:
 
   void set_layers(LAYER_CONFIG *p_lconfig);
 
-  void back_draw_editor(tpos x, tpos y, bool grid)
-  { 
-    if(grid) {
-      p_grf->draw(EDIT_ZEME, x*CELL_SIZE_X + start_x, y*CELL_SIZE_Y + start_y);
-    } else {
-      p_grf->draw(back_original, x*CELL_SIZE_X, y*CELL_SIZE_Y, 
-                  CELL_SIZE_X, CELL_SIZE_Y, 0,
-                  x*CELL_SIZE_X + start_x, y*CELL_SIZE_Y + start_y);
-    }  
-  }
+  void back_draw_editor(tpos x, tpos y, bool grid);
 
-  screen_editor(tpos cell_x_, tpos cell_y_)
-   : screen(cell_x_,cell_y_)
-  {
-  
-  }
+  screen_editor(tpos cell_x_, tpos cell_y_);
 
   virtual ~screen_editor(void)
-  {
-  
+  {  
   }
 
   virtual void draw(void);
