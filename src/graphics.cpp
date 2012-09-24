@@ -255,7 +255,9 @@ void screen_editor::draw(void)
       }
     }
   
-    p_grf->redraw_add(min_x*cell_x+start_x,min_y*cell_y+start_y,dx*cell_x,dy*cell_y);
+    RECT tmp = {min_x*cell_x+start_x,min_y*cell_y+start_y,dx*cell_x,dy*cell_y};
+    p_grf->adjust_to_screen(&tmp);
+    p_grf->redraw_add(&tmp);
   }
 
   ch_static.clear();

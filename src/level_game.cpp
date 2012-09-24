@@ -604,6 +604,8 @@ void level_editor::level_move(tpos dx, tpos dy)
 
   window_offset_set(offset_x*CELL_SIZE_X, offset_y*CELL_SIZE_Y);
     
+  p_grf->fill(0,0,EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y,0);
+  p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y);
   p_scr->set_redraw();
   p_scr->draw();
   p_scr->flip();

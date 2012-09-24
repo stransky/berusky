@@ -292,8 +292,7 @@ changer(&level,p_dir)
   
     load = level.level_load(p_name, p_paths, sizeof(p_paths)/sizeof(p_paths[0]));    
   }
-  
-  
+    
   if(!load) {
     bprintf(_("Unable to load level %s"),p_name);
   } else {

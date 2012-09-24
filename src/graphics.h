@@ -277,7 +277,7 @@ public:
     start_x_ = screen_start_x;
     start_y_ = screen_start_y;
   }
-
+  // TODO - adjust for shadowed area
   bool coord_in_area(tpos x, tpos y)
   { 
     x -= screen_start_x;

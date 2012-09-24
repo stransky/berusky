@@ -556,6 +556,38 @@ void sprite::blit(tpos sx, tpos sy, tpos dx, tpos dy, class sprite *p_dst, tpos 
   SDL_BlitSurface(p_surf->surf_get(), &src_rec, p_dst->p_surf->surf_get(), &dst_rec);
 }
 
+void sprite::rect_adjust(RECT *p_rect)
+{
+  tpos width = p_rect->w;
+  tpos height = p_rect->h;
+
+  if(p_rect->x < 0) {
+    width += p_rect->x;
+    p_rect->x = 0;
+    if(width < 0)
+      width = 0;
+  }
+  if(p_rect->y < 0) {
+    height += p_rect->y;
+    p_rect->y = 0;
+    if(height < 0)
+      height = 0;
+  }
+  if(p_rect->x+width > rec.w) {
+    width = rec.w-p_rect->x;
+  }
+  if(p_rect->y+height > rec.h) {
+    height = rec.h-p_rect->y;
+  }
+  p_rect->w = width;
+  p_rect->h = height;
+
+  assert(width > 0 && height > 0);
+  assert(p_rect->x+p_rect->w >= 0 && p_rect->x+p_rect->w <= rec.w);
+  assert(p_rect->y+p_rect->h >= 0 && p_rect->y+p_rect->h <= rec.h);
+}
+
+
 // -------------------------------------------------------
 //   the sprite store class
 // -------------------------------------------------------

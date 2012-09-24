@@ -329,26 +329,7 @@ public:
     return(&rec);
   }
 
-  void rect_adjust(RECT *p_rect)
-  {
-    if(p_rect->x < 0) {
-      p_rect->w += p_rect->x;
-      if(p_rect->w < 0)
-        p_rect->w = 0;
-    }
-    if(p_rect->y < 0) {
-      p_rect->h += p_rect->y;
-      if(p_rect->h < 0)
-        p_rect->h = 0;
-    }
-    if(p_rect->x+p_rect->w > rec.w) {
-      p_rect->w = rec.w-p_rect->x;
-    }
-    if(p_rect->y+p_rect->h > rec.h) {
-      p_rect->h = rec.h-p_rect->y;
-    }    
-  }
-
+  void rect_adjust(RECT *p_rect);
   void rect_check(void);
 
 } SPRITE;
@@ -642,7 +623,12 @@ public:
   {
     return(p_screen_surface);
   }
-  
+
+  void adjust_to_screen(RECT *p_rect)
+  {
+    p_screen->rect_adjust(p_rect);
+  }
+
   void redraw_set(int red_) 
   {
     redraw = red_; 

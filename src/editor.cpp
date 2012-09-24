@@ -354,7 +354,6 @@ void editor_gui::editor_reset(void)
   }
   level_config();
 
-/* TODO
   panel_draw();
   selection_draw();
   layer_menu_draw();
@@ -363,7 +362,7 @@ void editor_gui::editor_reset(void)
   layer_active_set(ALL_LEVEL_LAYERS);
   side_menu_create();
   side_menu_draw();
-*/
+
   level.back_max_set(background_num(p_dir));
 }
 
@@ -435,12 +434,6 @@ void editor_gui::panel_scroll_mouse(int direction)
 }
 
 /*
-#define EDIT_ITEM_START_X        (EDIT_COORD_START_X)
-#define EDIT_ITEM_START_Y        (EDIT_COORD_START_Y+EDIT_COORD_DY)
-#define EDIT_ITEM_DX             (LEVEL_RESOLUTION_X)
-#define EDIT_ITEM_DY             (20)
-*/
-/*
 #define EDIT_ITEM_PICT_START_X   (EDIT_ITEM_START_X)
 #define EDIT_ITEM_PICT_START_Y   (EDIT_ITEM_START_Y+EDIT_ITEM_DY+10)
 */
@@ -476,7 +469,7 @@ void editor_gui::selection_draw(void)
   {
     RECT r = {EDIT_ITEM_PICT_START_X+ITEM_SIZE_X+10,
               EDIT_ITEM_PICT_START_Y,
-              LEVEL_RESOLUTION_X,
+              (DOUBLE_SIZE) ? LEVEL_RESOLUTION_X/2 : LEVEL_RESOLUTION_X,
               ITEM_SIZE_Y};
     RECT dr;
   
@@ -532,7 +525,7 @@ void editor_gui::selection_cursor_update(void)
 
 /* Side menu - general
 */
-#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
+#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
 #define SIDE_MENU_Y         (EDITOR_SCREEN_START_Y+60)
 #define SIDE_MENU_DX        (EDITOR_RESOLUTION_X-SIDE_MENU_X)
 #define SIDE_MENU_DY        (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
@@ -577,7 +570,7 @@ void editor_gui::side_menu_create(void)
   p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
 
-#define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X+10)
+#define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
 #define SIDE_STATUS_Y     (EDITOR_SCREEN_START_Y)
 #define SIDE_STATUS_DX    (EDITOR_RESOLUTION_X-SIDE_STATUS_X)
 #define SIDE_STATUS_DY    40

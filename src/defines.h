@@ -53,7 +53,7 @@
 
 #define SCREEN_TOP_PANNEL_X       0
 #define SCREEN_TOP_PANNEL_Y       0
-#define SCREEN_TOP_PANNEL_DX      GAME_RESOLUTION_X
+#define SCREEN_TOP_PANNEL_DX      (DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)
 #define SCREEN_TOP_PANNEL_DY      40
 
 #define INSERT_FIRST              0
@@ -85,14 +85,14 @@
 #define EDITOR_SCREEN_START_Y     (berusky_config::editor_screen_start_y)
 
 #define EDIT_COORD_START_X        (EDITOR_SCREEN_START_X)
-#define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+LEVEL_RESOLUTION_Y)
-#define EDIT_COORD_DX             (LEVEL_RESOLUTION_X)
+#define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+(DOUBLE_SIZE ? LEVEL_RESOLUTION_Y/2 : LEVEL_RESOLUTION_Y))
+#define EDIT_COORD_DX             (DOUBLE_SIZE ? LEVEL_RESOLUTION_X/2 : LEVEL_RESOLUTION_X)
 #define EDIT_COORD_DY             (20)
 
 #define EDIT_ITEM_START_X         (EDIT_COORD_START_X)
 #define EDIT_ITEM_START_Y         (EDIT_COORD_START_Y+EDIT_COORD_DY)
-#define EDIT_ITEM_DX              (LEVEL_RESOLUTION_X)
-#define EDIT_ITEM_DY              (20)   
+#define EDIT_ITEM_DX              (DOUBLE_SIZE ? LEVEL_RESOLUTION_X/2 : LEVEL_RESOLUTION_X)
+#define EDIT_ITEM_DY              (20)
 
 #define EDIT_ITEM_PICT_START_X    (EDIT_ITEM_START_X)
 #define EDIT_ITEM_PICT_START_Y    (EDIT_ITEM_START_Y+EDIT_ITEM_DY+10)
@@ -104,12 +104,6 @@
 
 #define EDIT_HELP_MOUSE_X         460
 
-/*
-#define ITEM_MENU_X               (EDIT_ITEM_START_X)
-#define ITEM_MENU_Y               (EDIT_ITEM_PICT_START_Y+80)
-#define ITEM_MENU_DX              (LEVEL_RESOLUTION_X)
-#define ITEM_MENU_DY              (EDITOR_RESOLUTION_Y-ITEM_MENU_Y)
-*/
 #define CONSOLE_X                 (EDITOR_LAYER_STATUS_X)
 #define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+ITEM_SIZE_Y+5)
 #define CONSOLE_DX                (EDITOR_RESOLUTION_X-CONSOLE_X-200)

@@ -1,11 +1,9 @@
 void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
 void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
-- fix for double size
-- editor fix
 - menu - icon - editor?
+- editor fix
 - find better edit way 
   - (draw toolbar over the level?)
-  - scroll level?
   - fix console position
 
 - editor - double size:

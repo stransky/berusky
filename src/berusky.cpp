@@ -94,8 +94,7 @@ void berusky_config::double_size_set(void)
   game_resolution_y = 900;
 
   level_resolution_x = 1280;
-  //level_resolution_y = 840; TODO
-  level_resolution_y = 480;
+  level_resolution_y = 840;
 
   level_screen_start_x = 0;
   level_screen_start_y = 40;
