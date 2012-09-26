@@ -441,7 +441,8 @@ void editor_gui::selection_draw(void)
 {   
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
-  p_grf->fill(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,EDIT_ITEM_DX,EDIT_ITEM_DY,0);
+  p_grf->fill(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,
+              EDIT_ITEM_DX,EDIT_ITEM_DY,0);
   p_font->print(NULL,EDIT_ITEM_START_X,EDIT_ITEM_START_Y,_("I:%d V:%d R:%d L:%d"),
                 selected_editor_item.item, 
                 selected_editor_item.variant, 
@@ -460,7 +461,8 @@ void editor_gui::selection_draw(void)
               ITEM_SIZE_Y};
   
     p_grf->fill(&r,p_grf->color_map(COLOR_BACK_R, COLOR_BACK_G, COLOR_BACK_B));
-    p_repo->draw(EDIT_ITEM_PICT_START_X+CELL_SIZE_X,EDIT_ITEM_PICT_START_Y+CELL_SIZE_Y,
+    p_repo->draw(EDIT_ITEM_PICT_START_X+ITEM_SIZE_X/2-CELL_SIZE_X/2,
+                 EDIT_ITEM_PICT_START_Y+ITEM_SIZE_Y/2-CELL_SIZE_Y/2,
                  selected_editor_item.item,
                  selected_editor_item.variant,
                  selected_editor_item.rotation);
@@ -469,7 +471,7 @@ void editor_gui::selection_draw(void)
   {
     RECT r = {EDIT_ITEM_PICT_START_X+ITEM_SIZE_X+10,
               EDIT_ITEM_PICT_START_Y,
-              (DOUBLE_SIZE) ? LEVEL_RESOLUTION_X/2 : LEVEL_RESOLUTION_X,
+              EDIT_ITEM_DX-ITEM_SIZE_X-10,
               ITEM_SIZE_Y};
     RECT dr;
   
@@ -496,9 +498,11 @@ void editor_gui::selection_cursor_draw_status(char *p_text,...)
 
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
-  p_grf->fill(EDIT_COORD_START_X,EDIT_COORD_START_Y,EDIT_COORD_DX,EDIT_COORD_DY,0);
+  p_grf->fill(EDIT_COORD_START_X,EDIT_COORD_START_Y,
+              EDIT_COORD_DX,EDIT_COORD_DY,0);
   p_font->print(NULL,EDIT_COORD_START_X,EDIT_COORD_START_Y,text);
-  p_grf->redraw_add(EDIT_COORD_START_X,EDIT_COORD_START_Y,EDIT_COORD_DX,EDIT_COORD_DY); 
+  p_grf->redraw_add(EDIT_COORD_START_X,EDIT_COORD_START_Y,
+                    EDIT_COORD_DX,EDIT_COORD_DY);
 }
 
 /* draw screen cursor */
@@ -525,8 +529,8 @@ void editor_gui::selection_cursor_update(void)
 
 /* Side menu - general
 */
-#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
-#define SIDE_MENU_Y         (EDITOR_SCREEN_START_Y+60)
+#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2+300 : GAME_RESOLUTION_X)+10)
+#define SIDE_MENU_Y         (EDITOR_SCREEN_START_Y+(DOUBLE_SIZE ? 160 : 60))
 #define SIDE_MENU_DX        (EDITOR_RESOLUTION_X-SIDE_MENU_X)
 #define SIDE_MENU_DY        (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
 #define SIDE_MENU_X_DIFF    0
@@ -576,7 +580,7 @@ void editor_gui::side_menu_create(void)
 #define SIDE_STATUS_DY    40
 
 void editor_gui::side_menu_draw(void)
-{
+{ //TODO
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
   p_grf->fill(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY,0);
@@ -614,11 +618,11 @@ void editor_gui::side_menu_draw(void)
 #define EDITOR_LAYER_STATUS_DY    (30)
 */
 void editor_gui::layer_menu_draw(void)
-{
-  RECT r = {EDITOR_LAYER_STATUS_X, 
-            EDITOR_LAYER_STATUS_Y, 
-            EDITOR_LAYER_STATUS_DX, 
-            EDITOR_LAYER_STATUS_DY};  
+{ //TODO
+  RECT r = {EDITOR_LAYER_STATUS_X,
+            EDITOR_LAYER_STATUS_Y,
+            EDITOR_LAYER_STATUS_DX,
+            EDITOR_LAYER_STATUS_DY};
 
   p_grf->fill(&r,0);
 

@@ -1,3 +1,6 @@
+Editor - redraw all items after level draw?
+  - is under any control?
+
 void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
 void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
 - menu - icon - editor?

@@ -77,11 +77,13 @@
 #define  ADJUST(min, max, a)  { if((a) < (min)) (min) = (a); if((a) > (max)) (max) = (a); }
 
 #define  INSIDE(base, a, lenght)  (((base) <= (a)) && ((a) < (base+lenght)))
+#define  INSIDE_ABS(min, a, max)  (((min) <= (a)) && ((a) <= (max)))
 
 #define  TPOS_MIN       (-INT_MAX)
 #define  TPOS_MAX       INT_MAX
 
 #define  SCALE_FACTOR   2
+#define  SPRITE_SCREEN  0
 
 #define  BITMAP_FORMAT  ".png"
 

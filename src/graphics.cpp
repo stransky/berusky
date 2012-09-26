@@ -114,8 +114,32 @@ void screen::flip(void)
 screen_editor::screen_editor(tpos cell_x_, tpos cell_y_)
  : screen(cell_x_,cell_y_)
 {
-
+  if(DOUBLE_SIZE) {
+    selection_area_active = TRUE;
+    selection_min_x = 3;
+    selection_min_y = 4;
+    selection_max_x = 22;
+    selection_max_y = 16;
+  }
+  else {
+    selection_area_active = FALSE;
+  }
 }
+
+bool screen_editor::coord_in_level_shadowed(tpos level_x, tpos level_y)
+{ 
+  if(!INSIDE(0, level_x, LEVEL_CELLS_X) || !INSIDE(0, level_y, LEVEL_CELLS_Y))
+    return(FALSE);
+
+  if(selection_area_active) {
+    coord_to_grid(&level_x, &level_y);
+    return(!INSIDE_ABS(selection_min_x,level_x,selection_max_x) ||
+           !INSIDE_ABS(selection_min_y,level_y,selection_max_y));
+  }
+  else {
+    return(FALSE);
+  }  
+}      
 
 void screen_editor::set_layers(LAYER_CONFIG *p_lconfig)
 {
@@ -208,6 +232,18 @@ void screen_editor::selection_draw(bool clear)
   }
 }
 
+void screen_editor::inactive_area_draw(tpos x, tpos y)
+{
+  // SCREEN_SPRITE *p_spr = grid[x][y]+layer;
+  // Draw with blending
+  // TODO
+  tpos sx = x*cell_x + start_x;
+  tpos sy = y*cell_y + start_y;
+  if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
+    //p_spr->draw(sx, sy, SPRITE_SCREEN);
+  }
+}
+
 void screen_editor::draw(void)
 {
   if(!ch_static.changed() && !ch_dynamic.changed())
@@ -248,7 +284,11 @@ void screen_editor::draw(void)
           if(lconfig.get(LAYER_PLAYER)) {
             grid_draw(x, y, LAYER_PLAYER);
           }
-          
+        
+          if(coord_in_level_shadowed(x, y)) {
+            inactive_area_draw(x, y);
+          }
+        
           ch_static.clear(x,y);
           ch_dynamic.clear(x,y);
         }

@@ -34,7 +34,7 @@
 
 #define NO_SPRITE                 (-1)
 #define IS_ON_SCREEN(sx,sy,ex,ey) ((sx) >= 0 && (sy) >= 0 && \
-                                   (ex) < GAME_RESOLUTION_X && (ey) < GAME_RESOLUTION_Y)
+                                   (ex) <= GAME_RESOLUTION_X && (ey) <= GAME_RESOLUTION_Y)
 
 /*
   Screen class - is composed from cells
@@ -258,7 +258,7 @@ public:
     cell_x = cell_x_;
     cell_y = cell_y_;
   
-    esprite_num = 0;
+    esprite_num = 0;  
   }
 
   virtual ~screen(void)
@@ -277,7 +277,7 @@ public:
     start_x_ = screen_start_x;
     start_y_ = screen_start_y;
   }
-  // TODO - adjust for shadowed area
+  
   bool coord_in_area(tpos x, tpos y)
   { 
     x -= screen_start_x;
@@ -462,7 +462,7 @@ protected:
 
   void grid_draw(tpos x, tpos y, int layer, int flag = 0, spr_handle dst = 0)
   {
-    SCREEN_SPRITE *p_spr = grid[x][y]+layer;  
+    SCREEN_SPRITE *p_spr = grid[x][y]+layer;
     if(!p_spr->match(SPRITE_CLEAR) && p_spr->match(flag)) {
       tpos sx = x*cell_x + start_x;
       tpos sy = y*cell_y + start_y;
@@ -621,11 +621,32 @@ typedef class screen_editor : public screen {
 
   SCREEN_SELECTION   sel;
 
+  // Active area of the level
+  // It's in absolute coordinates (it does not depend on the level position)
+  bool                selection_area_active;
+  tpos                selection_min_x;
+  tpos                selection_min_y;
+  tpos                selection_max_x;
+  tpos                selection_max_y;
+
 private:
   
   void selection_draw(bool clear = FALSE);
+  void inactive_area_draw(tpos x, tpos y);
 
 public:
+
+  bool coord_in_area(tpos x, tpos y)
+  { 
+    if(selection_area_active &&
+       (!INSIDE_ABS(selection_min_x*CELL_SIZE_X,x,selection_max_x*CELL_SIZE_X) ||
+        !INSIDE_ABS(selection_min_y*CELL_SIZE_Y,y,selection_max_y*CELL_SIZE_Y)))
+    {
+      return(FALSE);
+    }
+    
+    return(screen::coord_in_area(x, y));
+  }
 
   void selection_set(bool selection)
   {
@@ -728,6 +749,8 @@ private:
   LAYER_CONFIG       lconfig;
 
 public:
+  
+  bool coord_in_level_shadowed(tpos level_x, tpos level_y);
 
   void set_layers(LAYER_CONFIG *p_lconfig);
 
