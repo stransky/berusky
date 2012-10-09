@@ -240,6 +240,7 @@ void screen_editor::inactive_area_draw(tpos x, tpos y)
   tpos sx = x*cell_x + start_x;
   tpos sy = y*cell_y + start_y;
   if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
+    TODO -> blending!
     //p_spr->draw(sx, sy, SPRITE_SCREEN);
   }
 }

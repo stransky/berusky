@@ -278,7 +278,7 @@ public:
     start_y_ = screen_start_y;
   }
   
-  bool coord_in_area(tpos x, tpos y)
+  virtual bool coord_in_area(tpos x, tpos y)
   { 
     x -= screen_start_x;
     y -= screen_start_y;
@@ -636,7 +636,7 @@ private:
 
 public:
 
-  bool coord_in_area(tpos x, tpos y)
+  virtual bool coord_in_area(tpos x, tpos y)
   { 
     if(selection_area_active &&
        (!INSIDE_ABS(selection_min_x*CELL_SIZE_X,x,selection_max_x*CELL_SIZE_X) ||
