@@ -210,14 +210,31 @@ void surface::create(tpos width, tpos height, bool display_format)
   used = 0;
 }
 
-void surface::copy(class surface *p_src, bool deep_copy)
+void surface::copy(class surface *p_src, RECT *p_src_rect)
 {
-  if(deep_copy && p_src->p_surf) {
-    p_surf = SDL_ConvertSurface(p_src->p_surf, p_src->p_surf->format, SDL_HWSURFACE);
-    assert(p_surf);
-  } else {
-    *this = *p_src;
+  assert(p_src->p_surf);
+  if(p_surf) {
+    SDL_FreeSurface(p_surf);
+    p_surf = NULL;
+  }  
+
+  if(p_src_rect) {
+    SDL_PixelFormat *p_format = p_src->p_surf->format;
+    p_surf = SDL_CreateRGBSurface(SDL_HWSURFACE, p_src_rect->w, p_src_rect->h,
+                                  p_format->BitsPerPixel,
+                                  p_format->Rmask,
+                                  p_format->Gmask,
+                                  p_format->Bmask,
+                                  p_format->Amask);
+    if(!p_surf) {
+      berror("Unable to create surface! (%dx%d)", p_src_rect->w, p_src_rect->h);
+    }
+    SDL_BlitSurface(p_src->p_surf, p_src_rect, p_surf, NULL);
   }
+  else {
+    p_surf = SDL_ConvertSurface(p_src->p_surf, p_src->p_surf->format, SDL_HWSURFACE);
+  }
+  assert(p_surf);
 
   used = 0;
 }
@@ -248,14 +265,14 @@ surface::surface(SDL_Surface *p_surf_, int used_)
   used = used_;    
 }
 
-surface::surface(class surface *p_src, bool deep_copy)
+surface::surface(class surface *p_src)
 {
-  copy(p_src, deep_copy);
+  copy(p_src);
 }
 
-surface::surface(class surface &src, bool deep_copy)
+surface::surface(class surface &src)
 {
-  copy(&src, deep_copy);
+  copy(&src);
 }
 
 surface::surface(tpos width, tpos height, bool display_format)
@@ -264,12 +281,11 @@ surface::surface(tpos width, tpos height, bool display_format)
   create(width, height, display_format);
 }
 
-surface::surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height, bool display_format)
+surface::surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height)
 : used(0), p_surf(NULL)
 { 
-  // Fill this surface from the source one
-  create(width, height, display_format);
-  p_src->blit(sx,sy,width,height,this,0,0);
+  RECT src = {sx,sy,width,height};
+  copy(p_src, &src);
 }
 
 surface::surface(class surface *p_src, int scale, bool display_format)
@@ -771,7 +787,10 @@ spr_handle sprite_store::sprite_copy(spr_handle dst_handle, spr_handle src_handl
   SPRITE *p_src = p_sprites + src_handle;
 
   if(copy_surface && p_src->surf_get()) {
-    sprite_insert(surface_copy(p_src->surf_get()), p_src->flag_get(), p_src->rect_get(), dst_handle);
+    RECT *p_src_rec = p_src->rect_get();
+    RECT r = {0, 0, p_src_rec->w, p_src_rec->h};
+    sprite_insert(surface_copy(p_src->surf_get(), p_src_rec),
+                  p_src->flag_get(), &r, dst_handle);    
   } else {
     p_sprites[dst_handle] = *p_src;
     // -- add ref-counnt?

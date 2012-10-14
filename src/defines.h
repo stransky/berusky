@@ -120,7 +120,6 @@
 #define LEVEL_LAYERS              3
 #define ALL_LEVEL_LAYERS          4
 
-
 #define SPRITE_CLEAR              0x1
 #define SPRITE_NO_DRAW            0x2
 #define SPRITE_STATIC             0x4
@@ -171,6 +170,7 @@
 #define FIRST_WALL_SNOW           2050
 #define FIRST_WALL_SWAMP          2100
 #define FIRST_WALL_WOOD           2150
+#define SPRITE_BLACK              2200
 
 #define ROT_SHIFT                 10000
 

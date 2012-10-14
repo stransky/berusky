@@ -132,9 +132,9 @@ bool screen_editor::coord_in_level_shadowed(tpos level_x, tpos level_y)
     return(FALSE);
 
   if(selection_area_active) {
-    coord_to_grid(&level_x, &level_y);
-    return(!INSIDE_ABS(selection_min_x,level_x,selection_max_x) ||
-           !INSIDE_ABS(selection_min_y,level_y,selection_max_y));
+    coord_to_area(&level_x, &level_y);
+    return(!(INSIDE_ABS(selection_min_x,level_x,selection_max_x) &&
+             INSIDE_ABS(selection_min_y,level_y,selection_max_y)));
   }
   else {
     return(FALSE);
@@ -234,14 +234,10 @@ void screen_editor::selection_draw(bool clear)
 
 void screen_editor::inactive_area_draw(tpos x, tpos y)
 {
-  // SCREEN_SPRITE *p_spr = grid[x][y]+layer;
-  // Draw with blending
-  // TODO
   tpos sx = x*cell_x + start_x;
   tpos sy = y*cell_y + start_y;
   if(IS_ON_SCREEN(sx, sy, sx+cell_x, sy+cell_y)) {
-    TODO -> blending!
-    //p_spr->draw(sx, sy, SPRITE_SCREEN);
+    p_grf->draw(SPRITE_BLACK, sx, sy);
   }
 }
 

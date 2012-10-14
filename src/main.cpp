@@ -490,6 +490,11 @@ bool graphics_game_load(DIR_LIST *p_dir)
   }
   bprintf(_("%d sprites loaded..."), i);
 
+  // Create black sprite for blending
+  p_grf->sprite_copy(SPRITE_BLACK, FIRST_CLASSIC_LEVEL+57, TRUE);
+  SDL_Surface *p_surf = ((p_grf->sprite_get(SPRITE_BLACK))->surf_get())->surf_get();
+  SDL_SetAlpha(p_surf, SDL_SRCALPHA, 150);
+
   return(i > 0);
 }
 

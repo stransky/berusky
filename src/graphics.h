@@ -286,6 +286,12 @@ public:
     return(INSIDE(0, x, LEVEL_RESOLUTION_X) && INSIDE(0, y, LEVEL_RESOLUTION_Y));
   }      
 
+  void coord_to_area(tpos *p_x, tpos *p_y)
+  {
+    *p_x -= screen_start_x;
+    *p_y -= screen_start_y;
+  }
+
   void coord_to_grid(tpos *p_x, tpos *p_y)
   {
     *p_x = (*p_x - screen_start_x) / cell_x;

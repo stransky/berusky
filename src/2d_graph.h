@@ -150,20 +150,18 @@ public:
   surface(void);
   surface(char *p_file);  
   surface(SDL_Surface *p_surf_, int used_ = 0);
-  surface(class surface *p_src, bool deep_copy = false);
-  surface(class surface &src, bool deep_copy = false);
+  surface(class surface *p_src);
+  surface(class surface &src);
   surface(tpos width, tpos height, bool display_format = true);
   surface(class surface *p_src, int scale = 1, bool display_format = true);
-  surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height, bool display_format = true);
+  surface(class surface *p_src, tpos sx, tpos sy, tpos width, tpos height);
   ~surface(void);
 
-  
   void create(tpos width, tpos height, bool display_format = true);
   void load(char *p_file);
-  void copy(class surface *p_src, bool deep_copy = false);
+  void copy(class surface *p_src, RECT *p_src_rect = NULL);
   void free(void);
 
-  
   void ckey_set(trgbcomp r, trgbcomp g, trgbcomp b);
   void ckey_set(tcolor color);
   void fill(tcolor color);
@@ -199,7 +197,6 @@ public:
     *p_dx = p_surf->w;
     *p_dy = p_surf->h;
   }
-
 
   SDL_Surface * surf_get(void)
   {
@@ -331,6 +328,11 @@ public:
     return(&rec);
   }
 
+  void rect_set(RECT *r)
+  {
+    rec = *r;
+  }
+
   void rect_adjust(RECT *p_rect);
   void rect_check(void);
 
@@ -379,16 +381,16 @@ public:
     return(surface_last++);
   }
 
-  surf_handle surface_copy(SURFACE *p_surf)
+  surf_handle surface_copy(SURFACE *p_surf, RECT *p_src_rec = NULL)
   {
     assert(surface_last < surface_num);
-    p_surfaces[surface_last].copy(p_surf);
+    p_surfaces[surface_last].copy(p_surf, p_src_rec);
     return(surface_last++);
   }
 
-  surf_handle surface_copy(surf_handle src_handle)
+  surf_handle surface_copy(surf_handle src_handle, RECT *p_src_rec = NULL)
   {
-    return(surface_copy(p_surfaces + src_handle));
+    return(surface_copy(p_surfaces + src_handle, p_src_rec));
   }
 
   SURFACE * surface_get(surf_handle handle)
