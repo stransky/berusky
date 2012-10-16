@@ -351,7 +351,7 @@ bool level_active::play_callback(LEVEL_EVENT_QUEUE *p_queue)
   p_queue->dump_read("Read - after changer");
 #endif
   
-  // Redraw level/screen
+  // Redraw level/screen  
   level.level_draw();
     
   return(TRUE);

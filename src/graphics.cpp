@@ -33,10 +33,10 @@
 
 #include "berusky.h"
 
-void screen::draw(void)
+bool screen::draw(void)
 { 
   if(!ch_dynamic.changed() && !ch_dynamic.changed())
-    return;
+    return(FALSE);
     
   tpos min_x = MIN(ch_static.get_min_x(), ch_dynamic.get_min_x()),
        min_y = MIN(ch_static.get_min_y(), ch_dynamic.get_min_y()),
@@ -104,6 +104,8 @@ void screen::draw(void)
 
   // Draw all extra-sprites
   sprite_draw_all();
+
+  return(FALSE);
 }
 
 void screen::flip(void)
@@ -132,7 +134,7 @@ bool screen_editor::coord_in_level_shadowed(tpos level_x, tpos level_y)
     return(FALSE);
 
   if(selection_area_active) {
-    coord_to_area(&level_x, &level_y);
+    grid_to_screen(&level_x, &level_y);
     return(!(INSIDE_ABS(selection_min_x,level_x,selection_max_x) &&
              INSIDE_ABS(selection_min_y,level_y,selection_max_y)));
   }
@@ -241,10 +243,10 @@ void screen_editor::inactive_area_draw(tpos x, tpos y)
   }
 }
 
-void screen_editor::draw(void)
+bool screen_editor::draw(void)
 {
   if(!ch_static.changed() && !ch_dynamic.changed())
-    return;
+    return(FALSE);
     
   tpos min_x = MIN(ch_static.get_min_x(), ch_dynamic.get_min_x()),
        min_y = MIN(ch_static.get_min_y(), ch_dynamic.get_min_y()),
@@ -255,7 +257,14 @@ void screen_editor::draw(void)
   
   assert(min_x >= 0 && max_x < LEVEL_CELLS_X);
   assert(min_y >= 0 && max_y < LEVEL_CELLS_Y);
-    
+
+  bool outside_change = FALSE;
+
+  if(clear_screen) {
+    p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
+    clear_screen = FALSE;
+  }
+  
   if(ch_static.changed() || ch_dynamic.changed()) {
   
     dx = (max_x - min_x)+1;
@@ -284,6 +293,7 @@ void screen_editor::draw(void)
         
           if(coord_in_level_shadowed(x, y)) {
             inactive_area_draw(x, y);
+            outside_change = TRUE;
           }
         
           ch_static.clear(x,y);
@@ -294,7 +304,8 @@ void screen_editor::draw(void)
   
     RECT tmp = {min_x*cell_x+start_x,min_y*cell_y+start_y,dx*cell_x,dy*cell_y};
     p_grf->adjust_to_screen(&tmp);
-    p_grf->redraw_add(&tmp);
+    if(!outside_change)
+      p_grf->redraw_add(&tmp);
   }
 
   ch_static.clear();
@@ -305,6 +316,8 @@ void screen_editor::draw(void)
 
   // Draw cursors
   selection_draw();
+
+  return(outside_change);
 }
 
 void screen_editor::back_draw_editor(tpos x, tpos y, bool grid)

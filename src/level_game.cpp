@@ -571,12 +571,13 @@ void level_editor::level_populate(void)
         cell_graphics_reset(x,y,l);
       }
     }    
-  }
+  }  
+}
 
-  /* Draw items to screen */
-  p_scr->set_redraw();
-  p_scr->draw();
-  p_scr->flip();
+bool level_editor::level_draw(void)
+{  
+   /* Draw items to screen */
+  return(p_scr->draw());
 }
 
 void level_editor::level_move(tpos dx, tpos dy)
@@ -584,11 +585,11 @@ void level_editor::level_move(tpos dx, tpos dy)
   tpos sx,sy;
   window_offset_get(sx, sy);
 
-  #define MINIMAL_X_OFFSET (-(LEVEL_CELLS_X/2))
-  #define MINIMAL_Y_OFFSET (-(LEVEL_CELLS_Y/2))
+  #define MINIMAL_X_OFFSET (-9)
+  #define MINIMAL_Y_OFFSET (-4)
 
-  #define MAXIMAL_X_OFFSET (LEVEL_CELLS_X/2)
-  #define MAXIMAL_Y_OFFSET (LEVEL_CELLS_Y/2)
+  #define MAXIMAL_X_OFFSET (3)
+  #define MAXIMAL_Y_OFFSET (4)
 
   // sx and sy are multiples of CELL_SIZE_X/CELL_SIZE_Y
   tpos offset_x = (sx != 0) ? sx/CELL_SIZE_X : 0;
@@ -603,12 +604,9 @@ void level_editor::level_move(tpos dx, tpos dy)
     return;
 
   window_offset_set(offset_x*CELL_SIZE_X, offset_y*CELL_SIZE_Y);
-    
-  p_grf->fill(0,0,EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y,0);
-  p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y);
+  
+  // Redraw whole level
   p_scr->set_redraw();
-  p_scr->draw();
-  p_scr->flip();
 }
 
 void level_editor::import_from_core(LEVEL_CORE *p_core)

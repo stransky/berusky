@@ -133,7 +133,7 @@ bool profiles_load(BERUSKY_PROFILE **p_profiles, int *p_num)
   int files = file_list_get(INI_USER_PROFILES, PROFILE_FILE_MASK, &p_profile_names);
   if(!files)
     return(FALSE);
-  
+
   BERUSKY_PROFILE *p_list = new BERUSKY_PROFILE[files];
   for(int i = 0; i < files; i++) {
     p_list[i].load(INI_USER_PROFILES, p_profile_names[i].name);

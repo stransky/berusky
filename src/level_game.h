@@ -1112,6 +1112,10 @@ public:
 
 public:
   
+  bool level_draw(void);
+
+public:
+  
   level_editor(ITEM_REPOSITORY *p_rep)
   : level_generic(p_rep)
   {

@@ -246,6 +246,8 @@ protected:
   EXTRA_SPRITE        esprite[MAX_EXTRA_SPRITES];
   int                 esprite_num;
 
+  bool                clear_screen;
+
 public:
 
   screen(tpos cell_x_, tpos cell_y_)
@@ -258,7 +260,8 @@ public:
     cell_x = cell_x_;
     cell_y = cell_y_;
   
-    esprite_num = 0;  
+    esprite_num = 0;
+    clear_screen = FALSE;
   }
 
   virtual ~screen(void)
@@ -286,12 +289,6 @@ public:
     return(INSIDE(0, x, LEVEL_RESOLUTION_X) && INSIDE(0, y, LEVEL_RESOLUTION_Y));
   }      
 
-  void coord_to_area(tpos *p_x, tpos *p_y)
-  {
-    *p_x -= screen_start_x;
-    *p_y -= screen_start_y;
-  }
-
   void coord_to_grid(tpos *p_x, tpos *p_y)
   {
     *p_x = (*p_x - screen_start_x) / cell_x;
@@ -311,6 +308,12 @@ public:
   { 
     return(INSIDE(0, level_x, LEVEL_CELLS_X) && INSIDE(0, level_y, LEVEL_CELLS_Y));
   }      
+
+  void grid_to_screen(tpos *p_x, tpos *p_y)
+  {
+    *p_x += (screen_start_x / cell_x);
+    *p_y += (screen_start_y / cell_y);
+  }
 
 protected:
   
@@ -530,9 +533,10 @@ public:
   {
     ch_static.set_all();
     ch_dynamic.set_all();
+    clear_screen = TRUE;
   }  
 
-  virtual void draw(void);
+  virtual bool draw(void);
   void flip(void);
 
 } SCREEN;
@@ -768,7 +772,9 @@ public:
   {  
   }
 
-  virtual void draw(void);
+  // returns true if level rendering was outside
+  // of restricted area, so we need to redraw controls  
+  virtual bool draw(void);
 
 } SCREEN_EDITOR;
 

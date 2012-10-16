@@ -140,7 +140,7 @@ public:
 
   /* Draw panel controls
   */
-  void controls_draw(void);
+  void controls_draw(bool draw);
   
   /* Panel highlight routines
   */
@@ -152,7 +152,7 @@ public:
            panel_slot_highlighted < panel_slot_num);
   
     if(redraw)
-      panel_draw();
+      panel_draw(redraw);
   }
   void slot_highlight(tpos x, tpos y, bool redraw)
   {
@@ -174,7 +174,7 @@ public:
            panel_slot_selected < panel_slot_num);
   
     if(redraw) {
-      panel_draw();
+      panel_draw(redraw);
     }
   
     // Propagate to editor selection (item/variant)
@@ -202,7 +202,7 @@ public:
         panel_slot_highlighted = last_valid_slot;
     }
     if(redraw) {
-      panel_draw();
+      panel_draw(redraw);
     }
   }
 
@@ -234,7 +234,7 @@ public:
 
   /* Draws controls and panel item(s)
   */
-  virtual void panel_draw(void) = 0;
+  virtual void panel_draw(bool draw) = 0;
 
   /* Scroll the pannel with given direction
      and preserve selected item
@@ -342,7 +342,7 @@ public:
 
 public:
   
-  void panel_draw(void);
+  void panel_draw(bool draw);
 
 public:
 
@@ -371,7 +371,7 @@ public:
   {
     panel_item = item;
     if(redraw)
-      panel_draw();
+      panel_draw(redraw);
   }
 
   /* Items in panel
@@ -438,7 +438,7 @@ public:
 
 public:
   
-  void panel_draw(void);
+  void panel_draw(bool draw);
 
 public:
 
@@ -525,7 +525,7 @@ public:
   
   void print(const char *p_text,...);
   void output_clear(bool redraw = TRUE);
-  void output_redraw(void);
+  void output_redraw(bool draw);
 
 
   // ----------------------------------------------
@@ -623,6 +623,10 @@ public:
   void  console_wait(MENU_STATE state, int data, int data1);
   void  input_stop(bool success);  
 
+  void  console_draw(bool draw)
+  {
+    console.output_redraw(draw);
+  }
 
   bool  input_get_bool(void)
   {
@@ -649,7 +653,7 @@ public:
   // Panel interface
   void panel_item_select(int panel, tpos x, tpos y);
   void panel_item_highlight(int panel, tpos x, tpos y);
-  void panel_draw(void);
+  void panel_draw(bool draw);
   void panel_scroll(int panel, int direction);
   void panel_scroll_mouse(int direction);
 
@@ -658,20 +662,22 @@ private:
   // Recent selected item (in editor)
   EDITOR_SELECTION        selected_editor_item;
 
+private:
+
+  void selection_cursor_draw_status(bool draw, char *p_text,...);
+
 public:
   
   // Selection interface
-  void selection_draw(void);
-
-  void selection_cursor_draw_status(char *p_text,...);
-  void selection_cursor_update(void);
+  void selection_draw(bool draw);
+  void selection_cursor_draw(bool draw);
 
   void selection_rotate(int direction = 1);
 
 private:
 
   void side_menu_create(void);
-  void side_menu_draw(void);
+  void side_menu_draw(bool draw);
 
 private:
 
@@ -707,6 +713,8 @@ public:
 
   void level_move(tpos dx, tpos dy);
 
+  void draw(void);
+
 public:
 
   editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_);
@@ -721,8 +729,8 @@ public:
   void test(void);
   void test_gui(void);
 
-  // Level screen interface
-  void level_draw(void);
+  // Level screen interface  
+  bool level_draw(void);
   void level_config(void);
 
   // Menu interface
@@ -740,10 +748,10 @@ public:
   void level_item_clear(void);
   void level_item_clear_rectangle(bool filled);
   
-  void layer_menu_draw(void);
-  void layer_status_draw(void);
+  void layer_menu_create(void);
+  void layer_status_draw(bool draw);
   void layer_status_switch(int layer, LAYER_STATE state);  
-  void layer_active_set(int layer);
+  void layer_active_set(int layer, bool draw);
   int  layer_active_get(void);
   int  layer_active_get(tpos x, tpos y);
   

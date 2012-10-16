@@ -229,7 +229,7 @@ void editor_panel::slot_draw(int slot, int item, int variant)
   p_repo->draw(x+x_shift,y+y_shift,item,variant,0);
 }
 
-void editor_panel::controls_draw(void)
+void editor_panel::controls_draw(bool draw)
 {
   RECT r = boundary_get();
 
@@ -239,20 +239,24 @@ void editor_panel::controls_draw(void)
   if(dx) { // Panel is horizontal
     {
       p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
-      p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
+      if(draw)
+        p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
     }
     {
       p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
-      p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
+      if(draw)
+        p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
     }
   } else { // Panel is vertical
     {
       p_grf->draw(EDIT_ARROW_UP,start_x+x_shift,start_y);
-      p_grf->redraw_add(EDIT_ARROW_UP,start_x+x_shift,start_y);
+      if(draw)
+        p_grf->redraw_add(EDIT_ARROW_UP,start_x+x_shift,start_y);
     }
     {
       p_grf->draw(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
-      p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
+      if(draw)
+        p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
     }
   }  
 }
@@ -273,7 +277,7 @@ void item_panel::item_select(EDITOR_SELECTION *p_sel)
   ((VARIANT_PANEL*)attached_panel_get())->slot_select(0, p_sel, TRUE, TRUE);
 }
 
-void item_panel::panel_draw(void)
+void item_panel::panel_draw(bool draw)
 {
   RECT r = boundary_get();
 
@@ -282,12 +286,13 @@ void item_panel::panel_draw(void)
   for(i = 0; i < panel_size_get(); i++) {
     slot_draw(i, panel_item_first + i, 0);
   }
-  p_grf->redraw_add(&r);
+  if(draw)
+    p_grf->redraw_add(&r);
 
-  controls_draw();
+  controls_draw(draw);
 }
 
-void variant_panel::panel_draw(void)
+void variant_panel::panel_draw(bool draw)
 {
   RECT r = boundary_get();
 
@@ -296,9 +301,10 @@ void variant_panel::panel_draw(void)
   for(i = 0; i < panel_size_get(); i++) {
     slot_draw(i, panel_item, panel_variant_first + i);
   }
-  p_grf->redraw_add(&r);
+  if(draw)
+    p_grf->redraw_add(&r);
 
-  controls_draw();
+  controls_draw(draw);
 }
 
 editor_layer_config::editor_layer_config(void)
@@ -352,17 +358,12 @@ void editor_gui::editor_reset(void)
   for(i = 0; i < PANELS; i++) {
     ipanel[i]->register_controls_events(&input);
   }
-  level_config();
+  level_config();  
 
-  panel_draw();
-  selection_draw();
-  layer_menu_draw();
-  layer_status_draw();
-  level_draw();
-  layer_active_set(ALL_LEVEL_LAYERS);
-  side_menu_create();
-  side_menu_draw();
-
+  layer_active_set(ALL_LEVEL_LAYERS, FALSE);
+  //TODO
+  //side_menu_create();
+  //layer_menu_create();
   level.back_max_set(background_num(p_dir));
 }
 
@@ -385,10 +386,10 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
   ipanel[panel]->slot_select(x,y,&selected_editor_item,TRUE,TRUE);
   
   // Draw the current selection
-  selection_draw();
+  selection_draw(TRUE);
 
   // Set active layer
-  layer_active_set(p_repo->item_get_layer(selected_editor_item.item));
+  layer_active_set(p_repo->item_get_layer(selected_editor_item.item), TRUE);
 }
 
 void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
@@ -398,11 +399,11 @@ void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
   ipanel[panel]->slot_highlight(x,y,TRUE);
 }
 
-void editor_gui::panel_draw(void)
+void editor_gui::panel_draw(bool draw)
 {
   int i;
   for(i = 0; i < PANELS; i++) {
-    ipanel[i]->panel_draw();
+    ipanel[i]->panel_draw(draw);
   }
 }
 
@@ -411,7 +412,7 @@ void editor_gui::panel_scroll(int panel, int direction)
   panel -= PANEL_HANDLE_1;
   assert(panel >= 0 && panel < PANELS);
   ipanel[panel]->panel_scroll(direction,&selected_editor_item,TRUE);
-  selection_draw();
+  selection_draw(TRUE);
 }
 
 void editor_gui::panel_scroll_mouse(int direction)
@@ -437,7 +438,7 @@ void editor_gui::panel_scroll_mouse(int direction)
 #define EDIT_ITEM_PICT_START_X   (EDIT_ITEM_START_X)
 #define EDIT_ITEM_PICT_START_Y   (EDIT_ITEM_START_Y+EDIT_ITEM_DY+10)
 */
-void editor_gui::selection_draw(void)
+void editor_gui::selection_draw(bool draw)
 {   
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
@@ -447,8 +448,9 @@ void editor_gui::selection_draw(void)
                 selected_editor_item.item, 
                 selected_editor_item.variant, 
                 selected_editor_item.rotation, 
-                p_repo->item_get_layer(selected_editor_item.item));
-  p_grf->redraw_add(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,EDIT_ITEM_DX,EDIT_ITEM_DY);
+                p_repo->item_get_layer(selected_editor_item.item));  
+  if(draw)
+    p_grf->redraw_add(EDIT_ITEM_START_X,EDIT_ITEM_START_Y,EDIT_ITEM_DX,EDIT_ITEM_DY);
 
   {
     #define COLOR_BACK_R      100
@@ -466,7 +468,8 @@ void editor_gui::selection_draw(void)
                  selected_editor_item.item,
                  selected_editor_item.variant,
                  selected_editor_item.rotation);
-    p_grf->redraw_add(&r);
+    if(draw)
+      p_grf->redraw_add(&r);
   }
   {
     RECT r = {EDIT_ITEM_PICT_START_X+ITEM_SIZE_X+10,
@@ -481,13 +484,14 @@ void editor_gui::selection_draw(void)
             selected_editor_item.variant,
             p_repo->item_get_rotation(selected_editor_item.rotation));
     r.h = dr.h;
-    p_grf->redraw_add(&r);
+    if(draw)
+      p_grf->redraw_add(&r);
   }  
 }
 
 /* Draw the status line
 */
-void editor_gui::selection_cursor_draw_status(char *p_text,...)
+void editor_gui::selection_cursor_draw_status(bool draw, char *p_text,...)
 {
   char      text[200];
   va_list   arguments;  
@@ -501,12 +505,14 @@ void editor_gui::selection_cursor_draw_status(char *p_text,...)
   p_grf->fill(EDIT_COORD_START_X,EDIT_COORD_START_Y,
               EDIT_COORD_DX,EDIT_COORD_DY,0);
   p_font->print(NULL,EDIT_COORD_START_X,EDIT_COORD_START_Y,text);
-  p_grf->redraw_add(EDIT_COORD_START_X,EDIT_COORD_START_Y,
-                    EDIT_COORD_DX,EDIT_COORD_DY);
+  if(draw) {
+    p_grf->redraw_add(EDIT_COORD_START_X,EDIT_COORD_START_Y,
+                      EDIT_COORD_DX,EDIT_COORD_DY);
+  }
 }
 
 /* draw screen cursor */
-void editor_gui::selection_cursor_update(void)
+void editor_gui::selection_cursor_draw(bool draw)
 {
   tpos x, y;
   tpos sx,sy;
@@ -516,14 +522,14 @@ void editor_gui::selection_cursor_update(void)
     level.selection_get(&x,&y);
     if(level.selection_rectangle_get()) {
       level.selection_rectangle_get(&sx,&sy,&dx,&dy);
-      selection_cursor_draw_status(_("selection %d,%d - %d,%d"),sx,sy,dx,dy);
+      selection_cursor_draw_status(draw,_("selection %d,%d - %d,%d"),sx,sy,dx,dy);
     }
     else {
-      selection_cursor_draw_status(_("level cursor %d x %d"),x,y);
+      selection_cursor_draw_status(draw,_("level cursor %d x %d"),x,y);
     }
   }
   else {
-    selection_cursor_draw_status(_("No selection"));
+    selection_cursor_draw_status(draw,_("No selection"));
   }
 }
 
@@ -571,15 +577,16 @@ void editor_gui::side_menu_create(void)
   menu_item_draw(side_menu[10],MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SHADER));
   menu_item_draw(side_menu[11],MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
 
-  p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
+  //p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
 
 #define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
 #define SIDE_STATUS_Y     (EDITOR_SCREEN_START_Y)
 #define SIDE_STATUS_DX    (EDITOR_RESOLUTION_X-SIDE_STATUS_X)
 #define SIDE_STATUS_DY    40
+#define SIDE_STATUS_DY    40
 
-void editor_gui::side_menu_draw(void)
+void editor_gui::side_menu_draw(bool draw)
 { //TODO
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
@@ -607,8 +614,9 @@ void editor_gui::side_menu_draw(void)
       break;
   }
   if(p_act)
-    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("edited layer:\n%s"),p_act);
-  p_grf->redraw_add(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY);
+    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("edited layer:\n%s"),p_act);  
+  if(draw)
+    p_grf->redraw_add(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY);
 }
 
 /*
@@ -617,7 +625,7 @@ void editor_gui::side_menu_draw(void)
 #define EDITOR_LAYER_STATUS_DX    (LEVEL_RESOLUTION_Y)
 #define EDITOR_LAYER_STATUS_DY    (30)
 */
-void editor_gui::layer_menu_draw(void)
+void editor_gui::layer_menu_create(void)
 { //TODO
   RECT r = {EDITOR_LAYER_STATUS_X,
             EDITOR_LAYER_STATUS_Y,
@@ -649,14 +657,15 @@ void editor_gui::layer_menu_draw(void)
 
   int i;
   for(i = 0; i < ALL_LEVEL_LAYERS; i++) {
-    menu_item_draw_text(layer_names[i], MENU_LEFT, 0, LEVEL_EVENT(ED_LEVEL_LAYER,layer_handle[i],LAYER_CHANGE));
+    menu_item_draw_text(layer_names[i], MENU_LEFT, 0, 
+                        LEVEL_EVENT(ED_LEVEL_LAYER,layer_handle[i],LAYER_CHANGE));
     menu_get_last_rect(config.coord+i);
   }
 
-  p_grf->redraw_add(&r); 
+  // p_grf->redraw_add(&r);
 }
 
-void editor_gui::layer_status_draw(void)
+void editor_gui::layer_status_draw(bool draw)
 {
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
@@ -687,7 +696,8 @@ void editor_gui::layer_status_draw(void)
                   config.coord[i].y, 
                   layers_status[config.lc.get(layer_handle[i]) ? 1 : 0]);
     r.w += 20;
-    p_grf->redraw_add(&r);
+    if(draw)
+      p_grf->redraw_add(&r);
   }  
 }
 
@@ -698,16 +708,14 @@ void editor_gui::layer_status_switch(int layer, LAYER_STATE state)
   } else {
     config.lc.set(layer,state);
   }
-  level.set_layers(&config.lc);
-
-  layer_status_draw();
-  level_draw();
+  level.set_layers(&config.lc);  
+  draw();
 }
 
-void editor_gui::layer_active_set(int layer)
+void editor_gui::layer_active_set(int layer, bool draw)
 {
-  config.lc.set_active(layer);  
-  side_menu_draw();
+  config.lc.set_active(layer);
+  side_menu_draw(draw);
 }
 
 int editor_gui::layer_active_get(void)
@@ -730,6 +738,21 @@ int editor_gui::layer_active_get(tpos x, tpos y)
   }
   else {
     return(active_layer);  
+  }
+}
+
+void editor_gui::draw(void)
+{
+  if(level.level_draw()) {
+    panel_draw(FALSE);
+    selection_draw(FALSE);
+    selection_cursor_draw(FALSE);
+    console_draw(FALSE);
+  /*
+    layer_status_draw(FALSE);
+    side_menu_draw(FALSE);    
+  */
+    p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
   }
 }
 
@@ -763,14 +786,6 @@ void editor_gui::level_config(void)
   input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_UP|MASK_WHEEL_DOWN,K_V),
                    MEVENT_MOUSE_EXTERNAL|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS|MEVENT_KEY,
                    SCREEN_HANDLE_VARIATE));                   
-}
-
-void editor_gui::level_draw(void)
-{
-  level.level_populate();
-
-  p_grf->redraw_add(EDITOR_SCREEN_START_X,EDITOR_SCREEN_START_Y,
-                    LEVEL_RESOLUTION_X,LEVEL_RESOLUTION_Y);  
 }
 
 void editor_gui::level_move(tpos dx, tpos dy)
@@ -1030,7 +1045,7 @@ void editor_gui::level_cursor_set(tpos x, tpos y)
   }
 
   level.selection_set(state);
-  selection_cursor_update();
+  selection_cursor_draw(TRUE);
 }
 
 void editor_gui::level_item_insert(void)
@@ -1184,7 +1199,7 @@ void editor_gui::selection_rotate(int direction)
 {
   if(p_repo->item_can_rotate(selected_editor_item.item)) {
     ROTATE_ITEM(selected_editor_item.rotation, direction);
-    selection_draw();
+    selection_draw(TRUE);
   } else {
     console.print(_("Can't rotate item %d"),selected_editor_item.item);
   }
@@ -1464,7 +1479,7 @@ bool editor_gui::event_handler(void)
           break;
         
         case ED_LEVEL_SELECT_LAYER:
-          layer_active_set(ev.param_int_get(PARAM_0));
+          layer_active_set(ev.param_int_get(PARAM_0), TRUE);
           break;
         
         case ED_LEVEL_CHANGE_BACKGROUND:
@@ -1535,7 +1550,7 @@ bool editor_gui::event_handler(void)
 
   // Draw all changes in level
   if(draw_level) {
-    level.draw();
+    draw();
   }
   level.flip();
 
@@ -1827,7 +1842,7 @@ void editor_console::print(const char *p_text,...)
   output_lines[1][0] = '*';
   output_lines[1][1] = ' ';
 
-  output_redraw();
+  output_redraw(TRUE);
 }
 
 void editor_console::output_clear(bool redraw)
@@ -1837,10 +1852,10 @@ void editor_console::output_clear(bool redraw)
     output_lines[i][0] = '\0';
   
   if(redraw)
-    output_redraw();
+    output_redraw(TRUE);
 }
 
-void editor_console::output_redraw(void)
+void editor_console::output_redraw(bool draw)
 {
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
@@ -1850,5 +1865,6 @@ void editor_console::output_redraw(void)
   for(i = 0; i < lines; i++)
     p_font->print(NULL,x,y+i*height_diff,output_lines[i]);
   
-  p_grf->redraw_add(x,y,w,h);
+  if(draw)
+    p_grf->redraw_add(x,y,w,h);
 }
