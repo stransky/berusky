@@ -2,6 +2,7 @@
 - zobrazit level bez controlu (full screen?)
 - vypinani jednotlivych list s nastrojema?
 - light boxes
+- better backgrounds
 
 void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
 void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
