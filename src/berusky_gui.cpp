@@ -562,9 +562,9 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
 
         menu_item_start();
-        menu_item_draw_checkbox(fulscreen, MENU_LEFT, p_grf->fullscreen_get(), 0,
+        menu_item_draw_checkbox(fulscreen, MENU_LEFT, p_grf->fullscreen_get(), 0, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
-        menu_item_draw_checkbox(double_size, MENU_LEFT, berusky_config::double_size, 0,
+        menu_item_draw_checkbox(double_size, MENU_LEFT, berusky_config::double_size, 0, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_DOUBLESIZE_SWITCH));
 
 /*

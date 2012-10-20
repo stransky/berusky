@@ -134,52 +134,54 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
         p_font->print(&r, last_x + menu_spr_diff_dx + menu_text_diff_x, 
                           last_y + menu_text_diff_y, p_text);
       
-        RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
+        if(!(flags&MENU_DRAW_ONLY)) {
+          RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
       
-        LEVEL_EVENT s_spr;
-        LEVEL_EVENT u_spr;
-
-        if(flags&MENU_DONT_DRAW_SPRITE) {
-          u_spr = s_spr = LEVEL_EVENT(EV_NONE);
-        }
-        else {
-          s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
-          u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
-        }
-
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED),
-                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
-                             ET_INT(last_y + menu_text_diff_y),
-                             ET_INT(MENU_LEFT), ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),
-                             ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
-                             ET_INT(last_y + menu_text_diff_y),
-                             ET_INT(MENU_LEFT), ET_INT(p_text));
-        LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
-        u_text_highlight.depends_add(2);
-    
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        if(!highlight_group_next)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
-        if(flags&MENU_SAVE_BACK)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+          LEVEL_EVENT s_spr;
+          LEVEL_EVENT u_spr;
+        
+          if(flags&MENU_DONT_DRAW_SPRITE) {
+            u_spr = s_spr = LEVEL_EVENT(EV_NONE);
+          }
+          else {
+            s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+            u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
+          }
   
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        if(!highlight_group_next)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
-        if(flags&MENU_SAVE_BACK)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+          LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET(FONT_SELECTED),
+                               ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
+                               ET_INT(last_y + menu_text_diff_y),
+                               ET_INT(MENU_LEFT), ET_INT(p_text));
+          LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),
+                               ET_INT(last_x + menu_spr_diff_dx + menu_text_diff_x),
+                               ET_INT(last_y + menu_text_diff_y),
+                               ET_INT(MENU_LEFT), ET_INT(p_text));
+          LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+          u_text_highlight.depends_add(2);
+      
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+          if(!highlight_group_next)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+          else
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
+          if(flags&MENU_SAVE_BACK)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+    
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+          if(!highlight_group_next)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+          else
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_spr, u_text));
+          if(flags&MENU_SAVE_BACK)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+          
+          highlight_group_next = HIGHLIGHT_GROUP_NONE;
+        }
         
         last_x += last_dx;
-        last_y += last_dy;
-        
-        highlight_group_next = HIGHLIGHT_GROUP_NONE;
+        last_y += last_dy;        
       }
       break;
     case MENU_RIGHT:
@@ -191,55 +193,57 @@ void gui_base::menu_item_draw_sprite(char *p_text, MENU_TYPE spr_align, int flag
         p_font->select(FONT_DEFAULT);
         p_font->print(&r, last_x - menu_text_diff_x, last_y + menu_text_diff_y, p_text);
 
-        RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
-
-        LEVEL_EVENT s_spr;
-        LEVEL_EVENT u_spr;
-
-        if(flags&MENU_DONT_DRAW_SPRITE) {
-          u_spr = s_spr = LEVEL_EVENT(EV_NONE);
+        if(!(flags&MENU_DRAW_ONLY)) {
+          RECT r_arrow = {last_x, last_y, menu_spr_diff_dx, menu_spr_diff_dy};
+  
+          LEVEL_EVENT s_spr;
+          LEVEL_EVENT u_spr;
+  
+          if(flags&MENU_DONT_DRAW_SPRITE) {
+            u_spr = s_spr = LEVEL_EVENT(EV_NONE);
+          }
+          else {
+            s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
+            u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
+          }
+          
+          LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
+                                          ET_INT(FONT_SELECTED), 
+                                          ET_INT(last_x - menu_text_diff_x), 
+                                          ET_INT(last_y + menu_text_diff_y), 
+                                          ET_INT(MENU_RIGHT), ET_INT(p_text));
+          LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, 
+                                          ET_INT(FONT_DEFAULT),  
+                                          ET_INT(last_x - menu_text_diff_x), 
+                                          ET_INT(last_y + menu_text_diff_y), 
+                                          ET_INT(MENU_RIGHT), ET_INT(p_text));
+  
+          LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+          u_text_highlight.depends_add(2);
+  
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+          if(!highlight_group_next)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+          else
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
+          if(flags&MENU_SAVE_BACK)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));        
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+  
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
+          if(!highlight_group_next)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
+          else
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
+          if(flags&MENU_SAVE_BACK)
+            input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));        
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+  
+          highlight_group_next = HIGHLIGHT_GROUP_NONE;
         }
-        else {
-          s_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_active, last_x, last_y);
-          u_spr = LEVEL_EVENT(GI_SPRITE_DRAW, menu_spr_inactive,  last_x, last_y);
-        }
-        
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, 
-                                        ET_INT(FONT_SELECTED), 
-                                        ET_INT(last_x - menu_text_diff_x), 
-                                        ET_INT(last_y + menu_text_diff_y), 
-                                        ET_INT(MENU_RIGHT), ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, 
-                                        ET_INT(FONT_DEFAULT),  
-                                        ET_INT(last_x - menu_text_diff_x), 
-                                        ET_INT(last_y + menu_text_diff_y), 
-                                        ET_INT(MENU_RIGHT), ET_INT(p_text));
-
-        LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
-        u_text_highlight.depends_add(2);
-
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        if(!highlight_group_next)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
-        if(flags&MENU_SAVE_BACK)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));        
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_arrow, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_spr, s_text));
-        if(!highlight_group_next)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_spr, u_text));
-        else
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
-        if(flags&MENU_SAVE_BACK)
-          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));        
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-
+      
         last_x += last_dx;
         last_y += last_dy;
-        
-        highlight_group_next = HIGHLIGHT_GROUP_NONE;
       }
       break;
     case MENU_CENTER:
@@ -267,35 +271,44 @@ void gui_base::menu_item_draw_text(char *p_text, MENU_TYPE align, int flags,
   p_font->select(FONT_DEFAULT);
   p_font->print(&r, last_x, last_y, p_text);
 
-  LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
-                                  ET_INT(last_x), 
-                                  ET_INT(last_y), 
-                                  ET_INT(align),
-                                  ET_INT(p_text));
-  LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),
-                                  ET_INT(last_x), 
-                                  ET_INT(last_y), 
-                                  ET_INT(align),
-                                  ET_INT(p_text));
-  LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
-  u_text_highlight.depends_add(1);
-
-  // event - release the saved highlighted event (if any)
-  input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-  if(!highlight_group_next)
-    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-  else
-    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, u_text_highlight, u_text));
-
-  if(flags&MENU_SAVE_BACK)
-    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(GI_MENU_BACK_PUSH)));
+  if(!(flags&MENU_DRAW_ONLY)) {
+    LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                    ET_INT(last_x), 
+                                    ET_INT(last_y), 
+                                    ET_INT(align),
+                                    ET_INT(p_text));
+    LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT),
+                                    ET_INT(last_x), 
+                                    ET_INT(last_y), 
+                                    ET_INT(align),
+                                    ET_INT(p_text));
+    LEVEL_EVENT u_text_highlight = LEVEL_EVENT(GI_HIGHLIGHT_EVENT, highlight_group_next);
+    u_text_highlight.depends_add(1);
   
-  input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+    // event - release the saved highlighted event (if any)
+    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+    if(!highlight_group_next)
+      input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+    else
+      input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), 
+                       MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
+                       u_text_highlight, u_text));
   
+    if(flags&MENU_SAVE_BACK) {
+      input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), 
+                       MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
+                       LEVEL_EVENT(GI_MENU_BACK_PUSH)));
+    }
+    
+    input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT), 
+                     MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
+                     click1, click2, click3));
+    
+    highlight_group_next = HIGHLIGHT_GROUP_NONE;
+  }
+
   last_x += last_dx;
   last_y += last_dy;
-  
-  highlight_group_next = HIGHLIGHT_GROUP_NONE;
 }
 
 void gui_base::menu_item_draw_text(tpos x, tpos y, char *p_text, MENU_TYPE spr_align, int flags,
@@ -305,7 +318,7 @@ void gui_base::menu_item_draw_text(tpos x, tpos y, char *p_text, MENU_TYPE spr_a
   menu_item_draw_text(p_text, spr_align, flags, click1, click2, click3);
 }
 
-void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, int flags, 
+void gui_base::menu_item_draw(char *p_text, MENU_TYPE spr_align, int flags,
                               LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
 
@@ -356,7 +369,7 @@ void gui_base::menu_item_draw(tpos x, tpos y, char *p_text, MENU_TYPE spr_align,
 #define MENU_TEXT_CHECKBOX_DIFF_X (20)
 #define MENU_TEXT_CHECKBOX_DIFF_Y (-1)
 
-void gui_base::menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool checked, int checkbox_id,
+void gui_base::menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool checked, int checkbox_id, int flags,
                                        LEVEL_EVENT click1, LEVEL_EVENT click2, LEVEL_EVENT click3)
 {
 
@@ -374,37 +387,38 @@ void gui_base::menu_item_draw_checkbox(char *p_text, MENU_TYPE spr_align, bool c
                       last_y + MENU_TEXT_CHECKBOX_DIFF_Y,
                       p_text);
       
-        LEVEL_EVENT checkbox_draw = LEVEL_EVENT(GI_CHECKBOX_SWITCH, checkbox_id);
-        LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
-                                        ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X),
-                                        ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
-                                        ET_INT(MENU_LEFT), ET_INT(p_text));
-        LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
-                                        ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X), 
-                                        ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
-                                        ET_INT(MENU_LEFT), ET_INT(p_text));
-
-        // 20x20 is a size of the check-box
-        RECT r_box = {last_x, last_y, 20, 20};
-
-        // highlight the text when mouse is over
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
-      
-        // if user clicked, activate the check-box and wait for mouse button release
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
-                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
-                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
-      
-        // if user clicked, activate the check-box and wait for mouse button release
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
-                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-        input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
-                        MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
-              
+        if(!(flags&MENU_DRAW_ONLY)) {
+          LEVEL_EVENT checkbox_draw = LEVEL_EVENT(GI_CHECKBOX_SWITCH, checkbox_id);
+          LEVEL_EVENT s_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_SELECTED), 
+                                          ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X),
+                                          ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
+                                          ET_INT(MENU_LEFT), ET_INT(p_text));
+          LEVEL_EVENT u_text = LEVEL_EVENT(GI_STRING_DRAW, ET_INT(FONT_DEFAULT), 
+                                          ET_INT(last_x + MENU_TEXT_CHECKBOX_DIFF_X + MENU_TEXT_DIFF_X), 
+                                          ET_INT(last_y + MENU_TEXT_CHECKBOX_DIFF_Y),
+                                          ET_INT(MENU_LEFT), ET_INT(p_text));
+  
+          // 20x20 is a size of the check-box
+          RECT r_box = {last_x, last_y, 20, 20};
+  
+          // highlight the text when mouse is over
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN,  s_text));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r), MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT, u_text));
+        
+          // if user clicked, activate the check-box and wait for mouse button release
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
+                          MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
+                          MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, checkbox_draw));
+        
+          // if user clicked, activate the check-box and wait for mouse button release
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r_box, MASK_BUTTON_LEFT, BUTTON_UP),
+                          MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+          input.mevent_add(MOUSE_EVENT(MOUSE_STATE(r, MASK_BUTTON_LEFT, BUTTON_UP),
+                          MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, click1, click2, click3));
+        }
         last_x += last_dx;
         last_y += last_dy;
       }

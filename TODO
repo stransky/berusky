@@ -4,24 +4,15 @@
 - light boxes
 - better backgrounds
 
-void game_gui::level_save(LEVEL_EVENT_QUEUE *p_queue)
-void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
 - menu - icon - editor?
 - editor fix
 - find better edit way 
   - (draw toolbar over the level?)
   - fix console position
 
-- editor - double size:
-  - the same system as single-size
-  - pannels will be semi-transparent
-  - level will be movable
-
-
 - windows - add MSVC dll
 - generate shadows to floor automatically when level is loaded
 - New backgrounds (from B2)
-- double-size mode, new items (from B2)
 
 - better animations - explosions and so
 
@@ -30,8 +21,8 @@ void game_gui::level_load(LEVEL_EVENT_QUEUE *p_queue)
 New Items:
 
 - new backgrounds
-- light box
-- a hole  
+- new ground
+- a hole
 
 Game:
 

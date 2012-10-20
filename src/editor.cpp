@@ -360,9 +360,8 @@ void editor_gui::editor_reset(void)
   }
   level_config();  
 
-  layer_active_set(ALL_LEVEL_LAYERS, FALSE);
-  //TODO
-  //side_menu_create();
+  layer_active_set(ALL_LEVEL_LAYERS, FALSE);  
+  side_menu_create();
   //layer_menu_create();
   level.back_max_set(background_num(p_dir));
 }
@@ -535,6 +534,7 @@ void editor_gui::selection_cursor_draw(bool draw)
 
 /* Side menu - general
 */
+/*
 #define SIDE_MENU_X         (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2+300 : GAME_RESOLUTION_X)+10)
 #define SIDE_MENU_Y         (EDITOR_SCREEN_START_Y+(DOUBLE_SIZE ? 160 : 60))
 #define SIDE_MENU_DX        (EDITOR_RESOLUTION_X-SIDE_MENU_X)
@@ -579,6 +579,50 @@ void editor_gui::side_menu_create(void)
 
   //p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
 }
+*/
+
+#define SIDE_MENU_X         (EDITOR_SCREEN_START_X+GAME_RESOLUTION_X/2+200)
+#define SIDE_MENU_Y         (650)
+#define SIDE_MENU_DX        (EDITOR_RESOLUTION_X-SIDE_MENU_X)
+#define SIDE_MENU_DY        (EDITOR_RESOLUTION_Y-SIDE_MENU_Y)
+#define SIDE_MENU_X_DIFF    0
+#define SIDE_MENU_Y_DIFF    35
+
+static char *side_menu[] = 
+{ 
+  _("help (f1)"),
+  _("run level (f9)"),
+  _("undo (ctrl+u)"),
+  _("shade floor (ctrl+s)"),
+  _("change background (b)"),
+};
+
+void editor_gui::side_menu_create(void)
+{
+  menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
+  menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
+
+  menu_item_draw(side_menu[0], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_HELP));
+  menu_item_draw(side_menu[1], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_RUN));
+  menu_item_draw(side_menu[2], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_UNDO));
+  menu_item_draw(side_menu[3], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SHADER));
+  menu_item_draw(side_menu[4], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
+
+  //p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
+}
+
+void editor_gui::side_menu_draw(bool draw)
+{
+
+  menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
+  menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
+
+  menu_item_draw(side_menu[0], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
+  menu_item_draw(side_menu[1], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
+  menu_item_draw(side_menu[2], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
+  menu_item_draw(side_menu[3], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
+  menu_item_draw(side_menu[4], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
+}
 
 #define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
 #define SIDE_STATUS_Y     (EDITOR_SCREEN_START_Y)
@@ -586,7 +630,7 @@ void editor_gui::side_menu_create(void)
 #define SIDE_STATUS_DY    40
 #define SIDE_STATUS_DY    40
 
-void editor_gui::side_menu_draw(bool draw)
+void editor_gui::layer_menu_draw(bool draw)
 { //TODO
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
@@ -715,7 +759,7 @@ void editor_gui::layer_status_switch(int layer, LAYER_STATE state)
 void editor_gui::layer_active_set(int layer, bool draw)
 {
   config.lc.set_active(layer);
-  side_menu_draw(draw);
+  layer_menu_draw(draw);
 }
 
 int editor_gui::layer_active_get(void)
@@ -748,6 +792,7 @@ void editor_gui::draw(void)
     selection_draw(FALSE);
     selection_cursor_draw(FALSE);
     console_draw(FALSE);
+    side_menu_draw(FALSE);
   /*
     layer_status_draw(FALSE);
     side_menu_draw(FALSE);    

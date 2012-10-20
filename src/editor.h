@@ -749,6 +749,8 @@ public:
   void level_item_clear_rectangle(bool filled);
   
   void layer_menu_create(void);
+  void layer_menu_draw(bool draw);
+  
   void layer_status_draw(bool draw);
   void layer_status_switch(int layer, LAYER_STATE state);  
   void layer_active_set(int layer, bool draw);
