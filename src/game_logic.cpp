@@ -238,7 +238,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
   bool fast_movement = (p_in->action_get() == GL_PLAYER_MOVE_FAST);
   
   tpos px,py,dx,dy;
-  tpos nx,ny,nnx,nny;
+  tpos nx,ny,nnx,nny,nnnx,nnny;
 
   //-- je blbost aby hrac byl jak v poli tak v tom levelu -> nejak to sjednotit
 
@@ -253,11 +253,16 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
   nnx = nx + dx;
   nny = ny + dy;
 
+  nnnx = nnx + dx;
+  nnny = nny + dy;
+
   item_handle itm_start = p_level->cell_get_item(px, py, LAYER_ITEMS);
   item_handle itm = -1;
   item_handle itm_next = -1;
+  item_handle itm_next_next = -1;
   item_handle itm_player = -1;
   item_handle itm_next_player = -1;
+  item_handle itm_next_next_player = -1;
 
   if(CHECK_MOVEMENT(nx,ny)) {
     itm = p_level->cell_get_item(nx, ny, LAYER_ITEMS);  
@@ -266,6 +271,10 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
   if(CHECK_MOVEMENT(nnx,nny)) {
     itm_next = p_level->cell_get_item(nnx, nny, LAYER_ITEMS);  
     itm_next_player = p_level->cell_get_item(nnx, nny, LAYER_PLAYER);
+  }
+  if(CHECK_MOVEMENT(nnnx,nnny)) {
+    itm_next_next = p_level->cell_get_item(nnnx, nnny, LAYER_ITEMS);  
+    itm_next_next_player = p_level->cell_get_item(nnnx, nnny, LAYER_PLAYER);
   }
 
   #define     TMP_EVENTS    100
@@ -350,6 +359,26 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
       }
       break;
     
+    case P_BOX_LIGHT:
+      if(!CHECK_MOVEMENT(nnnx,nnny))
+        break;
+      
+      // Move one light box
+      if(itm_next == NO_ITEM && itm_next_player == NO_ITEM) {
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
+        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy,fast_movement);
+        player_moved = TRUE;
+      }
+      // Move two light boxes
+      else if(itm_next == P_BOX_LIGHT && 
+              itm_next_next == NO_ITEM && itm_next_next_player == NO_ITEM) {
+        event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
+        event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy,fast_movement);
+        event_num += item_move(events+event_num,nnx,nny,LAYER_ITEMS,dx,dy,fast_movement);
+        player_moved = TRUE;
+      }    
+      break;
+    
     case P_TNT: // move player and box or explode both boxes
       if(!CHECK_MOVEMENT(nnx,nny))
         break;
@@ -360,7 +389,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
         event_num += item_move(events+event_num,nx,ny,LAYER_ITEMS,dx,dy,fast_movement);
         player_moved = TRUE;
       }
-      else if(itm_next == P_BOX) { // blow tnt & box   
+      else if(itm_next == P_BOX || itm_next == P_BOX_LIGHT) { // blow tnt & box
         event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);
         event_num += item_blast(events+event_num,nnx,nny,LAYER_ITEMS);
         event_num += item_erase(events+event_num,nx,ny,LAYER_ITEMS,TRUE);

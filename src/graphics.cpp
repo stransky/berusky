@@ -120,7 +120,7 @@ screen_editor::screen_editor(tpos cell_x_, tpos cell_y_)
     selection_area_active = TRUE;
     selection_min_x = 3;
     selection_min_y = 4;
-    selection_max_x = 22;
+    selection_max_x = 28;
     selection_max_y = 16;
   }
   else {

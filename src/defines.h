@@ -235,7 +235,7 @@
 #define NO_FLOOR                  0xffff
 #define NO_ROTATION               (-1)
 
-#define GAME_ITEMS                72
+#define GAME_ITEMS                73
 
 #define COLOR_KEY_BLACK_FULL      RGB(0,0,0)
 #define COLOR_KEY_BLACK           RGB(3,3,3)
@@ -338,6 +338,8 @@
 #define PP_RIGHT_JAMB_Z           69
 #define PP_TOP_JAMB_Z             70
 #define PP_BOTTOM_JAMB_Z          71
+
+#define P_BOX_LIGHT               72
 
 #define DOOR_VARIATION_CLASSIC    0
 #define DOOR_VARIATION_CYBER      1

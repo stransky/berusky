@@ -585,7 +585,7 @@ void level_editor::level_move(tpos dx, tpos dy)
   tpos sx,sy;
   window_offset_get(sx, sy);
 
-  #define MINIMAL_X_OFFSET (-9)
+  #define MINIMAL_X_OFFSET (-3)
   #define MINIMAL_Y_OFFSET (-4)
 
   #define MAXIMAL_X_OFFSET (3)

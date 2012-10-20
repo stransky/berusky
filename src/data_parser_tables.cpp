@@ -36,6 +36,7 @@ POSITION_TABLE_ITEM parser_table[] =
   {"P_PLAYER_4",P_PLAYER_4},
   {"P_PLAYER_5",P_PLAYER_5},
   {"P_BOX",P_BOX},
+  {"P_BOX_LIGHT",P_BOX_LIGHT},
   {"P_TNT",P_TNT},
   {"P_WALL",P_WALL},
   {"P_EXIT",P_EXIT},

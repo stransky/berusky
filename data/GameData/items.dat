@@ -212,6 +212,19 @@ P_BOX+77		P_BOX		SPRITE_DYNAMIC	0		0		0		0		FIRST_BOX_SNOW + 17	  0		0		0		0
 P_BOX+78		P_BOX		SPRITE_DYNAMIC	0		0		0		0		FIRST_BOX_SNOW + 18	  0		0		0		0
 
 #
+# Light BOXes
+#
+# position 		function 	flag		minus_x 	plus_x		x_cor		y_cor		sprite		animation	when_run_anim	so_1		so_2
+
+P_BOX_LIGHT+0	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 0		0		0		0		0
+P_BOX_LIGHT+1	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 1		0		0		0		0
+P_BOX_LIGHT+2	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 2		0		0		0		0
+P_BOX_LIGHT+3	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 3		0		0		0		0
+P_BOX_LIGHT+4	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 4		0		0		0		0
+P_BOX_LIGHT+5	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 5		0		0		0		0
+P_BOX_LIGHT+6	P_BOX_LIGHT		SPRITE_DYNAMIC	0		0		0		0		FIRST_LIGHT_BOX + 6		0		0		0		0
+
+#
 # TNT boxes
 #
 # position 		function 	flag		minus_x 	plus_x		x_cor		y_cor		sprite		animation	when_run_anim	so_1		so_2
