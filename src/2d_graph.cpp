@@ -31,6 +31,8 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+#include <math.h>
+
 #include "berusky.h"
 
 
@@ -342,6 +344,66 @@ void surface::blit(tpos sx, tpos sy, tpos dx, tpos dy, class surface *p_dst, tpo
   SDL_Rect src_rec = {sx,sy,dx,dy};
   SDL_Rect dst_rec = {tx,ty,dx,dy};
   SDL_BlitSurface(p_surf, &src_rec, p_dst->p_surf, &dst_rec);  
+}
+
+void surface::blend(tpos sx, tpos sy, tpos dx, tpos dy, tcolor color, BLEND_OP operation)
+{
+  // Lock the surface
+  if(SDL_MUSTLOCK(p_surf) ) {
+    if(SDL_LockSurface(p_surf) < 0 ) {
+      berror("Can't lock surface: %s\n", SDL_GetError());      
+    }
+  }
+
+  assert(sx+dx <= width_get());
+  assert(sy+dy <= height_get());
+
+  int   x,y;
+  int   width = sx+dx;
+  int   height = sy+dy;
+  RGB   color_rgb;
+  RGB   pixel;
+
+  byte  r,g,b;
+  color_unmap(color, &r, &g, &b);
+  color_rgb.r = r;
+  color_rgb.g = g;
+  color_rgb.b = b;
+
+  // Adjust original pixels
+  for(y = sy; y < height; y++) {
+    for(x = sx; x < width; x++) {
+      if(getpixel(p_surf, x, y, &pixel)) {
+        switch(operation) {
+          case BLEND_SET:
+            pixel = color_rgb;
+            break;
+          case BLEND_ADD:
+            pixel.r += color_rgb.r;
+            pixel.g += color_rgb.g;
+            pixel.b += color_rgb.b;
+            pixel.norm();
+            break;
+          case BLEND_SUB:
+            pixel.r -= color_rgb.r;
+            pixel.g -= color_rgb.g;
+            pixel.b -= color_rgb.b;
+          
+            int rn = floor(((float)rand()/RAND_MAX)*10);
+            pixel.r -= rn;
+            pixel.g -= rn;
+            pixel.b -= rn;          
+            pixel.norm();
+            break;
+        }
+        putpixel(p_surf, x, y, pixel);
+      }
+    }
+  }
+
+  if(SDL_MUSTLOCK(p_surf)) {
+    SDL_UnlockSurface(p_surf);
+  }
 }
 
 // Double scale from the source surface

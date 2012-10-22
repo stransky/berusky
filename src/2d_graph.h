@@ -106,6 +106,17 @@ public:
 
 public:
 
+  void norm(void)
+  {
+    if(r < 0) r = 0;
+    if(g < 0) g = 0;
+    if(b < 0) b = 0;
+  
+    if(r > 255) r = 255;
+    if(g > 255) g = 255;
+    if(b > 255) b = 255;
+  }
+
   rgb(void) {};
   
   rgb(int r_, int g_, int b_)
@@ -123,6 +134,13 @@ void rect_adjust(RECT *p_r, RECT *p_s);
 // -------------------------------------------------------
 //   the surface class
 // -------------------------------------------------------
+typedef enum {
+
+  BLEND_SET = 0,
+  BLEND_ADD,
+  BLEND_SUB,
+
+} BLEND_OP;
 
 typedef class surface
 {
@@ -168,10 +186,16 @@ public:
   void fill(tpos x, tpos y, tpos dx, tpos dy, tcolor color);
   void blit(class surface *p_dst, tpos tx, tpos ty);
   void blit(tpos sx, tpos sy, tpos dx, tpos dy, class surface *p_dst, tpos tx, tpos ty);
+  void blend(tpos sx, tpos sy, tpos dx, tpos dy, tcolor color, BLEND_OP operation);
 
   tcolor color_map(Uint8 r, Uint8 g, Uint8 b)
   {    
     return(SDL_MapRGB(p_surf->format, r, g, b));
+  }
+
+  void color_unmap(tcolor color, Uint8 *r, Uint8 *g, Uint8 *b)
+  {    
+    SDL_GetRGB(color, p_surf->format, r, g, b);    
   }
   
   bool is_loaded(void)

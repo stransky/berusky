@@ -40,6 +40,8 @@
 #include "main.h"
 #include "editor.h"
 
+void graphics_generate(void);
+
 /* Time loop - grabbed from SDL documentation */
 #define  TICK_INTERVAL    (1000 / GAME_FPS)
 
@@ -465,9 +467,6 @@ bool graphics_game_load(DIR_LIST *p_dir)
     i += p_grf->sprite_insert("box_dark1.spr", FIRST_BOX_DARK);
     i += p_grf->sprite_insert("box_paper1.spr", FIRST_BOX_PAPER);
     i += p_grf->sprite_insert("box_snow1.spr", FIRST_BOX_SNOW);
-    i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER);
-    i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS);
-    i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY);
     i += p_grf->sprite_insert("light_box1.spr", FIRST_LIGHT_BOX);
     i += p_grf->sprite_insert("tnt_bright1.spr", FIRST_TNT_BRIGHT);
     i += p_grf->sprite_insert("tnt_dark1.spr", FIRST_TNT_DARK);
@@ -483,6 +482,17 @@ bool graphics_game_load(DIR_LIST *p_dir)
     i += p_grf->sprite_insert("wall_snow1.spr", FIRST_WALL_SNOW);
     i += p_grf->sprite_insert("wall_swamp1.spr", FIRST_WALL_SWAMP);
     i += p_grf->sprite_insert("wall_wood1.spr", FIRST_WALL_WOOD);
+  
+    i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER_SRC);
+    i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS_SRC);
+    i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY_SRC);
+    
+    i += p_grf->sprite_insert("floor_iron_1.spr", FIRST_FLOOR_IRON);
+    i += p_grf->sprite_insert("floor_iron_2.spr", FIRST_FLOOR_IRON+5);
+    i += p_grf->sprite_insert("floor_iron_3.spr", FIRST_FLOOR_IRON+10);
+    i += p_grf->sprite_insert("floor_iron_4.spr", FIRST_FLOOR_IRON+15);
+    i += p_grf->sprite_insert("floor_iron_5.spr", FIRST_FLOOR_IRON+20);
+    i += p_grf->sprite_insert("floor_snow.spr",   FIRST_FLOOR_SNOW);
   }
 
   if(!i) {
@@ -490,10 +500,6 @@ bool graphics_game_load(DIR_LIST *p_dir)
   }
   bprintf(_("%d sprites loaded..."), i);
 
-  // Create black sprite for blending
-  p_grf->sprite_copy(SPRITE_BLACK, FIRST_CLASSIC_LEVEL+57, TRUE);
-  SDL_Surface *p_surf = ((p_grf->sprite_get(SPRITE_BLACK))->surf_get())->surf_get();
-  SDL_SetAlpha(p_surf, SDL_SRCALPHA, 150);
 
   return(i > 0);
 }
@@ -580,6 +586,8 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   }
   bprintf(_("%d sprites loaded..."), i);
 
+  graphics_generate();
+
   return((bool)i);
 }
 
@@ -625,4 +633,133 @@ int  background_num(DIR_LIST *p_dir)
   bprintf(_("%d backgrounds..."), j);
 
   return(j);
+}
+
+/*
+  // ####
+  // ##@@         
+  CHANGE_FLOOR(x,y,0);
+  //   ##        
+  //   @@         
+  CHANGE_FLOOR(x,y,3);
+  //
+  // ##@@         
+  CHANGE_FLOOR(x,y,2);
+  // ##
+  //   @@
+  CHANGE_FLOOR(x,y,1);
+  // 
+  //   @@
+  CHANGE_FLOOR(x,y,4); 
+*/
+// TODO -> randomize the shadow
+void graphics_generate_floor(spr_handle spr, int type)
+{
+  SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
+  tcolor color = p_surf->color_map(30, 30, 30);
+  
+  switch(type) {
+    case 0:
+      {      
+        p_surf->blend(0, 0, 12, p_surf->height_get(), color, BLEND_SUB);
+        p_surf->blend(12, 0, p_surf->width_get()-12, 14, color, BLEND_SUB);
+      }
+      break;
+    case 1:
+      {
+        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
+        p_surf->blend(0, 0, 12, 14, color, BLEND_SUB);
+      }
+      break;
+    case 2:
+      {      
+        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
+        p_surf->blend(0, 0, 12, p_surf->height_get(), color, BLEND_SUB);
+      }
+      break;
+    case 3:
+      {      
+        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
+        p_surf->blend(0, 0, p_surf->width_get(), 14, color, BLEND_SUB);
+      }
+      break;
+    case 4: // no action
+      break;
+    default:
+      break;  
+  }
+}
+
+// Regenerate rest of graphics
+void graphics_generate(void)
+{
+  // Create black sprite for blending
+  p_grf->sprite_copy(SPRITE_BLACK, FIRST_CLASSIC_LEVEL+57, TRUE);
+  SDL_Surface *p_surf = ((p_grf->sprite_get(SPRITE_BLACK))->surf_get())->surf_get();
+  SDL_SetAlpha(p_surf, SDL_SRCALPHA, 150);
+
+  int i;
+
+  // Generate floor graphics
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_IRON+i, FIRST_FLOOR_IRON, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_IRON+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_IRON, 0);
+
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_IRON+5+i, FIRST_FLOOR_IRON+5, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_IRON+5+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_IRON+5, 0);
+
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_IRON+10+i, FIRST_FLOOR_IRON+10, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_IRON+10+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_IRON+10, 0);
+
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_IRON+15+i, FIRST_FLOOR_IRON+15, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_IRON+15+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_IRON+15, 0);
+
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_IRON+20+i, FIRST_FLOOR_IRON+20, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_IRON+20+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_IRON+20, 0);
+
+  for(i = 1; i < 5; i++) {
+    p_grf->sprite_copy(FIRST_FLOOR_SNOW+i, FIRST_FLOOR_SNOW, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_SNOW+i, i);
+  }
+  graphics_generate_floor(FIRST_FLOOR_SNOW, 0);
+
+  for(i = 0; i < 5; i++) {
+    // 4 sprites
+    p_grf->sprite_copy(FIRST_FLOOR_DANGER+i, FIRST_FLOOR_DANGER_SRC, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_DANGER+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_DANGER+5+i, FIRST_FLOOR_DANGER_SRC+1, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_DANGER+5+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_DANGER+10+i, FIRST_FLOOR_DANGER_SRC+2, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_DANGER+10+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_DANGER+15+i, FIRST_FLOOR_DANGER_SRC+3, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_DANGER+15+i, i);
+  
+    // 3 sprites
+    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+i, FIRST_FLOOR_ELEVATORS_SRC, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+5+i, FIRST_FLOOR_ELEVATORS_SRC+1, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+5+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+10+i, FIRST_FLOOR_ELEVATORS_SRC+2, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+10+i, i);
+  
+    // 2 sprites
+    p_grf->sprite_copy(FIRST_FLOOR_GRAY+i, FIRST_FLOOR_GRAY_SRC, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_GRAY+i, i);
+    p_grf->sprite_copy(FIRST_FLOOR_GRAY+5+i, FIRST_FLOOR_GRAY_SRC+1, TRUE);
+    graphics_generate_floor(FIRST_FLOOR_GRAY+5+i, i);
+  }
 }

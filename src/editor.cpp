@@ -1386,7 +1386,7 @@ void editor_gui::editor_shader(tpos sx, tpos sy, tpos dx, tpos dy)
 
   for(x = sx; x < sx+dx; x++) {
     for(y = sy; y < sy+dy; y++) {    
-      if(IN_LEVEL(x-1,y)   && IS_WALL(x-1,y) &&         
+      if(IN_LEVEL(x-1,y)   && IS_WALL(x-1,y) &&
          IN_LEVEL(x,  y-1) && IS_WALL(x,  y-1)) {
          // ####
          // ##@@         

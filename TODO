@@ -10,7 +10,6 @@
   - fix console position
 
 - windows - add MSVC dll
-- generate shadows to floor automatically when level is loaded
 - New backgrounds (from B2)
 
 - better animations - explosions and so
@@ -41,7 +40,7 @@ Game:
   - uvolnovani surfacu z pameti!!
   - flag SPRITE_NO_BACK - pod tim to spritem se nic nekresli
             
-  - skontrolovat to pretaceni animaci - jestli se to dobre uvolnuje a tak...
+  - zkontrolovat to pretaceni animaci - jestli se to dobre uvolnuje a tak...
   
   - problem -> pokud smazu tu animaci v enginu a ma zaznam v levelu -> jak se to ten level dozvi?
             -> pridat udalost -> smaz animaci!!! -> pro level

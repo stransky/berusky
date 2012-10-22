@@ -152,9 +152,6 @@
 #define FIRST_BOX_DARK            2150
 #define FIRST_BOX_PAPER           2200
 #define FIRST_BOX_SNOW            2250
-#define FIRST_FLOOR_DANGER        2300
-#define FIRST_FLOOR_ELEVATORS     2350
-#define FIRST_FLOOR_GRAY          2400
 #define FIRST_LIGHT_BOX           2450
 #define FIRST_TNT_BRIGHT          2500
 #define FIRST_TNT_DARK            2550
@@ -171,6 +168,14 @@
 #define FIRST_WALL_SWAMP          3100
 #define FIRST_WALL_WOOD           3150
 #define SPRITE_BLACK              3200
+#define FIRST_FLOOR_DANGER_SRC    3250
+#define FIRST_FLOOR_DANGER        3260
+#define FIRST_FLOOR_ELEVATORS_SRC 3300
+#define FIRST_FLOOR_ELEVATORS     3310
+#define FIRST_FLOOR_GRAY_SRC      3350
+#define FIRST_FLOOR_GRAY          3360
+#define FIRST_FLOOR_IRON          3400
+#define FIRST_FLOOR_SNOW          3500
 
 #define ROT_SHIFT                 10000
 

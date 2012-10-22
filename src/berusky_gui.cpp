@@ -540,7 +540,7 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         if(DOUBLE_SIZE) {
           p_grf->draw(menu_background_get(),0,0);
         }
-      
+        
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 220)
