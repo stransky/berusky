@@ -78,7 +78,7 @@ typedef enum {
 #define ITEMS_DY        (EDITOR_RESOLUTION_Y-ITEMS_Y_START)
 
 //-- finish the pannel
-#define ITEMS_IN_PANEL  12
+#define ITEMS_IN_PANEL  7
 #define ITEMS_START     0xffff
 #define ITEMS_END       0xfffe
 
@@ -258,12 +258,12 @@ public:
   {
     switch(direction) {
       case HORIZONTAL:
-        dx = ITEM_SIZE_X;
+        dx = EDITOR_ITEM_SIZE_X;
         dy = 0;
         break;
       case VERTICAL:
         dx = 0;
-        dy = ITEM_SIZE_Y;
+        dy = EDITOR_ITEM_SIZE_Y;
         break;
     }
 

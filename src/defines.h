@@ -73,18 +73,18 @@
 #define CELL_SIZE_X               (berusky_config::cell_size_x)
 #define CELL_SIZE_Y               (berusky_config::cell_size_y)
 
-#define ITEM_SIZE_X               (20*3)
-#define ITEM_SIZE_Y               (20*3)
+#define EDITOR_ITEM_SIZE_X        (berusky_config::cell_size_x*3)
+#define EDITOR_ITEM_SIZE_Y        (berusky_config::cell_size_y*3)
 
-#define EDITOR_LAYER_STATUS_X     (ITEM_SIZE_X*2)
-#define EDITOR_LAYER_STATUS_Y     (ITEM_SIZE_Y*2+5)
+#define EDITOR_LAYER_STATUS_X     (20*3*2)
+#define EDITOR_LAYER_STATUS_Y     (20*3*2+5)
 #define EDITOR_LAYER_STATUS_DX    (EDITOR_RESOLUTION_X-EDITOR_LAYER_STATUS_X)
 #define EDITOR_LAYER_STATUS_DY    (30)
 
 #define EDITOR_SCREEN_START_X     (berusky_config::editor_screen_start_x)
 #define EDITOR_SCREEN_START_Y     (berusky_config::editor_screen_start_y)
 
-#define EDIT_COORD_START_X        (DOUBLE_SIZE ? ITEM_SIZE_X*2 : EDITOR_SCREEN_START_X)
+#define EDIT_COORD_START_X        (DOUBLE_SIZE ? 20*3*2 : EDITOR_SCREEN_START_X)
 #define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+(DOUBLE_SIZE ? LEVEL_RESOLUTION_Y-140 : LEVEL_RESOLUTION_Y))
 #define EDIT_COORD_DX             (DOUBLE_SIZE ? LEVEL_RESOLUTION_X/2-200 : LEVEL_RESOLUTION_X)
 #define EDIT_COORD_DY             (20)
@@ -105,7 +105,7 @@
 #define EDIT_HELP_MOUSE_X         460
 
 #define CONSOLE_X                 (EDITOR_LAYER_STATUS_X)
-#define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+ITEM_SIZE_Y+5)
+#define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+20*3+5)
 #define CONSOLE_DX                (DOUBLE_SIZE ? 700 : (EDITOR_RESOLUTION_X-CONSOLE_X-200))
 #define CONSOLE_LINES             2
 
@@ -226,8 +226,8 @@
 #define EDITOR_MARK_RED           (FIRST_OTHER+101)
 #define EDITOR_MARK_YELLOW        (FIRST_OTHER+102)
 
-#define EDIT_ARROW_DX             20
-#define EDIT_ARROW_DY             20
+//#define EDIT_ARROW_DX             20
+//#define EDIT_ARROW_DY             20
 
 #define ANAK_LOGO                 (FIRST_LOGO)
 
