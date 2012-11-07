@@ -323,6 +323,13 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   editor_panel::set_up(p_repo_);
 
   ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1);
+  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_2);
+
+  ipanel[0]->attached_panel_set(ipanel[1]);
+  ipanel[1]->attached_panel_set(ipanel[0]);
+
+/*
+  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1);
   ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_2);
   ipanel[2] = new ITEM_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3);
   ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
@@ -332,7 +339,7 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
 
   ipanel[1]->attached_panel_set(ipanel[0]);
   ipanel[3]->attached_panel_set(ipanel[2]);
-
+*/
   editor_reset();
 }
 

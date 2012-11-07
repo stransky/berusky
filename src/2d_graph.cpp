@@ -388,7 +388,7 @@ void surface::blend(tpos sx, tpos sy, tpos dx, tpos dy, tcolor color, BLEND_OP o
             pixel.r -= color_rgb.r;
             pixel.g -= color_rgb.g;
             pixel.b -= color_rgb.b;
-          
+
             int rn = floor(((float)rand()/RAND_MAX)*10);
             pixel.r -= rn;
             pixel.g -= rn;
@@ -634,7 +634,9 @@ void sprite::blit(tpos sx, tpos sy, tpos dx, tpos dy, class sprite *p_dst, tpos 
   SDL_BlitSurface(p_surf->surf_get(), &src_rec, p_dst->p_surf->surf_get(), &dst_rec);
 }
 
-void sprite::rect_adjust(RECT *p_rect)
+/* 
+*/
+void sprite::rect_clamp(RECT *p_rect)
 {
   tpos width = p_rect->w;
   tpos height = p_rect->h;
@@ -652,9 +654,11 @@ void sprite::rect_adjust(RECT *p_rect)
       height = 0;
   }
   if(p_rect->x+width > rec.w) {
+    assert(p_rect->x < rec.w && rec.x == 0);
     width = rec.w-p_rect->x;
   }
   if(p_rect->y+height > rec.h) {
+    assert(p_rect->y < rec.h && rec.y == 0);
     height = rec.h-p_rect->y;
   }
   p_rect->w = width;

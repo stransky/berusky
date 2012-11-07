@@ -346,8 +346,10 @@ public:
 
 public:
 
-  item_panel(int panel_item_num, DIRECTION direction,
-             tpos start_x, tpos start_y, int handle)
+  item_panel(int panel_item_num, 
+             DIRECTION direction,
+             tpos start_x, tpos start_y, 
+             int handle)
   : editor_panel(panel_item_num, direction, start_x, start_y, handle),    
     panel_item_first(0)
   {  
@@ -645,7 +647,7 @@ public:
 
 public:
 
-  #define                 PANELS        4
+  #define                 PANELS        2
   EDITOR_PANEL           *ipanel[PANELS];
 
 public:

@@ -303,7 +303,7 @@ bool screen_editor::draw(void)
     }
   
     RECT tmp = {min_x*cell_x+start_x,min_y*cell_y+start_y,dx*cell_x,dy*cell_y};
-    p_grf->adjust_to_screen(&tmp);
+    p_grf->clamp_to_screen(&tmp);
     if(!outside_change)
       p_grf->redraw_add(&tmp);
   }
