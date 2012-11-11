@@ -48,23 +48,46 @@
 #include "editor.h"
 
 ITEM_REPOSITORY *editor_panel::p_repo = NULL;
+ITEM_REPOSITORY *editor_panel_slot::p_repo = NULL;
+
+void editor_panel_slot::draw(tpos x, tpos y, bool highlighted, bool selected)
+{
+  p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y,0);
+
+  assert(p_repo->item_valid(item) && p_repo->variant_valid(item,variant));
+  
+  #define COLOR_HIGHLIGHTED_R   0
+  #define COLOR_HIGHLIGHTED_G   0
+  #define COLOR_HIGHLIGHTED_B   200
+  
+  #define COLOR_SELECTED_R      175
+  #define COLOR_SELECTED_G      0
+  #define COLOR_SELECTED_B      0
+  
+  if(highlighted) {
+    p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y,
+                p_grf->color_map(COLOR_HIGHLIGHTED_R,
+                COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
+  }
+  if(selected) {
+    p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y, 
+                p_grf->color_map(COLOR_SELECTED_R,
+                COLOR_SELECTED_G, COLOR_SELECTED_B));
+  }
+
+  tpos x_shift = EDITOR_ITEM_SIZE_X/2-CELL_SIZE_X/2;
+  tpos y_shift = EDITOR_ITEM_SIZE_Y/2-CELL_SIZE_Y/2;
+
+  p_repo->draw(x+x_shift,y+y_shift,item,variant,0);
+}
 
 bool editor_panel::slot_return(tpos x, tpos y, int &slot)
 {
   tpos sx = start_x;
   tpos sy = start_y;
 
-  // Panel is horizontal/vertical?
-/* Don't draw controls
-  if(dx) { 
-    sx += EDIT_ARROW_DX;
-  } else {
-    sy += EDIT_ARROW_DY;
-  }  
-*/
-
   int i;
-  for(i = 0; i < panel_size_get(); i++) {
+  for(i = visible_slot_first; i < visible_slot_num; i++) {
     if(!slot_valid(i))
       return(FALSE);
     
@@ -82,40 +105,63 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
   return(FALSE);
 }
 
+void editor_panel::panel_draw(bool draw)
+{
+  RECT r = boundary_get();
+
+  p_grf->fill(&r,0);
+  int i, slot;
+  for(i = visible_slot_first, slot = 0; 
+      i < visible_slot_num; 
+      i++, slot++)
+  {
+    if(slot_valid(i)) {
+      RECT r = boundary_get();
+      p_slots[i].draw(r.x + dx*slot,
+                      r.y + dy*slot,
+                      i == visible_slot_highlighted,
+                      i == visible_slot_selected);
+    }
+  }
+  if(draw)
+    p_grf->redraw_add(&r);
+
+//  controls_draw(draw);
+}
+
 void editor_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw)
 {  
-  int panel_item_first = item_firts_get();  
-  int panel_item_num = items_num_get();
-  int item_new;
+  int slot_first_new;
+
+  // No need to scroll
+  if(slot_num <= visible_slot_num)
+    return;
 
   if(direction == ITEMS_START) {
-    item_new = 0;
+    slot_first_new = 0;
   }
   else if(direction == ITEMS_END) {
-    item_new = panel_item_num - panel_size_get();
+    slot_first_new = visible_slot_first - visible_slot_num;
   }
   else {  
-    item_new = panel_item_first + direction;
+    slot_first_new = visible_slot_first + direction;
   }
   
-  if(item_new < 0) {
-    item_new = 0;
+  if(slot_first_new < 0) {
+    slot_first_new = 0;
   }
   
-  if(item_new == panel_item_first) {
+  if(slot_first_new == visible_slot_first) {
     // no scroll - don't change it
     return;
   }
   
-  // Do we scroll the panel?
-  if(panel_item_num > panel_size_get()) {
-    if(item_new + panel_size_get() > panel_item_num) {
-      item_new = panel_item_num - panel_size_get();
-      assert(item_new >= panel_item_first);
-    }
-    if(item_new != panel_item_first)
-      panel_set(item_new, p_sel, TRUE, redraw);
+  if(slot_first_new + slot_num > visible_slot_num) {
+    slot_first_new = visible_slot_num - slot_num;
+    assert(slot_first_new >= visible_slot_first);
   }
+  if(slot_first_new != visible_slot_first)
+    panel_set(slot_first_new, p_sel, TRUE, redraw);
 }
 
 RECT editor_panel::boundary_get(void)
@@ -126,21 +172,15 @@ RECT editor_panel::boundary_get(void)
   tpos sy = start_y;
 
   if(dx) {
-    // Panel is horizontal
-    //sx += EDIT_ARROW_DX; // control arrow
-  
     r.x = sx;
     r.y = sy;
-    r.w = dx*panel_size_get();
+    r.w = dx*slot_num;
     r.h = EDITOR_ITEM_SIZE_Y;
   } else {
-    // Panel is vertical
-    //sy += EDIT_ARROW_DY;  // control arrow
-  
     r.x = sx;
     r.y = sy;
     r.w = EDITOR_ITEM_SIZE_X;
-    r.h = dy*panel_size_get();
+    r.h = dy*slot_num;
   }
 
   return r;
@@ -168,109 +208,40 @@ void editor_panel::register_controls_events(INPUT *p_input)
   p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_BUTTON_LEFT),
                       MEVENT_MOUSE_EXTERNAL|MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
                       panel_handle));
-
-/* Don't draw controls
-  if(dx) { // Panel is horizontal
-    {
-      RECT t = {start_x, start_y+CELL_SIZE_Y, EDIT_ARROW_DX, EDIT_ARROW_DY};
-      p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
-                          MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
-                          panel_handle,-1)));
-    }
-    {
-      RECT t = {r.x+r.w,r.y+CELL_SIZE_Y, EDIT_ARROW_DX, EDIT_ARROW_DY};
-      p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
-                          MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
-                          panel_handle,1)));
-    }
-  } else { // Panel is vertical
-    {
-      RECT t = {start_x+CELL_SIZE_X, start_y, EDIT_ARROW_DX, EDIT_ARROW_DY};
-      p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
-                          MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
-                          panel_handle,-1)));
-    }
-    {
-      RECT t = {r.x+CELL_SIZE_X, r.y+r.h, EDIT_ARROW_DX, EDIT_ARROW_DY};
-      p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(t,MASK_BUTTON_LEFT),
-                          MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL,
-                          panel_handle,1)));
-    }
-  }
-*/  
 }
 
-void editor_panel::slot_draw(int slot, int item, int variant)
+item_panel::item_panel(int panel_item_num,
+                       DIRECTION direction,
+                       tpos start_x, tpos start_y, 
+                       int handle,
+                       VARIANT_PANEL *p_var)
+: editor_panel(panel_item_num, direction, start_x, start_y, handle)  
 {
-  RECT r = boundary_get();
+  p_variants = p_var;
 
-  tpos x = r.x + dx*slot;
-  tpos y = r.y + dy*slot;
-
-  p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y,0);
-
-  if(!p_repo->item_valid(item) || !p_repo->variant_valid(item,variant))
-    return;
-  
-  #define COLOR_HIGHLIGHTED_R   0
-  #define COLOR_HIGHLIGHTED_G   0
-  #define COLOR_HIGHLIGHTED_B   200
-  
-  #define COLOR_SELECTED_R      175
-  #define COLOR_SELECTED_G      0
-  #define COLOR_SELECTED_B      0
-  
-  if(slot == panel_slot_highlighted) {
-    p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y,
-                p_grf->color_map(COLOR_HIGHLIGHTED_R,
-                COLOR_HIGHLIGHTED_G, COLOR_HIGHLIGHTED_B));
-  }
-  if(slot == panel_slot_selected) {
-    p_grf->fill(x,y,EDITOR_ITEM_SIZE_X,EDITOR_ITEM_SIZE_Y, 
-                p_grf->color_map(COLOR_SELECTED_R,
-                COLOR_SELECTED_G, COLOR_SELECTED_B));
+  slot_num = PP_LEFT_JAMB_O+1;
+  p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+  int i,item;
+  for(i = 0, item = 0; i < P_BOX; i++, item++) {
+    p_slots[i].item = item;
+    p_slots[i].variant = 0;
   }
 
-  tpos x_shift = EDITOR_ITEM_SIZE_X/2-CELL_SIZE_X/2;
-  tpos y_shift = EDITOR_ITEM_SIZE_Y/2-CELL_SIZE_Y/2;
-
-  p_repo->draw(x+x_shift,y+y_shift,item,variant,0);
-}
-
-void editor_panel::controls_draw(bool draw)
-{
-  RECT r = boundary_get();
-
-  tpos x_shift = EDITOR_ITEM_SIZE_X/2-CELL_SIZE_X/2;
-  tpos y_shift = EDITOR_ITEM_SIZE_Y/2-CELL_SIZE_Y/2;
-
-  if(dx) { // Panel is horizontal
-    {
-      p_grf->draw(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
-      if(draw)
-        p_grf->redraw_add(EDIT_ARROW_LEFT,start_x,start_y+y_shift);
-    }
-    {
-      p_grf->draw(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
-      if(draw)
-        p_grf->redraw_add(EDIT_ARROW_RIGHT,r.x+r.w,r.y+y_shift);
-    }
-  } else { // Panel is vertical
-    {
-      p_grf->draw(EDIT_ARROW_UP,start_x+x_shift,start_y);
-      if(draw)
-        p_grf->redraw_add(EDIT_ARROW_UP,start_x+x_shift,start_y);
-    }
-    {
-      p_grf->draw(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
-      if(draw)
-        p_grf->redraw_add(EDIT_ARROW_DOWN,r.x+x_shift,r.y+r.h);
-    }
-  }  
+  // Light boxes
+  p_slots[i].item = P_BOX_LIGHT;
+  p_slots[i].variant = 0;
+  i++;
+  
+  // TNT and more
+  for(; i < PP_LEFT_JAMB_O; i++, item++) {
+    p_slots[i].item = item;
+    p_slots[i].variant = 0;
+  }
 }
 
 /* Select the select item by variant panel
 */
+/*
 void item_panel::item_select(EDITOR_SELECTION *p_sel)
 {
   int slot = selected_slot_get();
@@ -284,35 +255,12 @@ void item_panel::item_select(EDITOR_SELECTION *p_sel)
   ((VARIANT_PANEL*)attached_panel_get())->panel_set(0, p_sel, FALSE, TRUE);
   ((VARIANT_PANEL*)attached_panel_get())->slot_select(0, p_sel, TRUE, TRUE);
 }
+*/
 
-void item_panel::panel_draw(bool draw)
+void variant_panel::configure(int item)
 {
-  RECT r = boundary_get();
 
-  p_grf->fill(&r,0);
-  int i;
-  for(i = 0; i < panel_size_get(); i++) {
-    slot_draw(i, panel_item_first + i, 0);
-  }
-  if(draw)
-    p_grf->redraw_add(&r);
 
-//  controls_draw(draw);
-}
-
-void variant_panel::panel_draw(bool draw)
-{
-  RECT r = boundary_get();
-
-  p_grf->fill(&r,0);
-  int i;
-  for(i = 0; i < panel_size_get(); i++) {
-    slot_draw(i, panel_item, panel_variant_first + i);
-  }
-  if(draw)
-    p_grf->redraw_add(&r);
-
-//  controls_draw(draw);
 }
 
 editor_layer_config::editor_layer_config(void)
@@ -329,25 +277,11 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   selected_editor_item(&level)
 {
   editor_panel::set_up(p_repo_);
+  editor_panel_slot::set_up(p_repo_);
 
-  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1);
   ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_2);
+  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1, (VARIANT_PANEL *)ipanel[1]);
 
-  ipanel[0]->attached_panel_set(ipanel[1]);
-  ipanel[1]->attached_panel_set(ipanel[0]);
-
-/*
-  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1);
-  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, VERTICAL, ITEM_SIZE_X, 0, PANEL_HANDLE_2);
-  ipanel[2] = new ITEM_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, 0, PANEL_HANDLE_3);
-  ipanel[3] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*ITEM_SIZE_X, ITEM_SIZE_Y, PANEL_HANDLE_4);
-
-  ipanel[0]->attached_panel_set(ipanel[1]);
-  ipanel[2]->attached_panel_set(ipanel[3]);
-
-  ipanel[1]->attached_panel_set(ipanel[0]);
-  ipanel[3]->attached_panel_set(ipanel[2]);
-*/
   editor_reset();
 }
 
