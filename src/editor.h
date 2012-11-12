@@ -157,7 +157,7 @@ public:
     visible_slot_highlighted = slot;
   
     assert(visible_slot_highlighted >= NO_SELECTION && 
-           visible_slot_highlighted < visible_slot_num);
+           visible_slot_highlighted < slot_num);
   
     if(redraw)
       panel_draw(redraw);
@@ -179,7 +179,7 @@ public:
     visible_slot_selected = slot;
   
     assert(visible_slot_selected >= NO_SELECTION && 
-           visible_slot_selected < visible_slot_num);
+           visible_slot_selected < slot_num);
   
     if(redraw) {
       panel_draw(redraw);
@@ -203,12 +203,12 @@ public:
   void slot_selection_fix(int last_valid_slot, bool redraw)
   {
     if(visible_slot_selected != NO_SELECTION) {
-      if(visible_slot_selected >= visible_slot_num)
-        visible_slot_selected = visible_slot_num-1;
+      if(visible_slot_selected >= slot_num)
+        visible_slot_selected = slot_num-1;
     }
     if(visible_slot_highlighted != NO_SELECTION) {
-      if(visible_slot_highlighted >= visible_slot_num)
-        visible_slot_highlighted = visible_slot_num-1;
+      if(visible_slot_highlighted >= slot_num)
+        visible_slot_highlighted = slot_num-1;
     }
     if(redraw) {
       panel_draw(redraw);

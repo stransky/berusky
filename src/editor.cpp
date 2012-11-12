@@ -87,8 +87,8 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
   tpos sy = start_y;
 
   int i;
-  for(i = visible_slot_first; i < visible_slot_num; i++) {
-    if(!slot_valid(i))
+  for(i = 0; i < visible_slot_num; i++) {
+    if(!slot_valid(i+visible_slot_first))
       return(FALSE);
     
     tpos tx = sx + dx*i;
@@ -97,7 +97,7 @@ bool editor_panel::slot_return(tpos x, tpos y, int &slot)
     if(INSIDE(tx, x, EDITOR_ITEM_SIZE_X) && 
        INSIDE(ty, y, EDITOR_ITEM_SIZE_Y)) 
     {
-      slot = i;
+      slot = i+visible_slot_first;
       return(TRUE);
     }
   }
@@ -110,17 +110,18 @@ void editor_panel::panel_draw(bool draw)
   RECT r = boundary_get();
 
   p_grf->fill(&r,0);
-  int i, slot;
-  for(i = visible_slot_first, slot = 0; 
+  int i;
+  for(i = 0;
       i < visible_slot_num; 
-      i++, slot++)
+      i++)
   {
-    if(slot_valid(i)) {
+    int slot = i+visible_slot_first;
+    if(slot_valid(slot)) {
       RECT r = boundary_get();
-      p_slots[i].draw(r.x + dx*slot,
-                      r.y + dy*slot,
-                      i == visible_slot_highlighted,
-                      i == visible_slot_selected);
+      p_slots[slot].draw(r.x + dx*i,
+                         r.y + dy*i,
+                         slot == visible_slot_highlighted,
+                         slot == visible_slot_selected);
     }
   }
   if(draw)
@@ -156,8 +157,8 @@ void editor_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool red
     return;
   }
   
-  if(slot_first_new + slot_num > visible_slot_num) {
-    slot_first_new = visible_slot_num - slot_num;
+  if(slot_first_new + visible_slot_num > slot_num) {
+    slot_first_new = slot_num - visible_slot_num;
     assert(slot_first_new >= visible_slot_first);
   }
   if(slot_first_new != visible_slot_first)
@@ -174,13 +175,13 @@ RECT editor_panel::boundary_get(void)
   if(dx) {
     r.x = sx;
     r.y = sy;
-    r.w = dx*slot_num;
+    r.w = dx*visible_slot_num;
     r.h = EDITOR_ITEM_SIZE_Y;
   } else {
     r.x = sx;
     r.y = sy;
     r.w = EDITOR_ITEM_SIZE_X;
-    r.h = dy*slot_num;
+    r.h = dy*visible_slot_num;
   }
 
   return r;
@@ -219,10 +220,10 @@ item_panel::item_panel(int panel_item_num,
 {
   p_variants = p_var;
 
-  slot_num = PP_LEFT_JAMB_O+1;
+  slot_num = P_DV_V+2;
   p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
   int i,item;
-  for(i = 0, item = 0; i < P_BOX; i++, item++) {
+  for(i = 0, item = 0; i < P_TNT; i++, item++) {
     p_slots[i].item = item;
     p_slots[i].variant = 0;
   }
@@ -233,10 +234,12 @@ item_panel::item_panel(int panel_item_num,
   i++;
   
   // TNT and more
-  for(; i < PP_LEFT_JAMB_O; i++, item++) {
+  for(; item <= P_DV_V; i++, item++) {
     p_slots[i].item = item;
     p_slots[i].variant = 0;
   }
+
+  assert(i == slot_num);
 }
 
 /* Select the select item by variant panel

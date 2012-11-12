@@ -120,7 +120,9 @@ char * item_repository::item_desc_name[MAX_ITEM_NAMES] =
   _("Jamb (Wall)"),
   _("Jamb (Wall)"),
   _("Jamb (Wall)"),
-  _("Jamb (Wall)")
+  _("Jamb (Wall)"),
+  
+  _("Light box")
 };
 
 char * item_repository::item_desc_rotation[MAX_ITEM_ROTATIONS] = 

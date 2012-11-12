@@ -84,14 +84,14 @@
 #define EDITOR_SCREEN_START_X     (berusky_config::editor_screen_start_x)
 #define EDITOR_SCREEN_START_Y     (berusky_config::editor_screen_start_y)
 
-#define EDIT_COORD_START_X        (DOUBLE_SIZE ? 20*3*2 : EDITOR_SCREEN_START_X)
-#define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+(DOUBLE_SIZE ? LEVEL_RESOLUTION_Y-140 : LEVEL_RESOLUTION_Y))
-#define EDIT_COORD_DX             (DOUBLE_SIZE ? LEVEL_RESOLUTION_X/2-200 : LEVEL_RESOLUTION_X)
+#define EDIT_COORD_START_X        (20*3*2)
+#define EDIT_COORD_START_Y        (EDITOR_SCREEN_START_Y+LEVEL_RESOLUTION_Y-140)
+#define EDIT_COORD_DX             (LEVEL_RESOLUTION_X/2-200)
 #define EDIT_COORD_DY             (20)
 
 #define EDIT_ITEM_START_X         (EDIT_COORD_START_X)
 #define EDIT_ITEM_START_Y         (EDIT_COORD_START_Y+EDIT_COORD_DY)
-#define EDIT_ITEM_DX              (DOUBLE_SIZE ? LEVEL_RESOLUTION_X/2-200 : LEVEL_RESOLUTION_X)
+#define EDIT_ITEM_DX              (600)
 #define EDIT_ITEM_DY              (20)
 
 #define EDIT_ITEM_PICT_START_X    (EDIT_ITEM_START_X)
@@ -104,9 +104,9 @@
 
 #define EDIT_HELP_MOUSE_X         460
 
-#define CONSOLE_X                 (EDITOR_LAYER_STATUS_X)
+#define CONSOLE_X                 (2*EDIT_ITEM_START_X)
 #define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+20*3+5)
-#define CONSOLE_DX                (DOUBLE_SIZE ? 700 : (EDITOR_RESOLUTION_X-CONSOLE_X-200))
+#define CONSOLE_DX                (600)
 #define CONSOLE_LINES             2
 
 #define LEVELSET_NUM              5
