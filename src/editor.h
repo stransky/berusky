@@ -131,7 +131,10 @@ protected:
   int                 visible_slot_selected;
 
 public:
-  
+
+  // Remove all items from the panel
+  void clear(void);
+
   /* Return index of slot at x,y coordinates
   */
   bool slot_return(tpos x, tpos y, int &slot);
@@ -215,7 +218,7 @@ public:
     }
   }
 
-  void slot_selection_get(EDITOR_SELECTION *p_sel)
+  virtual void slot_selection_get(EDITOR_SELECTION *p_sel)
   {    
     if(p_sel && visible_slot_selected != NO_SELECTION) {
       p_sel->item = p_slots[visible_slot_selected].item;
@@ -334,6 +337,10 @@ public:
 typedef class item_panel : public editor_panel {
 
   VARIANT_PANEL *p_variants;
+
+public:
+
+  void slot_selection_get(EDITOR_SELECTION *p_sel);
 
 public:
   

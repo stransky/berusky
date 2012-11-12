@@ -81,6 +81,12 @@ void editor_panel_slot::draw(tpos x, tpos y, bool highlighted, bool selected)
   p_repo->draw(x+x_shift,y+y_shift,item,variant,0);
 }
 
+void editor_panel::clear(void)
+{
+  ffree(p_slots);
+  slot_num = 0;
+}
+
 bool editor_panel::slot_return(tpos x, tpos y, int &slot)
 {
   tpos sx = start_x;
@@ -211,6 +217,14 @@ void editor_panel::register_controls_events(INPUT *p_input)
                       panel_handle));
 }
 
+void item_panel::slot_selection_get(EDITOR_SELECTION *p_sel)
+{
+  editor_panel::slot_selection_get(p_sel);
+  if(p_variants) {
+    p_variants->configure(p_sel->item);
+  }
+}
+
 item_panel::item_panel(int panel_item_num,
                        DIRECTION direction,
                        tpos start_x, tpos start_y, 
@@ -262,8 +276,17 @@ void item_panel::item_select(EDITOR_SELECTION *p_sel)
 
 void variant_panel::configure(int item)
 {
+  clear();
 
-
+  // Configure the variant panel according the master (item) panel
+  if(item >= 0 && item < ) {
+    slot_num = p_repo->variants_get(item);
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = item;
+      p_slots[i].variant = i;
+    }  
+  }
 }
 
 editor_layer_config::editor_layer_config(void)
