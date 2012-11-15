@@ -279,7 +279,20 @@ void variant_panel::configure(int item)
   clear();
 
   // Configure the variant panel according the master (item) panel
-  if(item >= 0 && item < ) {
+
+  /* Item rendered as default:
+  #define P_GROUND                  0
+  #define P_EXIT                    9
+  #define P_STONE                   10
+  #define P_KEY                     11
+  #define P_MATTOCK                 12
+  */
+  if(item == P_GROUND ||
+     item == P_EXIT ||
+     item == P_STONE ||
+     item == P_KEY ||
+     item == P_MATTOCK)
+  {
     slot_num = p_repo->variants_get(item);
     p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
     for(int i = 0; i < slot_num; i++) {
@@ -287,6 +300,22 @@ void variant_panel::configure(int item)
       p_slots[i].variant = i;
     }  
   }
+
+  /* Player are in one line
+  */
+  if(item >= P_PLAYER_1 && item <= P_PLAYER_5) {
+    slot_num = 5;
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_PLAYER_1+i;
+      p_slots[i].variant = 0;
+    }  
+  }
+
+  /* Player are one line
+  */
+  if(item >= P_PLAYER_1 && item <= P_PLAYER_5) {
+
 }
 
 editor_layer_config::editor_layer_config(void)

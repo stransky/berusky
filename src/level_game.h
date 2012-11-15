@@ -284,7 +284,7 @@ public:
   bool coord_in_level(tpos x, tpos y)
   { 
     return(p_scr->coord_in_area(x,y));
-  }      
+  }
 
   // Translate global coordination to cell coordination
   void coord_to_cell(tpos *p_x, tpos *p_y)
