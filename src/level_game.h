@@ -540,7 +540,7 @@ public:
                              bool graphics_change)
   {
     level_cell *p_cell = cells[x][y]+layer;
-      
+    
     p_cell->variation += direction;
   
     int variation_max = p_repo->variants_get(p_cell->item)-1;

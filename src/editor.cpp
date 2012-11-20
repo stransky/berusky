@@ -220,7 +220,7 @@ void editor_panel::register_controls_events(INPUT *p_input)
 void item_panel::slot_selection_get(EDITOR_SELECTION *p_sel)
 {
   editor_panel::slot_selection_get(p_sel);
-  if(p_variants) {
+  if(p_sel && p_variants) {
     p_variants->configure(p_sel->item);
   }
 }
@@ -234,25 +234,67 @@ item_panel::item_panel(int panel_item_num,
 {
   p_variants = p_var;
 
-  slot_num = P_DV_V+2;
+  slot_num = 14;
   p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
-  int i,item;
-  for(i = 0, item = 0; i < P_TNT; i++, item++) {
-    p_slots[i].item = item;
-    p_slots[i].variant = 0;
-  }
 
-  // Light boxes
+  int i = 0;
+
+  p_slots[i].item = P_GROUND;
+  p_slots[i].variant = 0;
+  i++;
+
+  p_slots[i].item = P_PLAYER_1;
+  p_slots[i].variant = 0;
+  i++;
+
+  p_slots[i].item = P_BOX;
+  p_slots[i].variant = 0;
+  i++;
+
   p_slots[i].item = P_BOX_LIGHT;
   p_slots[i].variant = 0;
   i++;
   
-  // TNT and more
-  for(; item <= P_DV_V; i++, item++) {
-    p_slots[i].item = item;
-    p_slots[i].variant = 0;
-  }
-
+  p_slots[i].item = P_TNT;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_WALL;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_EXIT;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_STONE;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_KEY;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_MATTOCK;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_KEY1;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_DOOR1_H_O;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_ID_DOOR1_H_O;
+  p_slots[i].variant = 0;
+  i++;
+  
+  p_slots[i].item = P_DV_H_O;
+  p_slots[i].variant = 0;
+  i++;
+  
   assert(i == slot_num);
 }
 
@@ -312,10 +354,93 @@ void variant_panel::configure(int item)
     }  
   }
 
-  /* Player are one line
+  /* Boxes
   */
-  if(item >= P_PLAYER_1 && item <= P_PLAYER_5) {
+  if(item == P_BOX) {
+    slot_num = p_repo->variants_get(item);
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_BOX;
+      p_slots[i].variant = i;
+    }  
+  }
 
+  /* Light boxes
+  */
+  if(item == P_BOX_LIGHT) {
+    slot_num = p_repo->variants_get(item);
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_BOX_LIGHT;
+      p_slots[i].variant = i;
+    }  
+  }
+
+  /* TNT
+  */
+  if(item == P_TNT) {
+    slot_num = p_repo->variants_get(item);
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_TNT;
+      p_slots[i].variant = i;
+    }  
+  }
+
+  /* WALL
+  */
+  if(item == P_WALL) {
+    slot_num = p_repo->variants_get(item);
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_WALL;
+      p_slots[i].variant = i;
+    }  
+  }
+
+  /* Color keys
+  */
+  if(item >= P_KEY1 && item <= P_KEY5) {
+    slot_num = 5;
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_KEY1+i;
+      p_slots[i].variant = 0;
+    }  
+  }
+
+  /* key doors
+  */
+  if(item >= P_DOOR1_H_O && item <= P_DOOR5_V_Z) {
+    slot_num = 20;
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_DOOR1_H_O+i;
+      p_slots[i].variant = 0;
+    }  
+  }
+
+  /* Color doors
+  */
+  if(item >= P_ID_DOOR1_H_O && item <= P_ID_DOOR5_V_Z) {
+    slot_num = 20;
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_ID_DOOR1_H_O+i;
+      p_slots[i].variant = 0;
+    }  
+  }
+
+  /* One way doors
+  */
+  if(item >= P_DV_H_O && item <= P_DV_V) {
+    slot_num = 20;
+    p_slots = (EDITOR_PANEL_SLOT *)mmalloc(sizeof(EDITOR_PANEL_SLOT)*slot_num);
+    for(int i = 0; i < slot_num; i++) {
+      p_slots[i].item = P_DV_H_O+i;
+      p_slots[i].variant = 0;
+    }  
+  }
 }
 
 editor_layer_config::editor_layer_config(void)
@@ -334,7 +459,7 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   editor_panel::set_up(p_repo_);
   editor_panel_slot::set_up(p_repo_);
 
-  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL, HORIZONTAL, 2*EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_2);
+  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_2);
   ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1, (VARIANT_PANEL *)ipanel[1]);
 
   editor_reset();
