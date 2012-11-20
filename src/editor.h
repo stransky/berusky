@@ -135,6 +135,9 @@ public:
   // Remove all items from the panel
   void clear(void);
 
+  // Configure the panel
+  virtual void configure(int item) {};
+
   /* Return index of slot at x,y coordinates
   */
   bool slot_return(tpos x, tpos y, int &slot);
@@ -191,6 +194,10 @@ public:
     // Propagate to editor selection (item/variant)
     if(propagate) {
       slot_selection_get(p_sel);
+      if(p_attached_panel && p_sel && slot != NO_SELECTION) {
+        p_attached_panel->configure(p_sel->item);
+        p_attached_panel->panel_draw(redraw);
+      }
     }  
   }
 
@@ -218,7 +225,7 @@ public:
     }
   }
 
-  virtual void slot_selection_get(EDITOR_SELECTION *p_sel)
+  void slot_selection_get(EDITOR_SELECTION *p_sel)
   {    
     if(p_sel && visible_slot_selected != NO_SELECTION) {
       p_sel->item = p_slots[visible_slot_selected].item;
@@ -320,7 +327,7 @@ typedef class variant_panel : public editor_panel {
 public:
   
   // Configure variant panel according the selected item
-  void configure(int item);
+  virtual void configure(int item);
 
 public:
 
@@ -335,12 +342,6 @@ public:
 /* Derived panel for items
 */
 typedef class item_panel : public editor_panel {
-
-  VARIANT_PANEL *p_variants;
-
-public:
-
-  void slot_selection_get(EDITOR_SELECTION *p_sel);
 
 public:
   
