@@ -77,9 +77,9 @@
 #define EDITOR_ITEM_SIZE_Y        (berusky_config::cell_size_y*3)
 
 #define EDITOR_LAYER_STATUS_X     (20*3*2)
-#define EDITOR_LAYER_STATUS_Y     (20*3*2+5)
+#define EDITOR_LAYER_STATUS_Y     (20*3*2)
 #define EDITOR_LAYER_STATUS_DX    (EDITOR_RESOLUTION_X-EDITOR_LAYER_STATUS_X)
-#define EDITOR_LAYER_STATUS_DY    (30)
+#define EDITOR_LAYER_STATUS_DY    (20)
 
 #define EDITOR_SCREEN_START_X     (berusky_config::editor_screen_start_x)
 #define EDITOR_SCREEN_START_Y     (berusky_config::editor_screen_start_y)

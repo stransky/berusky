@@ -111,11 +111,13 @@ typedef class editor_panel {
   class editor_panel *p_attached_panel;
 
   // Location and appearance of the panel
-  tpos start_x, dx;
-  tpos start_y, dy;
+  tpos                start_x, dx;
+  tpos                start_y, dy;
 
-  int panel_handle;
+  int                 panel_handle;
 
+  MOUSE_EVENT        *p_registered_events;
+  
 protected:
   
   // Content of te panel
@@ -281,6 +283,7 @@ public:
   void panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool redraw);
   
   void register_controls_events(INPUT *p_input);
+  void unregister_controls_events(INPUT *p_input);
 
   // Get pannel size, without control buttons
   RECT boundary_get(void);
@@ -502,7 +505,8 @@ typedef class editor_gui : public gui_base {
 
   ITEM_REPOSITORY        *p_repo;
   LEVEL_EDITOR            level;
-  bool                    draw_level; // Draw the level?
+  bool                    draw_level;   // Draw the level?
+  bool                    draw_panels;  // Draw the panels?
 
   LEVEL_EVENT_QUEUE       queue;
 
@@ -578,7 +582,11 @@ public:
 
 private:
 
+  LLIST_ITEM * p_side_event_first;
+  int          side_event_num;
+
   void side_menu_create(void);
+  void side_menu_remove(void);
   void side_menu_draw(bool draw);
 
 private:
@@ -615,14 +623,14 @@ public:
 
   void level_move(tpos dx, tpos dy);
 
-  void draw(void);
+  void draw(bool force = FALSE);
 
 public:
 
   editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_);
   ~editor_gui(void);
   
-  void editor_reset(void);
+  void editor_init(void);
 
   bool editor_quit(bool force);
   void editor_quit_callback(void);
@@ -649,10 +657,10 @@ public:
   
   void level_item_clear(void);
   void level_item_clear_rectangle(bool filled);
-  
-  void layer_menu_create(void);
-  void layer_menu_draw(bool draw);
-  
+
+  void layer_active_draw(bool draw);
+
+  void layer_status_create(void);
   void layer_status_draw(bool draw);
   void layer_status_switch(int layer, LAYER_STATE state);  
   void layer_active_set(int layer, bool draw);
@@ -674,6 +682,9 @@ public:
   
   // Run level
   void editor_run_level(void);
+  
+  // Run level in fullscreen
+  void editor_fullscreen(void);
   
   // Shade level 
   void editor_shader(void);

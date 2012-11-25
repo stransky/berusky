@@ -372,7 +372,8 @@ public:
 
 #define MEVENTS                       3
 
-typedef struct mouse_event {
+typedef struct mouse_event : public llist_item 
+{
   
   MOUSE_STATE        mstate;
   int                flag;
@@ -433,9 +434,6 @@ typedef struct mouse_event {
 // ------------------------------------------------------------
 // Basic game input class
 // ------------------------------------------------------------
-
-#define MAX_MOUSE_EVENTS  200
-
 #define INPUT_BLOCK_SETS       0x1   // Block all key-sets (is captured by console)                                       
 #define INPUT_EVENT_LOOP_WAIT  0x2   // wait for events
 
@@ -447,9 +445,11 @@ typedef class input {
   int               group;           // global group flag
 
   MOUSE_STATE       mstate;          // Last mouse state
-
+/*
   MOUSE_EVENT       mevents[MAX_MOUSE_EVENTS]; // Active mouse events
   int               mevents_num;
+*/
+  LLIST_HEAD        mevents;
 
   int               flag;            // current input-interface flags
 
@@ -461,7 +461,7 @@ private:
   
 public:
   
-  input(void) : p_set(NULL), group(0), mevents_num(0), flag(0) {};
+  input(void) : p_set(NULL), group(0), flag(0) {};
 
   bool key_status(int sdl_key);
   void key_repeat(bool state);
@@ -481,18 +481,21 @@ public:
   // Mouse interface
   void mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button);
 
-  void mevent_state_clear(int first = 0);
+  void mevent_state_clear(MOUSE_EVENT *p_first = NULL);
   void mevent_clear(void);
-  void mevent_add(MOUSE_EVENT *p_event, int num);
+  
+  MOUSE_EVENT * mevent_add(MOUSE_EVENT event);
+  MOUSE_EVENT * mevent_add(MOUSE_EVENT *p_event, int num);
+  void          mevent_remove(MOUSE_EVENT *p_first, int num);
+  
+  LLIST_HEAD  * mevents_get(void)
+  {
+    return(&mevents);
+  }
   
   MOUSE_STATE * mouse_state_get(void)
   {
     return(&mstate);
-  }
-
-  void mevent_add(MOUSE_EVENT event)
-  {
-    mevent_add(&event, 1);
   }
 
 } INPUT;

@@ -1,12 +1,14 @@
-editor_gui::layer_menu_draw() - layer menu wrong place
+Can't find 'P_BOX_LIGHT' token!
 
-Panel:
-  - kapatko
-  - 
+- launch editor in double size only
+- light boxes to help
+- ukazat cely level (no gui) -> popr. vypinani jednotlivych panelu?
+- kapatko
+- f9 - run - does not work
+- f10 - fullscreen
+- help - arrow keys for level scroll
+- redraw variant pannel automatically (when item panel is drawn)?
 
-  - lepsi usporadani? (vsechny klice/dvere do jedne listy)
-
-- F1 - help - neprekresli se pak level
 - zobrazit level bez controlu (full screen?)
 - vypinani jednotlivych list s nastrojema?
 - better backgrounds
@@ -15,11 +17,6 @@ Panel:
 - controls for item/variant scrols
 
 - menu - icon - editor?
-- editor fix
-- find better edit way 
-  - (draw toolbar over the level?)
-  - fix console position
-
 - windows - add MSVC dll
 - New backgrounds (from B2)
 
@@ -32,6 +29,7 @@ New Items:
 - new backgrounds
 - new ground
 - a hole
+- power pill
 
 Game:
 

@@ -116,6 +116,7 @@ public:
 
 #include "events.h"
 
+#include "llist.h"
 #include "input.h"
 
 //#include "timer.h"

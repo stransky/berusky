@@ -1065,6 +1065,11 @@ public:
   void level_populate(void);
 
   void level_move(tpos dx, tpos dy);
+  
+  void level_selection_area_set(bool active)
+  {
+    ((SCREEN_EDITOR *)p_scr)->selection_area_set(active);
+  }
 
   // -------------------------------------------------------------------
   // undo/restore interface
@@ -1113,6 +1118,11 @@ public:
 public:
   
   bool level_draw(void);
+
+  void level_redraw(void)
+  {
+    p_scr->set_redraw();
+  }
 
 public:
   

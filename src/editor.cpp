@@ -201,24 +201,40 @@ void editor_panel::register_controls_events(INPUT *p_input)
 {
   RECT r = boundary_get();
 
-  /* Scrolling (by mouse wheel) */
-  p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_UP),
-                      MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS,
-                      LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL, panel_handle,-1)));
-  p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_DOWN),
-                      MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS,
-                      LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL, panel_handle, 1)));
-                      
-  /* Highlight of items in panel */
-  p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r),
-                      MEVENT_MOUSE_EXTERNAL|MEVENT_MOUSE_IN, 
-                      panel_handle));
-  p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r),
-                      MEVENT_MOUSE_EXTERNAL|MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT,
-                      panel_handle));
-  p_input->mevent_add(MOUSE_EVENT(MOUSE_STATE(r,MASK_BUTTON_LEFT),
-                      MEVENT_MOUSE_EXTERNAL|MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
-                      panel_handle));
+  assert(!p_registered_events);
+
+  #define EDITOR_PANEL_EVENTS 5
+  MOUSE_EVENT events[EDITOR_PANEL_EVENTS] = 
+
+  { MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_UP),
+    MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS,
+    LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL, panel_handle,-1)),
+  
+    MOUSE_EVENT(MOUSE_STATE(r,MASK_WHEEL_DOWN),
+    MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS,
+    LEVEL_EVENT(ED_LEVEL_IPANEL_SCROLL, panel_handle, 1)),
+    
+    MOUSE_EVENT(MOUSE_STATE(r),
+    MEVENT_MOUSE_EXTERNAL|MEVENT_MOUSE_IN, 
+    panel_handle),
+  
+    MOUSE_EVENT(MOUSE_STATE(r),
+    MEVENT_MOUSE_EXTERNAL|MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_OUT,
+    panel_handle),
+  
+    MOUSE_EVENT(MOUSE_STATE(r,MASK_BUTTON_LEFT),
+    MEVENT_MOUSE_EXTERNAL|MEVENT_ACTIVATE_ONCE|MEVENT_MOUSE_IN|MEVENT_MOUSE_BUTTONS, 
+    panel_handle)
+  };
+
+  p_registered_events = p_input->mevent_add(events, EDITOR_PANEL_EVENTS);
+}
+
+void editor_panel::unregister_controls_events(INPUT *p_input)
+{
+  assert(p_registered_events);
+  p_input->mevent_remove(p_registered_events, EDITOR_PANEL_EVENTS);
+  p_registered_events = NULL;
 }
 
 item_panel::item_panel(int panel_item_num,
@@ -448,7 +464,7 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_2);
   ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1, (VARIANT_PANEL *)ipanel[1]);
 
-  editor_reset();
+  editor_init();
 }
 
 editor_gui::~editor_gui(void)
@@ -459,12 +475,13 @@ editor_gui::~editor_gui(void)
   }
 }
 
-void editor_gui::editor_reset(void)
+void editor_gui::editor_init(void)
 {
   input.mevent_clear();
   input.events_wait(TRUE);
 
   draw_level = TRUE;
+  draw_panels = TRUE;
 
   // Clear whole screen
   p_grf->clear();
@@ -473,11 +490,12 @@ void editor_gui::editor_reset(void)
   for(i = 0; i < PANELS; i++) {
     ipanel[i]->register_controls_events(&input);
   }
-  level_config();  
 
-  layer_active_set(ALL_LEVEL_LAYERS, FALSE);  
+  level_config();
+
+  layer_active_set(ALL_LEVEL_LAYERS, FALSE);
   side_menu_create();
-  //layer_menu_create();
+  //layer_status_create();
   level.back_max_set(background_num(p_dir));
 }
 
@@ -714,8 +732,12 @@ static char *side_menu[] =
 
 void editor_gui::side_menu_create(void)
 {
+  assert(!p_side_event_first);
+
   menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
   menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
+  
+  LLIST_ITEM *p_last = input.mevents_get()->list_get_last();
 
   menu_item_draw(side_menu[0], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_HELP));
   menu_item_draw(side_menu[1], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_RUN));
@@ -723,12 +745,22 @@ void editor_gui::side_menu_create(void)
   menu_item_draw(side_menu[3], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_SHADER));
   menu_item_draw(side_menu[4], MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(ED_LEVEL_CHANGE_BACKGROUND));
 
+  p_side_event_first = p_last->list_next();
+  side_event_num = llist_count(p_side_event_first);
+
   //p_grf->redraw_add(SIDE_MENU_X,SIDE_MENU_Y,SIDE_MENU_DX,SIDE_MENU_DY);
+}
+
+void editor_gui::side_menu_remove(void)
+{
+  assert(p_side_event_first);
+  input.mevent_remove(reinterpret_cast<MOUSE_EVENT *>(p_side_event_first), side_event_num);
+  p_side_event_first = NULL;
+  side_event_num = 0;
 }
 
 void editor_gui::side_menu_draw(bool draw)
 {
-
   menu_item_set_pos(SIDE_MENU_X, SIDE_MENU_Y+SIDE_MENU_Y_DIFF);
   menu_item_set_diff(SIDE_MENU_X_DIFF, SIDE_MENU_Y_DIFF);
 
@@ -739,17 +771,17 @@ void editor_gui::side_menu_draw(bool draw)
   menu_item_draw(side_menu[4], MENU_LEFT, MENU_SAVE_BACK|MENU_DRAW_ONLY);
 }
 
-#define SIDE_STATUS_X     (EDITOR_SCREEN_START_X+(DOUBLE_SIZE ? GAME_RESOLUTION_X/2 : GAME_RESOLUTION_X)+10)
-#define SIDE_STATUS_Y     (EDITOR_SCREEN_START_Y)
-#define SIDE_STATUS_DX    (EDITOR_RESOLUTION_X-SIDE_STATUS_X)
-#define SIDE_STATUS_DY    40
-#define SIDE_STATUS_DY    40
+#define SIDE_STATUS_X     (GAME_RESOLUTION_X-400)
+#define SIDE_STATUS_Y     (EDITOR_ITEM_SIZE_Y)
+#define SIDE_STATUS_DX    320
+#define SIDE_STATUS_DY    20
 
-void editor_gui::layer_menu_draw(bool draw)
-{ //TODO
+void editor_gui::layer_active_draw(bool draw)
+{
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_LEFT);
-  p_grf->fill(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY,0);
+  p_grf->fill(SIDE_STATUS_X, SIDE_STATUS_Y,
+              SIDE_STATUS_DX, SIDE_STATUS_DY, 0);
 
   char *p_act = NULL;
 
@@ -767,13 +799,13 @@ void editor_gui::layer_menu_draw(bool draw)
       p_act = _("players");
       break;
     case ALL_LEVEL_LAYERS:
-      p_act = _("all layers");
+      p_act = _("all");
       break;
     default:
       break;
   }
   if(p_act)
-    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("edited layer:\n%s"),p_act);  
+    p_font->print(NULL,SIDE_STATUS_X,SIDE_STATUS_Y,_("edited layer: %s"),p_act);
   if(draw)
     p_grf->redraw_add(SIDE_STATUS_X,SIDE_STATUS_Y,SIDE_STATUS_DX,SIDE_STATUS_DY);
 }
@@ -784,7 +816,7 @@ void editor_gui::layer_menu_draw(bool draw)
 #define EDITOR_LAYER_STATUS_DX    (LEVEL_RESOLUTION_Y)
 #define EDITOR_LAYER_STATUS_DY    (30)
 */
-void editor_gui::layer_menu_create(void)
+void editor_gui::layer_status_create(void)
 { //TODO
   RECT r = {EDITOR_LAYER_STATUS_X,
             EDITOR_LAYER_STATUS_Y,
@@ -874,7 +906,7 @@ void editor_gui::layer_status_switch(int layer, LAYER_STATE state)
 void editor_gui::layer_active_set(int layer, bool draw)
 {
   config.lc.set_active(layer);
-  layer_menu_draw(draw);
+  layer_active_draw(draw);
 }
 
 int editor_gui::layer_active_get(void)
@@ -900,18 +932,25 @@ int editor_gui::layer_active_get(tpos x, tpos y)
   }
 }
 
-void editor_gui::draw(void)
+void editor_gui::draw(bool force)
 {
-  if(level.level_draw()) {
+  if(force) {
+    p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
+    level.level_redraw();
+  }
+
+  bool panel_refresh = level.level_draw();
+  if(panel_refresh && draw_panels) {
     panel_draw(FALSE);
     selection_draw(FALSE);
     selection_cursor_draw(FALSE);
     console_draw(FALSE);
     side_menu_draw(FALSE);
-  /*
-    layer_status_draw(FALSE);
-    side_menu_draw(FALSE);    
-  */
+    layer_active_draw(FALSE);  
+    //layer_status_draw(FALSE);
+  }
+
+  if(force || panel_refresh) {
     p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
   }
 }
@@ -1133,6 +1172,7 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("F3"),_("- Load level"));
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("F9"),_("- Run level"));
+  help_print_line(x_pos,y_pos,_("F10"),_("- Full screen mode"));
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("SHIFT+R"),_("- Rotate item"));
   help_print_line(x_pos,y_pos,_("CTRL+U"),_("- Undo"));
@@ -1187,7 +1227,8 @@ void editor_gui::help(void)
 
 void editor_gui::help_quit(void)
 {
-  editor_reset();
+  draw_level = TRUE;
+  draw(TRUE);
 }
 
 void editor_gui::level_save(int force)
@@ -1434,6 +1475,30 @@ void editor_gui::editor_quit_callback(void)
   }
 }
 
+void editor_gui::editor_fullscreen(void)
+{
+  draw_panels = !draw_panels;  
+  level.level_selection_area_set(draw_panels);
+
+  // Register or undergister events from item panels
+  int i;
+  for(i = 0; i < PANELS; i++) {
+    if(draw_panels)
+      ipanel[i]->register_controls_events(&input);
+    else
+      ipanel[i]->unregister_controls_events(&input);
+  }
+
+  // Side menu
+  if(draw_panels) {
+    side_menu_create();
+  } else {
+    side_menu_remove();
+  }
+
+  draw(TRUE);
+}
+
 void editor_gui::editor_run_level(void)
 {
   #define TMP_LEVEL "berusky-editor-level.lv3"
@@ -1660,6 +1725,10 @@ bool editor_gui::event_handler(void)
           editor_run_level();
           break;
 
+        case ED_LEVEL_FULLSCREEN:
+          editor_fullscreen();
+          break;
+        
         case ED_LEVEL_SHADER:
           editor_shader();
           break;

@@ -115,6 +115,7 @@ EVENT_KEY editor_key_array[] =
   {LEVEL_EVENT(ED_UNDO),                                    LEVEL_EVENT(EV_NONE),K_U,   0,1,0,KEY_CLEAR_AFTER_PRESS},
   {LEVEL_EVENT(ED_REDO),                                    LEVEL_EVENT(EV_NONE),K_R,   0,1,0,KEY_CLEAR_AFTER_PRESS},
   {LEVEL_EVENT(ED_LEVEL_RUN),                               LEVEL_EVENT(EV_NONE),K_F9,  0,0,0,KEY_CLEAR_AFTER_PRESS},
+  {LEVEL_EVENT(ED_LEVEL_FULLSCREEN),                        LEVEL_EVENT(EV_NONE),K_F10, 0,0,0,KEY_CLEAR_AFTER_PRESS},
   {LEVEL_EVENT(ED_LEVEL_SHADER),                            LEVEL_EVENT(EV_NONE),K_S,   0,1,0,KEY_CLEAR_AFTER_PRESS},
   {LEVEL_EVENT(ED_ROTATE_SELECTION),                        LEVEL_EVENT(EV_NONE),K_R,   0,0,1,KEY_CLEAR_AFTER_PRESS},
   {LEVEL_EVENT(ED_LEVEL_RECTANGLE_SELECTION,FALSE),         LEVEL_EVENT(EV_NONE),K_D,   0,0,0,KEY_CLEAR_AFTER_PRESS},
@@ -368,18 +369,16 @@ void input::mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button)
   }
 
   /* Process all events */
-  if(mevents_num) {  
+  if(!mevents.is_empty()) {  
     Uint8 *p_keystate = SDL_GetKeyState(NULL);
   
-    int i;
-    for(i = 0; i < mevents_num; i++) {
+    MOUSE_EVENT *p_ev = reinterpret_cast<MOUSE_EVENT *>(mevents.list_get_first());
+    while(p_ev) {
       bool cond_button = TRUE;
       bool cond_key = TRUE;
       bool cond_area = FALSE;
       bool active;
     
-      MOUSE_EVENT *p_ev = mevents+i;    
-
       if(p_ev->flag&MEVENT_MOUSE_BUTTONS) {
         int j;
         for(j = 0; j < MOUSE_BUTTONS; j++) {
@@ -426,6 +425,7 @@ void input::mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button)
           input_queue.add(p_ev->event,p_ev->event_num);
         }
       }
+      p_ev = reinterpret_cast<MOUSE_EVENT *>(p_ev->list_next());
     }
     
     input_queue.commit();
@@ -434,29 +434,50 @@ void input::mouse_input(tpos mx, tpos my, MOUSE_BUTTON_STATE state, int button)
   mstate.button[button] = BUTTON_NONE;
 }
 
-void input::mevent_state_clear(int first)
+void input::mevent_state_clear(MOUSE_EVENT *p_first)
 {
-  for(int i = 0; i < mevents_num; i++)
-    mevents[i].state_clear();
+  MOUSE_EVENT *p_event = p_first ? p_first : 
+                         reinterpret_cast<MOUSE_EVENT *>(mevents.list_get_first());
+  while(p_event) {
+    p_event->state_clear();
+    p_event = reinterpret_cast<MOUSE_EVENT *>(p_event->list_next());
+  }
 }
 
 void input::mevent_clear(void)
 {  
-  mevents_num = 0;
+  mevents.list_clear();
 }
 
-void input::mevent_add(MOUSE_EVENT *p_event, int num)
+MOUSE_EVENT * input::mevent_add(MOUSE_EVENT event)
+{  
+  return(mevent_add(&event, 1));
+}
+
+MOUSE_EVENT * input::mevent_add(MOUSE_EVENT *p_event, int num)
 {
-  int mevents_start = mevents_num;
+  MOUSE_EVENT *p_first = reinterpret_cast<MOUSE_EVENT *>(mmemcpy(p_event, sizeof(MOUSE_EVENT)));
+  mevents.list_insert_last(p_first);
 
-  assert(mevents_num + num < MAX_MOUSE_EVENTS);
-
-  // Add events
-  memcpy(mevents+mevents_num,p_event,sizeof(p_event[0])*num);
-  mevents_num += num;
+  for(int i = 1; i < num; i++) {
+    mevents.list_insert_last(reinterpret_cast<MOUSE_EVENT *>(mmemcpy(p_event+i, sizeof(MOUSE_EVENT))));
+  }
 
   // Initialize all
-  mevent_state_clear(mevents_start);  
+  mevent_state_clear(p_first);
+
+  return(p_first);
+}
+
+void input::mevent_remove(MOUSE_EVENT *p_first, int num)
+{
+  for(int i = 0; i < num; i++) {
+    assert(p_first);
+    MOUSE_EVENT *p_next = reinterpret_cast<MOUSE_EVENT *>(p_first->list_next());
+    mevents.list_remove(p_first);
+    ffree(p_first);
+    p_first = p_next;
+  }  
 }
 
 void input::block(bool state)

@@ -321,6 +321,10 @@ typedef enum {
   // format: [ED_LEVEL_RUN]
   ED_LEVEL_RUN,
 
+  // Fullscreen mode
+  // format: [ED_LEVEL_FULLSCREEN]
+  ED_LEVEL_FULLSCREEN,
+  
   // level layer on/off  
   // format: [ED_LEVEL_LAYER, layer]
   ED_LEVEL_LAYER,

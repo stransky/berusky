@@ -646,6 +646,11 @@ private:
 
 public:
 
+  void selection_area_set(bool active)
+  {
+    selection_area_active = active;
+  }
+
   virtual bool coord_in_area(tpos x, tpos y)
   { 
     if(selection_area_active &&

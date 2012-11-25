@@ -105,6 +105,7 @@ const char * level_event::translation_table[] =
   "ED_VARIATE_SELECTION",
   "ED_LEVEL_SHADER",
   "ED_LEVEL_RUN",
+  "ED_LEVEL_FULLSCREEN",
   "ED_LEVEL_LAYER",
   "ED_LEVEL_IPANEL_SCROLL",
   "ED_LEVEL_MOUSE_PANEL_SCROLL",
