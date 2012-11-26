@@ -313,6 +313,10 @@ typedef enum {
   // format: [ED_VARIATE_SELECTION]
   ED_VARIATE_SELECTION,
 
+  // pick up selected item from level
+  // format: [ED_CURSOR_PICKUP]
+  ED_CURSOR_PICKUP,
+
   // Shade level
   // format: [ED_LEVEL_SHADER]
   ED_LEVEL_SHADER,
@@ -336,7 +340,7 @@ typedef enum {
   // scroll a panel selected by mouse cursor
   // format: [ED_LEVEL_MOUSE_PANEL_SCROLL, direction]
   ED_LEVEL_MOUSE_PANEL_SCROLL,
-  
+
   // highlight an item in panel
   // format: [ED_LEVEL_IPANEL_SELECT, panel_handle, direction]
   ED_LEVEL_IPANEL_SELECT,

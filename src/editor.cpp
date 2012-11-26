@@ -1414,6 +1414,15 @@ void editor_gui::selection_rotate(int direction)
   }
 }
 
+void editor_gui::selection_pickup(void)
+{
+/*
+  Select item from the cursor
+  set panels for that
+*/
+
+}
+
 // format: [GI_MOUSE_EVENT, handle, x, y, button]
 void editor_gui::mouse_handler(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT ev)
 {
@@ -1709,7 +1718,7 @@ bool editor_gui::event_handler(void)
         case ED_LEVEL_MOUSE_PANEL_SCROLL:
           panel_scroll_mouse(ev.param_int_get(PARAM_0));
           break;
-  
+        
         case ED_LEVEL_LAYER:        
           layer_status_switch(ev.param_int_get(PARAM_0),(LAYER_STATE)(ev.param_int_get(PARAM_1)));
           break;
@@ -1726,6 +1735,10 @@ bool editor_gui::event_handler(void)
           level_move(ev.param_int_get(PARAM_0), ev.param_int_get(PARAM_1));
           break;
         
+        case ED_CURSOR_PICKUP:
+          selection_pickup();
+          break;
+  
         case ED_UNDO:
           undo_restore();
           break;

@@ -582,6 +582,9 @@ public:
 
   void selection_rotate(int direction = 1);
 
+  // Pick up selected item from cursor
+  void selection_pickup(void);
+
 private:
 
   LLIST_ITEM * p_side_event_first;
