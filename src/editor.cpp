@@ -1174,8 +1174,8 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("F3"),_("- Load level"));
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("F9"),_("- Run level"));
-  help_print_line(x_pos,y_pos,_("F10"),_("- Full screen mode"));
   y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("P"),_("- Pick item from cursor"));
   help_print_line(x_pos,y_pos,_("SHIFT+R"),_("- Rotate item"));
   help_print_line(x_pos,y_pos,_("CTRL+U"),_("- Undo"));
   help_print_line(x_pos,y_pos,_("CTRL+S"),_("- Shade level"));
@@ -1207,7 +1207,7 @@ void editor_gui::help(void)
   help_print_line(x_pos,y_pos,_("F+third"),_("- clear solid rect"));
   help_print_line(x_pos,y_pos,_("D+third"),_("- clear empty rect"));
 
-  x_pos = EDIT_HELP_MOUSE_X+70;
+  x_pos = EDIT_HELP_MOUSE_X;
   y_pos += EDIT_HELP_DY*6;
   help_print_line(x_pos,y_pos,_("item panel mouse control:"));
   y_pos += EDIT_HELP_DY;
@@ -1218,6 +1218,12 @@ void editor_gui::help(void)
   y_pos += EDIT_HELP_DY;
   help_print_line(x_pos,y_pos,_("Home"),_("- first item"));
   help_print_line(x_pos,y_pos,_("End"),_("- last item"));
+
+  y_pos += EDIT_HELP_DY*6;
+  help_print_line(x_pos,y_pos,_("Screen control:"));
+  y_pos += EDIT_HELP_DY;
+  help_print_line(x_pos,y_pos,_("F10"),_("- Full screen mode"));  
+  help_print_line(x_pos,y_pos,_("Arrows"),_("- Move screen"));
 
   p_grf->redraw_add(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y);
 
@@ -1493,10 +1499,13 @@ void editor_gui::editor_fullscreen(void)
 
   // Side menu
   if(draw_panels) {
-    side_menu_create();
+    side_menu_create();  
   } else {
     side_menu_remove();
   }
+
+  // Set-up console
+  console.output_draw_set(draw_panels);
 
   draw(TRUE);
 }
@@ -1505,7 +1514,7 @@ void editor_gui::editor_run_level(void)
 {
   #define TMP_LEVEL "berusky-editor-level.lv3"
 
-  console.print("Run level...");  
+  console.print("Run level...");
 
   char filename[MAX_FILENAME];
   return_path(p_dir->tmp_get(), TMP_LEVEL, filename, MAX_FILENAME);
@@ -1931,6 +1940,8 @@ editor_console::editor_console(INPUT *p_input_, tpos sx, tpos sy, tpos dx, int l
 
   output_clear();
   input_clear();
+
+  output_draw = TRUE;
 }
 
 void editor_console::input_start(INPUT_TYPE type, char *p_text)
@@ -2088,14 +2099,21 @@ void editor_console::output_clear(bool redraw)
 
 void editor_console::output_redraw(bool draw)
 {
-  p_font->select(FONT_DEFAULT);
-  p_font->alignment_set(MENU_LEFT);
-
-  p_grf->fill(x,y,w,h,0);
-  int i;
-  for(i = 0; i < lines; i++)
-    p_font->print(NULL,x,y+i*height_diff,output_lines[i]);
+  if(output_draw) {
+    p_font->select(FONT_DEFAULT);
+    p_font->alignment_set(MENU_LEFT);
   
-  if(draw)
-    p_grf->redraw_add(x,y,w,h);
+    p_grf->fill(x,y,w,h,0);
+    int i;
+    for(i = 0; i < lines; i++)
+      p_font->print(NULL,x,y+i*height_diff,output_lines[i]);
+    
+    if(draw)
+      p_grf->redraw_add(x,y,w,h);
+  }
+}
+
+void editor_console::output_draw_set(bool draw)
+{
+  output_draw = draw;
 }

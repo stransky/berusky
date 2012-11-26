@@ -405,6 +405,7 @@ typedef class editor_console {
 
   int          lines;
   char         output_lines[CONSOLE_OUTPUT_LINES][CONSOLE_MAX_INPUT_LINE];
+  bool         output_draw;
 
   tpos         ix_title;
   tpos         iy_title;
@@ -431,6 +432,7 @@ public:
   void print(const char *p_text,...);
   void output_clear(bool redraw = TRUE);
   void output_redraw(bool draw);
+  void output_draw_set(bool draw);
 
 
   // ----------------------------------------------

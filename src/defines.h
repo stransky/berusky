@@ -102,7 +102,7 @@
 #define EDIT_HELP_START_Y         40
 #define EDIT_HELP_DY              10
 
-#define EDIT_HELP_MOUSE_X         460
+#define EDIT_HELP_MOUSE_X         600
 
 #define CONSOLE_X                 (2*EDIT_ITEM_START_X)
 #define CONSOLE_Y                 (EDIT_ITEM_PICT_START_Y+20*3+5)
