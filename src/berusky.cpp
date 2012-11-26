@@ -109,7 +109,7 @@ void berusky_config::double_size_set(void)
   cell_size_y = 40;
 }
 
-void berusky_config::config_load(const char *p_ini_file)
+void berusky_config::game_config_load(const char *p_ini_file)
 {
   game_fps = 30;  
 
@@ -123,6 +123,18 @@ void berusky_config::config_load(const char *p_ini_file)
   else {
     original_size_set();
   }
+}
+
+void berusky_config::editor_config_load(const char *p_ini_file)
+{
+  game_fps = 30;  
+
+  fullscreen = get_fullscreen(p_ini_file);
+  screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
+
+  // Runs only in double-size mode
+  double_size_gui = double_size = TRUE;  
+  double_size_set();
 }
 
 berusky::berusky(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)

@@ -2,15 +2,11 @@ Can't find 'P_BOX_LIGHT' token!
 
 - launch editor in double size only
 - light boxes to help
-- ukazat cely level (no gui) -> popr. vypinani jednotlivych panelu?
 - kapatko
 - f9 - run - does not work
-- f10 - fullscreen
 - help - arrow keys for level scroll
 - redraw variant pannel automatically (when item panel is drawn)?
 
-- zobrazit level bez controlu (full screen?)
-- vypinani jednotlivych list s nastrojema?
 - better backgrounds
 - power pilulka
 - editor - remove controls, add hot keys for panel scroll

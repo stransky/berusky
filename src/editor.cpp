@@ -650,18 +650,20 @@ void editor_gui::selection_cursor_draw(bool draw)
   tpos sx,sy;
   tpos dx,dy;
 
-  if(level.selection_get()) {
-    level.selection_get(&x,&y);
-    if(level.selection_rectangle_get()) {
-      level.selection_rectangle_get(&sx,&sy,&dx,&dy);
-      selection_cursor_draw_status(draw,_("selection %d,%d - %d,%d"),sx,sy,dx,dy);
+  if(draw_panels) {
+    if(level.selection_get()) {
+      level.selection_get(&x,&y);
+      if(level.selection_rectangle_get()) {
+        level.selection_rectangle_get(&sx,&sy,&dx,&dy);
+        selection_cursor_draw_status(draw,_("selection %d,%d - %d,%d"),sx,sy,dx,dy);
+      }
+      else {
+        selection_cursor_draw_status(draw,_("level cursor %d x %d"),x,y);
+      }
     }
     else {
-      selection_cursor_draw_status(draw,_("level cursor %d x %d"),x,y);
+      selection_cursor_draw_status(draw,_("No selection"));
     }
-  }
-  else {
-    selection_cursor_draw_status(draw,_("No selection"));
   }
 }
 

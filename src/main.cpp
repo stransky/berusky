@@ -92,7 +92,7 @@ void end(DIR_LIST *p_dir)
 void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 {
   /* Create game objects */
-  berusky_config::config_load(INI_FILE);
+  berusky_config::game_config_load(INI_FILE);
 
   graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
 
@@ -188,7 +188,7 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 void run_editor(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 {
   /* Create game objects */
-  berusky_config::config_load(INI_FILE);
+  berusky_config::editor_config_load(INI_FILE);
 
   graphics_start(EDITOR_RESOLUTION_X, EDITOR_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
 

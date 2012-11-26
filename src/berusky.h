@@ -97,7 +97,8 @@ public:
   static void original_size_set(void);
   static void double_size_set(void);
 
-  static void config_load(const char *p_ini_file);
+  static void game_config_load(const char *p_ini_file);
+  static void editor_config_load(const char *p_ini_file);
 
 } BERUSKY_CONFIG;
 
