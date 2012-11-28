@@ -1,10 +1,8 @@
 Game:
-Can't find 'P_BOX_LIGHT' token!
 - light boxes to help
 
 Editor:
 - kapatko - pick item
-- f9 - run - does not work
 - redraw variant pannel automatically (when item panel is drawn)?
 
 - better backgrounds

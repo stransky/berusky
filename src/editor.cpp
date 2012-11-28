@@ -1419,8 +1419,18 @@ void editor_gui::selection_pickup(void)
 /*
   Select item from the cursor
   set panels for that
-*/
+*/  
+  if(level.selection_get()) {
+    tpos x,y;
+    level.selection_get(&x,&y);
 
+    int layer = layer_active_get(x,y);
+    item_handle item = level.cell_get_item(x, y, layer);
+    int variant = level.cell_get_variation(x, y, layer);
+    
+     
+
+  }
 }
 
 // format: [GI_MOUSE_EVENT, handle, x, y, button]

@@ -552,9 +552,9 @@ public:
   }
 
 public:
-
-  #define                 PANELS        2
-  EDITOR_PANEL           *ipanel[PANELS];
+  
+  ITEM_PANEL      panel_items;
+  VARIANT_PANEL   panel_variants;
 
 public:
   
