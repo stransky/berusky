@@ -712,9 +712,7 @@ public:
 #define SCREEN_HANDLE_ROTATE  3
 #define SCREEN_HANDLE_VARIATE 4
 
-#define PANEL_HANDLE_1        11
-#define PANEL_HANDLE_2        12
-#define PANEL_HANDLE_3        13
-#define PANEL_HANDLE_4        14
+#define PANEL_HANDLE_ITEMS    11
+#define PANEL_HANDLE_VARIANTS 12
 
 #endif // __EDITOR_H__

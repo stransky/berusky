@@ -456,27 +456,14 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   p_repo(p_repo_),
   level(p_repo_), 
   console(&input,CONSOLE_X,CONSOLE_Y,CONSOLE_DX,CONSOLE_LINES),
+  panel_items(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_ITEMS, &panel_variants),
+  panel_variants(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_VARIANTS),
   selected_editor_item(&level)
 {
   editor_panel::set_up(p_repo_);
   editor_panel_slot::set_up(p_repo_);
 
-  ipanel[1] = new VARIANT_PANEL(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_2);
-  ipanel[0] = new ITEM_PANEL(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_1, (VARIANT_PANEL *)ipanel[1]);
 
-  editor_init();
-}
-
-editor_gui::~editor_gui(void)
-{
-  int i;
-  for(i = 0; i < PANELS; i++) {    
-    delete ipanel[i];
-  }
-}
-
-void editor_gui::editor_init(void)
-{
   input.mevent_clear();
   input.events_wait(TRUE);
 
@@ -485,11 +472,9 @@ void editor_gui::editor_init(void)
 
   // Clear whole screen
   p_grf->clear();
-
-  int i;
-  for(i = 0; i < PANELS; i++) {
-    ipanel[i]->register_controls_events(&input);
-  }
+    
+  panel_items.register_controls_events(&input);  
+  panel_variants.register_controls_events(&input);  
 
   level_config();
 
@@ -499,23 +484,23 @@ void editor_gui::editor_init(void)
   level.back_max_set(background_num(p_dir));
 }
 
+editor_gui::~editor_gui(void)
+{
+}
+
+void editor_gui::editor_init(void)
+{
+}
+
 // Panel interface
 void editor_gui::panel_item_select(int panel, tpos x, tpos y)
 {
-  panel -= PANEL_HANDLE_1;
-  assert(panel >= 0 && panel < PANELS);
-
-  EDITOR_PANEL *p_attached = ipanel[panel]->attached_panel_get();
-
-  int i;
-  for(i = 0; i < PANELS; i++) {
-    if(p_attached != ipanel[i]) {
-      ipanel[i]->slot_unselect(TRUE,TRUE);
-    }
+  if(panel == PANEL_HANDLE_ITEMS) {
+    panel_items.slot_select(x,y,&selected_editor_item,TRUE,TRUE);
   }
-
-  // Select the selection
-  ipanel[panel]->slot_select(x,y,&selected_editor_item,TRUE,TRUE);
+  else {
+    panel_variants.slot_select(x,y,&selected_editor_item,TRUE,TRUE);
+  }
   
   // Draw the current selection
   selection_draw(TRUE);
@@ -526,43 +511,40 @@ void editor_gui::panel_item_select(int panel, tpos x, tpos y)
 
 void editor_gui::panel_item_highlight(int panel, tpos x, tpos y)
 {
-  panel -= PANEL_HANDLE_1;
-  assert(panel >= 0 && panel < PANELS);
-  ipanel[panel]->slot_highlight(x,y,TRUE);
+  if(panel == PANEL_HANDLE_ITEMS) {
+    panel_items.slot_highlight(x,y,TRUE);
+  }
+  else {
+    panel_variants.slot_highlight(x,y,TRUE);
+  }
 }
 
 void editor_gui::panel_draw(bool draw)
 {
-  int i;
-  for(i = 0; i < PANELS; i++) {
-    ipanel[i]->panel_draw(draw);
-  }
+  panel_items.panel_draw(draw);
+  panel_variants.panel_draw(draw);
 }
 
 void editor_gui::panel_scroll(int panel, int direction)
 {
-  panel -= PANEL_HANDLE_1;
-  assert(panel >= 0 && panel < PANELS);
-  ipanel[panel]->panel_scroll(direction,&selected_editor_item,TRUE);
+  if(panel == PANEL_HANDLE_ITEMS) {
+    panel_items.panel_scroll(direction,&selected_editor_item,TRUE);
+  }
+  else {
+    panel_variants.panel_scroll(direction,&selected_editor_item,TRUE);
+  }
   selection_draw(TRUE);
 }
 
 void editor_gui::panel_scroll_mouse(int direction)
 {
   MOUSE_STATE *p_state = input.mouse_state_get();
-  int panel = -1;
 
-  int i;
-  for(i = 0; i < PANELS; i++) {
-    RECT r = ipanel[i]->boundary_get();
-    if(p_state->in_rect(r)) {
-      panel = i;
-      break;
-    }
+  if(p_state->in_rect(panel_items.boundary_get())) {
+    panel_scroll(PANEL_HANDLE_ITEMS, direction);
   }
-
-  if(panel != -1) {  
-    panel_scroll(PANEL_HANDLE_1+panel, direction);
+  else if(p_state->in_rect(panel_variants.boundary_get())) {
+    panel_scroll(PANEL_HANDLE_VARIANTS, direction);
   }
 }
 
@@ -1470,10 +1452,8 @@ void editor_gui::mouse_handler(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT ev)
       p_queue->add(LEVEL_EVENT(ED_LEVEL_DRAW_CURSOR_VARIATE_ITEM,ITEM_MODIFY,direction));
       p_queue->commit();
       break;
-    case PANEL_HANDLE_1:
-    case PANEL_HANDLE_2:
-    case PANEL_HANDLE_3:
-    case PANEL_HANDLE_4:
+    case PANEL_HANDLE_ITEMS:
+    case PANEL_HANDLE_VARIANTS:
       if(ev.param_int_get(PARAM_3)) {
         panel_item_select(ev.param_int_get(PARAM_0),ev.param_int_get(PARAM_1),ev.param_int_get(PARAM_2));
       } else {
@@ -1508,13 +1488,15 @@ void editor_gui::editor_fullscreen(void)
   level.level_selection_area_set(draw_panels);
 
   // Register or undergister events from item panels
-  int i;
-  for(i = 0; i < PANELS; i++) {
-    if(draw_panels)
-      ipanel[i]->register_controls_events(&input);
-    else
-      ipanel[i]->unregister_controls_events(&input);
+
+  if(draw_panels) {
+    panel_items.register_controls_events(&input);
+    panel_variants.register_controls_events(&input);
   }
+  else {
+    panel_items.unregister_controls_events(&input);
+    panel_variants.unregister_controls_events(&input);
+  }  
 
   // Side menu
   if(draw_panels) {

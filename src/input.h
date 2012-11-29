@@ -319,7 +319,7 @@ public:
 
 public:
   
-  bool in_rect(RECT &dst)
+  bool in_rect(RECT dst)
   {
     return(::in_rect(dst, rect.x, rect.y));
   }
