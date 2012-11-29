@@ -1410,8 +1410,12 @@ void editor_gui::selection_pickup(void)
     item_handle item = level.cell_get_item(x, y, layer);
     int variant = level.cell_get_variation(x, y, layer);
     
-     
-
+    EDITOR_PANEL_SLOT *p_slot;    
+    for(int i = 0; (p_slot = panel_items.slot_get(i)); i++) {
+      if(p_slot->item == item) {
+      
+      }
+    }
   }
 }
 

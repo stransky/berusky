@@ -158,6 +158,11 @@ public:
     return(slot >= 0 && slot < slot_num);
   }
 
+  EDITOR_PANEL_SLOT * slot_get(int slot)
+  {
+    return(slot_valid(slot) ? p_slots+slot : NULL);
+  }
+
   /* Panel highlight routines
   */
   void slot_highlight(int slot, bool redraw)
