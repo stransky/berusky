@@ -39,12 +39,7 @@ typedef enum {
 
 #define NO_SELECTION (-1)
 
-typedef class editor_selection {
-
-  // The current level
-  LEVEL_EDITOR *p_level;
-
-public:
+typedef struct editor_selection {
 
   // current selection
   int item;
@@ -53,8 +48,7 @@ public:
 
 public:
 
-  editor_selection(LEVEL_EDITOR *p_level_)
-  : p_level(p_level_)
+  editor_selection(void)
   {
     item = 0;
     variant = 0;
@@ -198,14 +192,17 @@ public:
       panel_draw(redraw);
     }
   
-    // Propagate to editor selection (item/variant)
+    // Propagate to editor selection (item/variant)  
     if(propagate) {
-      slot_selection_get(p_sel);
-      if(p_attached_panel && p_sel && slot != NO_SELECTION) {
-        p_attached_panel->configure(p_sel->item);
+      EDITOR_SELECTION selection;
+      slot_selection_get(&selection);
+      if(p_attached_panel && slot != NO_SELECTION) {
+        p_attached_panel->configure(selection.item);
         p_attached_panel->panel_draw(redraw);
       }
-    }  
+      if(p_sel)
+        *p_sel = selection;
+    }
   }
 
   void slot_select(tpos x, tpos y, EDITOR_SELECTION *p_sel, bool propagate, bool redraw)

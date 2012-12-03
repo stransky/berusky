@@ -457,8 +457,7 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   level(p_repo_), 
   console(&input,CONSOLE_X,CONSOLE_Y,CONSOLE_DX,CONSOLE_LINES),
   panel_items(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_ITEMS, &panel_variants),
-  panel_variants(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_VARIANTS),
-  selected_editor_item(&level)
+  panel_variants(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_VARIANTS)
 {
   editor_panel::set_up(p_repo_);
   editor_panel_slot::set_up(p_repo_);
@@ -1409,13 +1408,36 @@ void editor_gui::selection_pickup(void)
     int layer = layer_active_get(x,y);
     item_handle item = level.cell_get_item(x, y, layer);
     int variant = level.cell_get_variation(x, y, layer);
+    bool item_selected = FALSE;
     
-    EDITOR_PANEL_SLOT *p_slot;    
+    EDITOR_PANEL_SLOT *p_slot;
     for(int i = 0; (p_slot = panel_items.slot_get(i)); i++) {
       if(p_slot->item == item) {
-      
+        // 1:1 match
+        panel_items.slot_select(i, NULL, TRUE, TRUE);
+        item_selected = TRUE;
+        break;
       }
     }
+  
+    if(!item_selected) {
+      ... TODO -> ranged search
+    
+    
+    }    
+  
+  
+    EDITOR_PANEL_SLOT *p_slot;
+    for(int i = 0; (p_slot = panel_variants.slot_get(i)); i++) {
+      if(p_slot->item == item && p_slot->variant == variant) {        
+        panel_variants.slot_select(i, &selected_editor_item, TRUE, TRUE);
+        return;
+      }
+    }
+  
+    // Missing item? (doors or so?)
+    // TODO
+    assert(0);
   }
 }
 
