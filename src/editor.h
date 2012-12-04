@@ -252,6 +252,8 @@ public:
 
 public:
 
+  static int item_base_get(int item);
+
   void attached_panel_set(class editor_panel *p_panel)
   {
     p_attached_panel = p_panel;
@@ -262,19 +264,30 @@ public:
     return(p_attached_panel);
   }
 
-  void panel_set(int first, EDITOR_SELECTION *p_sel, bool propagate, bool redraw)
+  void panel_set(int slot_first_new, EDITOR_SELECTION *p_sel, 
+                 bool propagate, bool redraw)
   {
-    visible_slot_first = first;
-  
-    if(slot_num < visible_slot_num) {
-      slot_selection_fix(slot_num-1, redraw);
+    if(slot_num <= visible_slot_num) {
+      slot_first_new = 0;
     }
-    else {
-      slot_selection_fix(visible_slot_num-1, redraw);
+    else if(slot_first_new + visible_slot_num > slot_num) {
+      slot_first_new = slot_num - visible_slot_num;
+      assert(slot_first_new >= visible_slot_first);
     }
-  
-    if(propagate)
-      slot_selection_get(p_sel);
+
+    if(slot_first_new != visible_slot_first) {
+      visible_slot_first = slot_first_new;
+
+      if(slot_num < visible_slot_num) {
+        slot_selection_fix(slot_num-1, redraw);
+      }
+      else {
+        slot_selection_fix(visible_slot_num-1, redraw);
+      }
+
+      if(propagate)
+        slot_selection_get(p_sel);
+    }
   }
 
   // Draws controls and panel item(s)

@@ -166,13 +166,8 @@ void editor_panel::panel_scroll(int direction, EDITOR_SELECTION *p_sel, bool red
     // no scroll - don't change it
     return;
   }
-  
-  if(slot_first_new + visible_slot_num > slot_num) {
-    slot_first_new = slot_num - visible_slot_num;
-    assert(slot_first_new >= visible_slot_first);
-  }
-  if(slot_first_new != visible_slot_first)
-    panel_set(slot_first_new, p_sel, TRUE, redraw);
+
+  panel_set(slot_first_new, p_sel, TRUE, redraw);
 }
 
 RECT editor_panel::boundary_get(void)
@@ -235,6 +230,22 @@ void editor_panel::unregister_controls_events(INPUT *p_input)
   assert(p_registered_events);
   p_input->mevent_remove(p_registered_events, EDITOR_PANEL_EVENTS);
   p_registered_events = NULL;
+}
+
+item_handle editor_panel::item_base_get(item_handle item)
+{
+  if(item >= P_PLAYER_1 && item <= P_PLAYER_5)
+    return(P_PLAYER_1);
+  else if(item >= P_KEY1 && item <= P_KEY5)
+    return(P_KEY1);
+  else if(item >= P_DOOR1_H_O && item <= P_DOOR5_V_Z)
+    return(P_DOOR1_H_O);  
+  else if(item >= P_ID_DOOR1_H_O && item <= P_ID_DOOR5_V_Z)
+    return(P_ID_DOOR1_H_O);
+  else if(item >= P_DV_H_O && item <= P_DV_V)
+    return(P_DV_H_O);
+  
+  return(item);
 }
 
 item_panel::item_panel(int panel_item_num,
@@ -587,8 +598,8 @@ void editor_gui::selection_draw(bool draw)
   {
     RECT r = {EDIT_ITEM_PICT_START_X+EDITOR_ITEM_SIZE_X+10,
               EDIT_ITEM_PICT_START_Y,
-              EDIT_ITEM_DX-EDITOR_ITEM_SIZE_X-10,
-              EDITOR_ITEM_SIZE_Y};
+              EDIT_ITEM_DX-10,
+              3*20};
     RECT dr;
   
     p_grf->fill(&r,0);
@@ -1019,7 +1030,8 @@ void editor_gui::level_load(char *p_file, int force)
 
   // Level is edited and not saved - ask for action
   if(level_edited_get() && !force) {
-    strncpy(file,p_file,MAX_FILENAME);
+    if(p_file)
+      strncpy(file,p_file,MAX_FILENAME);
     input_start(&editor_gui::level_load_callback, HANDLE_1, INPUT_BOOLEAN, _("level is modified. erase all data?"));
     return;
   }
@@ -1401,43 +1413,45 @@ void editor_gui::selection_pickup(void)
   Select item from the cursor
   set panels for that
 */  
-  if(level.selection_get()) {
+  if(level.selection_get()) {    
     tpos x,y;
     level.selection_get(&x,&y);
 
+    layer_active_set(ALL_LEVEL_LAYERS, TRUE);
+
     int layer = layer_active_get(x,y);
+    if(layer == LAYER_NONE)
+      return;
+
     item_handle item = level.cell_get_item(x, y, layer);
-    int variant = level.cell_get_variation(x, y, layer);
-    bool item_selected = FALSE;
-    
-    EDITOR_PANEL_SLOT *p_slot;
+    if(item == NO_SELECTION)
+      return;
+
+    item_handle base_item = editor_panel::item_base_get(item);
+    int variant = level.cell_get_variation(x, y, layer);    
+
+    console.print("Picking up item %d variant %d", item, variant);
+
+    EDITOR_PANEL_SLOT *p_slot;  
     for(int i = 0; (p_slot = panel_items.slot_get(i)); i++) {
-      if(p_slot->item == item) {
-        // 1:1 match
+      if(p_slot->item == base_item) {
         panel_items.slot_select(i, NULL, TRUE, TRUE);
-        item_selected = TRUE;
-        break;
-      }
-    }
-  
-    if(!item_selected) {
-      ... TODO -> ranged search
-    
-    
-    }    
-  
-  
-    EDITOR_PANEL_SLOT *p_slot;
-    for(int i = 0; (p_slot = panel_variants.slot_get(i)); i++) {
-      if(p_slot->item == item && p_slot->variant == variant) {        
-        panel_variants.slot_select(i, &selected_editor_item, TRUE, TRUE);
+        panel_items.panel_set(i, NULL, FALSE, TRUE);
+      
+        for(i = 0; (p_slot = panel_variants.slot_get(i)); i++) {
+          if(p_slot->item == item && p_slot->variant == variant) {            
+            panel_variants.panel_set(i, NULL, FALSE, TRUE);
+            panel_variants.slot_highlight(i, FALSE);
+            panel_variants.slot_select(i, &selected_editor_item, TRUE, TRUE);
+            selection_draw(TRUE);
+            return;
+          }
+        }
+        // Not found?
+        assert(0);
         return;
       }
     }
-  
-    // Missing item? (doors or so?)
-    // TODO
-    assert(0);
   }
 }
 
