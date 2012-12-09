@@ -586,7 +586,9 @@ bool graphics_menu_load(DIR_LIST *p_dir)
   }
   bprintf(_("%d sprites loaded..."), i);
 
-  graphics_generate();
+  if(berusky_config::new_gfx) {
+    graphics_generate();
+  }
 
   return((bool)i);
 }

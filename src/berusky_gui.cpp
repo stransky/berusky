@@ -682,11 +682,31 @@ meaning now.\n"));
             y += 30; // 340
             if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_BOX);
+            if(variants > 13) {
+              variants = (DOUBLE_SIZE) ? 13 : 8;
+            }
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_BOX, i, 0);
               x += DOUBLE_SIZE ? 50 : 30;
             }
-            
+
+            if(DOUBLE_SIZE) {
+              x = 20+X_START;
+              y += 30;
+              if(DOUBLE_SIZE) y += 40;
+              p_font->print(NULL, x, y, _("Light box - bugs can push two of them."));
+              y += 30;
+              if(DOUBLE_SIZE) y += 10;
+              variants = p_repo->variants_get(P_BOX_LIGHT);
+              if(variants > 13) {
+                variants = (DOUBLE_SIZE) ? 13 : 8;
+              }
+              for (i = 0; i < variants; i++) {
+                p_repo->draw(x, y, P_BOX_LIGHT, i, 0);
+                x += DOUBLE_SIZE ? 50 : 30;
+              }
+            }
+          
             x = 20+X_START;
             y += 30;
             if(DOUBLE_SIZE) y += 40;
@@ -694,6 +714,9 @@ meaning now.\n"));
             y += 30;
             if(DOUBLE_SIZE) y += 10;
             variants = p_repo->variants_get(P_TNT);
+            if(variants > 13) {
+              variants = (DOUBLE_SIZE) ? 13 : 5;
+            }
             for (i = 0; i < variants; i++) {
               p_repo->draw(x, y, P_TNT, i, 0);
               x += DOUBLE_SIZE ? 50 : 30;
