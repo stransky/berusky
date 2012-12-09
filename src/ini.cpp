@@ -266,7 +266,7 @@ int ini_write_string(FHANDLE f_in, FHANDLE f_out, const char *p_template, const 
   }
   else {
     file_copy(f_in, f_out);    
-    fprintf(f_out,"%s = %s\n",p_template, p_value);
+    fprintf(f_out,"\n%s = %s\n",p_template, p_value);
   }
 
   return(TRUE);

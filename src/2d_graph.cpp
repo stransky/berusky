@@ -1067,6 +1067,7 @@ void font::print(char *p_string, RECT *p_res, int lines)
     assert(px >= 0);
   
     if(p_res) {
+      p_res->x = px;
       //bprintf("before print - [%d %d] -> [%d %d]",px, py, width_string, height_string);
       rect_adjust(p_res, px, py, width_string, height_string);
       //bprintf("after print - [%d %d] -> [%d %d]",p_res->x,p_res->y,p_res->w,p_res->h);

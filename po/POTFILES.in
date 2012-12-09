@@ -49,5 +49,6 @@ src/gui.h
 src/portability.h
 src/profile.cpp
 src/profile.h
+src/llist.h
 
 
