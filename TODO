@@ -1,3 +1,6 @@
+- Select game mode (double size/single size) on start
+- Editor does not work?
+
 Thank you for help, I set "disable_double_size=1", game menu is OK.
 But there was another problem: When I select "play -> difficulty level" game closes with an error.
 When screen 1280x900, game starts normal.

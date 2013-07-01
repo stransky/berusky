@@ -247,7 +247,7 @@ public:
   RECT rect_get(void)
   {
     assert(p_surf);
-    RECT r = {0,0,p_surf->w,p_surf->h};
+    RECT r = {0,0,(Uint16)p_surf->w,(Uint16)p_surf->h};
     return(r);
   }
 
@@ -671,6 +671,9 @@ public:
   {
     assert(rect_last < RECT_NUM);
   
+    if(!dx || !dy)
+      return;
+  
     RECT *p_tmp = rects+rect_last++;
   
     p_tmp->x = x;
@@ -700,6 +703,10 @@ public:
   void redraw_add(RECT *p_rect)
   {
     assert(rect_last < RECT_NUM);
+  
+    if(!p_rect->w || !p_rect->h)
+      return;
+  
     rects[rect_last++] = *p_rect;
     p_screen->rect_clamp(p_rect);
   }
