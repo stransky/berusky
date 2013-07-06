@@ -163,7 +163,7 @@ bool set_doublesize(const char *p_ini_file, bool state)
 #define INI_DOUBLESIZE_QUESTION "startup_doublesize_question"
 bool get_doublesize_question(const char *p_ini_file)
 {
-  return(!ini_read_int_file(p_ini_file, INI_DOUBLESIZE_QUESTION, TRUE));
+  return(ini_read_int_file(p_ini_file, INI_DOUBLESIZE_QUESTION, TRUE));
 }
 
 bool set_doublesize_question(const char *p_ini_file, bool state)

@@ -149,10 +149,10 @@ void berusky_config::editor_config_load(const char *p_ini_file)
 void berusky_config::game_screen_set(void)
 {
   if(DOUBLE_SIZE) {
-    original_size_set();
+    double_size_set();
   }
   else {
-    double_size_set();
+    original_size_set();
   }
 
   graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);

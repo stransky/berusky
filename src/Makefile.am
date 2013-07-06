@@ -8,8 +8,7 @@ INCLUDES = \
 	$(PACKAGE_CFLAGS)
 
 AM_CXXFLAGS =\
-	-Wint-to-pointer-cast\
-	 -Wall\
+	-Wall -Wint-to-pointer-cast\
 	 -g
 
 bin_PROGRAMS = berusky

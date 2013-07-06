@@ -738,6 +738,8 @@ public:
     return (TRUE);
   }  
 
+  void resize_screen(int width, int height);
+
   SDL_Surface * create_screen(int flag, int width, int height, int bpp, int fullscreen_);
 
   void check(void);

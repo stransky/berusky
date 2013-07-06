@@ -952,6 +952,12 @@ void graph_2d::fullscreen_toggle(void)
   }
 }
 
+void graph_2d::resize_screen(int width, int height)
+{
+
+
+}
+
 // -------------------------------------------------------
 //   the font table interface
 // -------------------------------------------------------
@@ -1174,8 +1180,15 @@ FONT     *p_font = NULL;
 
 void graphics_start(tpos dx, tpos dy, int depth, bool fullscreen)
 {
-  p_grf = new GRAPH_2D(dx, dy, depth, fullscreen);
-  p_font = new FONT(p_grf);
+  if(!p_grf) {
+    p_grf = new GRAPH_2D(dx, dy, depth, fullscreen);
+  } else {
+    p_grf->resize_screen(dx, dy);
+  }
+
+  if(!p_font) {
+    p_font = new FONT(p_grf);
+  }
 }
 
 void graphics_stop(void)

@@ -127,13 +127,13 @@ void game_gui::menu_double_size_question(MENU_STATE state, size_ptr data, size_p
                        LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, FALSE, TRUE),
                        LEVEL_EVENT(GC_MENU_START));
 
-        #define MENU_X_START (GAME_RESOLUTION_X/2 - 200)
-        #define MENU_Y_START (300)
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 120)
+        #define MENU_Y_START (400)
       
         static char *dont_ask = _("Don't ask again");
       
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
-        menu_item_draw_checkbox(dont_ask, MENU_LEFT, berusky_config::double_size_question, 0, 0,
+        menu_item_draw_checkbox(dont_ask, MENU_LEFT, !berusky_config::double_size_question, 0, 0,
                                 LEVEL_EVENT(GC_MENU_DOUBLESIZE_SWITCH));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
@@ -149,9 +149,10 @@ void game_gui::menu_double_size_question(MENU_STATE state, size_ptr data, size_p
   }
 }
 
-void game_gui::menu_double_size_question_switch(MENU_STATE state, size_ptr data, size_ptr data1)
+void game_gui::menu_double_size_question_switch(void)
 {
-
+  berusky_config::double_size_question = !berusky_config::double_size_question;
+  set_doublesize_question(INI_FILE, berusky_config::double_size_question);
 }
 
 void game_gui::menu_double_size_set(MENU_STATE state, size_ptr data, size_ptr data1)
@@ -627,9 +628,9 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
       
         bool from_game = (bool)data;
       
-        static char *fulscreen = _("fulscreen");      
-
-        static char *double_size = _("double size");
+        static char *fulscreen = _("fulscreen");
+        static char *double_size = _("High resolution mode");
+        static char *double_size_question = _("Ask on start up");
 /*      
         static char *sound = _("sound");
         static char *music = _("music");
@@ -642,7 +643,11 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
                                 LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
         menu_item_draw_checkbox(double_size, MENU_LEFT, berusky_config::double_size, 0, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_DOUBLESIZE_SWITCH));
-
+                                
+        menu_item_set_pos(MENU_X_START+35, MENU_Y_START+2*MENU_Y_DIFF);
+        menu_item_draw_checkbox(double_size_question, MENU_LEFT,
+                                berusky_config::double_size_question, 0, 0,
+                                LEVEL_EVENT(GC_MENU_DOUBLESIZE_SWITCH));
 /*
         menu_item_draw_checkbox(sound, MENU_LEFT, p_ber->sound.sound_on, 1,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_SOUND_SWITCH));
@@ -2647,7 +2652,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_double_size_question(MENU_ENTER);
         break;
       case GC_MENU_DOUBLESIZE_SWITCH:
-        menu_double_size_question_switch(MENU_ENTER);
+        menu_double_size_question_switch();
         break;
       case GC_MENU_DOUBLESIZE_SET:
         menu_double_size_set(MENU_ENTER);
@@ -2673,7 +2678,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       case GC_MENU_SETTINGS_FULSCREEN_SWITCH:
         menu_settings_fullscreen();
         break;
-      case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:        
+      case GC_MENU_SETTINGS_DOUBLESIZE_SWITCH:
         menu_settings_doublesize();
         break;
       case GC_MENU_SETTINGS_SOUND_SWITCH:
