@@ -365,6 +365,9 @@ bool set_fullscreen(const char *p_ini_file, bool state);
 bool get_doublesize(const char *p_ini_file);
 bool set_doublesize(const char *p_ini_file, bool state);
 
+bool get_doublesize_question(const char *p_ini_file);
+bool set_doublesize_question(const char *p_ini_file, bool state);
+
 int  get_colors(const char *p_ini_file, int default_color_depth);
 
 // -------------------------------------------------------
@@ -404,5 +407,20 @@ typedef struct _DIRECTORY_ENTRY {
 } DIRECTORY_ENTRY;
 
 int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY **p_list);
+
+void  user_directory_create(void);
+
+/* Data loading
+*/
+bool  graphics_game_load(DIR_LIST *p_dir);
+void  graphics_game_free(void);
+
+bool  graphics_menu_load(DIR_LIST *p_dir);
+void  graphics_menu_free(void);
+
+bool  graphics_logos_load(DIR_LIST *p_dir);
+void  graphics_logos_free(void);
+
+void  graphics_generate(void);
 
 #endif // __UTILS_H__

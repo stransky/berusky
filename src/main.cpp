@@ -91,10 +91,15 @@ void end(DIR_LIST *p_dir)
  */
 void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
 {
-  /* Create game objects */
-  berusky_config::game_config_load(INI_FILE);
+  /* Load game configuration */
+  if(gmode == MENU) {
+    berusky_config::game_config_load(INI_FILE);
+  }
+  else {
+    berusky_config::user_level_config_load(INI_FILE);
+  }
 
-  graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
+  berusky_config::game_screen_set();
 
   #define START_LEN 400
   next_time = SDL_GetTicks() + START_LEN;
@@ -105,8 +110,6 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
   start_logo_progress(4);
 
   /* Load game data */
-  graphics_game_load(p_dir);
-  start_logo_progress();
   graphics_menu_load(p_dir);
   start_logo_progress();
 
@@ -126,7 +129,7 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
   switch(gmode) {
     /* Run menu */
     case MENU:
-      main_queue.add(LEVEL_EVENT(GC_MENU_START));
+      main_queue.add(LEVEL_EVENT(DOUBLE_SIZE_QUESTION ? GC_MENU_DOUBLESIZE_QUESTION : GC_MENU_START));
       break;
     
     /* Run user level */
@@ -260,34 +263,6 @@ const char * config_file(bool configure)
   return(ini_file);
 }
 
-/* It tries to create the user directory (~./berusky)
- * and copy berusky.ini file there
- *
- */
-void user_directory_create(void)
-{
-  // Check ~./berusky
-  dir_create(INI_USER_DIRECTORY);
-  dir_create(INI_USER_LEVELS);
-  dir_create(INI_USER_PROFILES);
-
-  // Check ~./berusky/berusky.ini
-  bprintfnl(_("Checking %s/%s..."),INI_USER_DIRECTORY,INI_FILE_NAME);
-  if(!file_exists(INI_USER_DIRECTORY,INI_FILE_NAME)) {
-    bprintfnl(_("missing, try to copy it from %s..."),INI_FILE_GLOBAL);
-    bool ret = file_copy(INI_FILE_GLOBAL, NULL, INI_FILE_NAME, INI_USER_DIRECTORY,FALSE);
-    if(ret) {
-      bprintf(_("ok"));
-    } else {
-      print_errno(TRUE);
-      bprintf(_("failed"));
-    }
-  } else {
-    bprintf(_("ok"));
-  }
-  bprintf(" ");
-}
-
 /*
  * Let's begin
  */
@@ -409,202 +384,6 @@ void start_logo_progress(int steps)
   }
 }
 
-bool graphics_logos_load(DIR_LIST *p_dir)
-{
-  int i = 0;
-
-  p_grf->graphics_dir_set(p_dir->graphics_get());
-
-  sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("logo.spr", FIRST_LOGO);
-
-  return(i);
-}
-
-void graphics_logos_free(void)
-{
-  p_grf->sprite_delete(FIRST_LOGO, 1);
-}
-
-bool graphics_game_load(DIR_LIST *p_dir)
-{
-  int i;
-
-  p_grf->graphics_dir_set(p_dir->graphics_get());
-
-  bprintf(_("Graphics dir '%s'"),p_dir->graphics_get());
-  bprintf(_("Loading game graphics..."));
-
-  sprite::color_key_set(COLOR_KEY_GAME);
-
-  i  = p_grf->sprite_insert("global1.spr", FIRST_GLOBAL_LEVEL);
-  i += p_grf->sprite_insert("global2.spr", FIRST_GLOBAL_LEVEL + ROT_SHIFT);
-  i += p_grf->sprite_insert("global3.spr", FIRST_GLOBAL_LEVEL + 2 * ROT_SHIFT);
-  i += p_grf->sprite_insert("global4.spr", FIRST_GLOBAL_LEVEL + 3 * ROT_SHIFT);
-
-  i += p_grf->sprite_insert("klasik1.spr", FIRST_CLASSIC_LEVEL);
-  i += p_grf->sprite_insert("klasik2.spr", FIRST_CLASSIC_LEVEL + ROT_SHIFT);
-  i += p_grf->sprite_insert("klasik3.spr", FIRST_CLASSIC_LEVEL + 2 * ROT_SHIFT);
-  i += p_grf->sprite_insert("klasik4.spr", FIRST_CLASSIC_LEVEL + 3 * ROT_SHIFT);
-
-  i += p_grf->sprite_insert("kyber1.spr", FIRST_CYBER_LEVEL);
-  i += p_grf->sprite_insert("kyber2.spr", FIRST_CYBER_LEVEL + ROT_SHIFT);
-  i += p_grf->sprite_insert("kyber3.spr", FIRST_CYBER_LEVEL + 2 * ROT_SHIFT);
-  i += p_grf->sprite_insert("kyber4.spr", FIRST_CYBER_LEVEL + 3 * ROT_SHIFT);
-  
-  i += p_grf->sprite_insert("herni1.spr",  FIRST_OTHER);
-  i += p_grf->sprite_insert("herni2.spr",  FIRST_OTHER + ROT_SHIFT);
-  
-  i += p_grf->sprite_insert("game_cur.spr", FIRST_CURSOR);
-  
-  i += p_grf->sprite_insert("hraci1.spr", FIRST_PLAYER);
-  i += p_grf->sprite_insert("hraci2.spr", FIRST_PLAYER + ROT_SHIFT);
-  i += p_grf->sprite_insert("hraci3.spr", FIRST_PLAYER + 2 * ROT_SHIFT);
-  i += p_grf->sprite_insert("hraci4.spr", FIRST_PLAYER + 3 * ROT_SHIFT);
-
-  if(berusky_config::new_gfx) {
-    i += p_grf->sprite_insert("box_bright1.spr", FIRST_BOX_BRIGHT);
-    i += p_grf->sprite_insert("box_dark1.spr", FIRST_BOX_DARK);
-    i += p_grf->sprite_insert("box_paper1.spr", FIRST_BOX_PAPER);
-    i += p_grf->sprite_insert("box_snow1.spr", FIRST_BOX_SNOW);
-    i += p_grf->sprite_insert("light_box1.spr", FIRST_LIGHT_BOX);
-    i += p_grf->sprite_insert("tnt_bright1.spr", FIRST_TNT_BRIGHT);
-    i += p_grf->sprite_insert("tnt_dark1.spr", FIRST_TNT_DARK);
-    i += p_grf->sprite_insert("tnt_paper1.spr", FIRST_TNT_PAPER);
-    i += p_grf->sprite_insert("tnt_snow1.spr", FIRST_TNT_SNOW);
-    i += p_grf->sprite_insert("tnt_swamp1.spr", FIRST_TNT_SWAMP);
-    i += p_grf->sprite_insert("wall_iron_blue1.spr", FIRST_WALL_IRON_BLUE);
-    i += p_grf->sprite_insert("wall_iron_brown1.spr", FIRST_WALL_IRON_BROWN);
-    i += p_grf->sprite_insert("wall_iron_dark1.spr", FIRST_WALL_IRON_DARK);
-    i += p_grf->sprite_insert("wall_iron_gray1.spr", FIRST_WALL_IRON_GRAY);
-    i += p_grf->sprite_insert("wall_machine1.spr", FIRST_WALL_MACHINE);
-    i += p_grf->sprite_insert("wall_repro1.spr", FIRST_WALL_REPRO);
-    i += p_grf->sprite_insert("wall_snow1.spr", FIRST_WALL_SNOW);
-    i += p_grf->sprite_insert("wall_swamp1.spr", FIRST_WALL_SWAMP);
-    i += p_grf->sprite_insert("wall_wood1.spr", FIRST_WALL_WOOD);
-  
-    i += p_grf->sprite_insert("floor_danger1.spr", FIRST_FLOOR_DANGER_SRC);
-    i += p_grf->sprite_insert("floor_elevators1.spr", FIRST_FLOOR_ELEVATORS_SRC);
-    i += p_grf->sprite_insert("floor_gray1.spr", FIRST_FLOOR_GRAY_SRC);
-    
-    i += p_grf->sprite_insert("floor_iron_1.spr", FIRST_FLOOR_IRON);
-    i += p_grf->sprite_insert("floor_iron_2.spr", FIRST_FLOOR_IRON+5);
-    i += p_grf->sprite_insert("floor_iron_3.spr", FIRST_FLOOR_IRON+10);
-    i += p_grf->sprite_insert("floor_iron_4.spr", FIRST_FLOOR_IRON+15);
-    i += p_grf->sprite_insert("floor_iron_5.spr", FIRST_FLOOR_IRON+20);
-    i += p_grf->sprite_insert("floor_snow.spr",   FIRST_FLOOR_SNOW);
-  }
-
-  if(!i) {
-    berror(_("Unable to load data, exiting..."));    
-  }
-  bprintf(_("%d sprites loaded..."), i);
-
-
-  return(i > 0);
-}
-
-void graphics_game_free(void)
-{
-  p_grf->sprite_delete(FIRST_GLOBAL_LEVEL, GLOBAL_SPRITES);
-  p_grf->sprite_delete(FIRST_GLOBAL_LEVEL + ROT_SHIFT, GLOBAL_SPRITES);
-  p_grf->sprite_delete(FIRST_GLOBAL_LEVEL + 2 * ROT_SHIFT, GLOBAL_SPRITES);
-  p_grf->sprite_delete(FIRST_GLOBAL_LEVEL + 3 * ROT_SHIFT, GLOBAL_SPRITES);
-
-  p_grf->sprite_delete(FIRST_CLASSIC_LEVEL, CLASSIC_SPRITES);
-  p_grf->sprite_delete(FIRST_CLASSIC_LEVEL + ROT_SHIFT, CLASSIC_SPRITES);
-  p_grf->sprite_delete(FIRST_CLASSIC_LEVEL + 2 * ROT_SHIFT, CLASSIC_SPRITES);
-  p_grf->sprite_delete(FIRST_CLASSIC_LEVEL + 3 * ROT_SHIFT, CLASSIC_SPRITES);
-
-  p_grf->sprite_delete(FIRST_CYBER_LEVEL, CYBER_SPRITES);
-  p_grf->sprite_delete(FIRST_CYBER_LEVEL + ROT_SHIFT,CYBER_SPRITES);
-  p_grf->sprite_delete(FIRST_CYBER_LEVEL + 2 * ROT_SHIFT, CYBER_SPRITES);
-  p_grf->sprite_delete(FIRST_CYBER_LEVEL + 3 * ROT_SHIFT, CYBER_SPRITES);
-  
-  p_grf->sprite_delete(FIRST_OTHER, GAME_SPRITES);
-  p_grf->sprite_delete(FIRST_OTHER + ROT_SHIFT, GAME_SPRITES);
-
-  p_grf->sprite_delete(FIRST_CURSOR, CURSOR_SPRITES);
-  
-  p_grf->sprite_delete(FIRST_PLAYER, PLAYER_SPRITES);
-  p_grf->sprite_delete(FIRST_PLAYER + ROT_SHIFT, PLAYER_SPRITES);
-  p_grf->sprite_delete(FIRST_PLAYER + 2 * ROT_SHIFT, PLAYER_SPRITES);
-  p_grf->sprite_delete(FIRST_PLAYER + 3 * ROT_SHIFT, PLAYER_SPRITES);  
-}
-
-bool graphics_menu_load(DIR_LIST *p_dir)
-{
-  int i = 0;
-  
-  p_grf->graphics_dir_set(p_dir->graphics_get());
-
-  bprintf(_("Graphics dir '%s'"),p_dir->graphics_get());
-  bprintf(_("Loading menu graphics..."));
-
-  sprite::color_key_set(COLOR_KEY_BLACK);
-  i   = p_grf->sprite_insert("menu1.spr", MENU_SPRIT_ROCK);
-  i  += p_grf->sprite_insert("menu2.spr", MENU_SPRIT_LOGO);
-  i  += p_grf->sprite_insert("menu3.spr", MENU_SPRIT_BACK);
-  i  += p_grf->sprite_insert("menu6.spr", MENU_SPRIT_WALL);
-  
-  sprite::color_key_set(COLOR_KEY_MENU);
-  i  += p_grf->sprite_insert("menu_back1.spr", MENU_SPRIT_BACK1);
-  i  += p_grf->sprite_insert("menu_back2.spr", MENU_SPRIT_BACK2);
-  i  += p_grf->sprite_insert("menu_back3.spr", MENU_SPRIT_BACK3);
-
-  sprite::color_key_set(COLOR_KEY_MENU);
-  i  += p_grf->sprite_insert("menu4.spr", MENU_SPRIT_ARROWS);
-  i  += p_grf->sprite_insert("controls.spr", MENU_CHECKBOX_CHECKED);
-  i  += p_grf->sprite_insert("slidebar.spr", MENU_SLIDEBAR);
-  i  += p_grf->sprite_insert("slider.spr", MENU_SLIDER);
-
-  sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("menu5.spr", MENU_SPRIT_LOGO_SMALL_1);
-
-  sprite::color_key_set(COLOR_KEY_BLACK_FULL);
-  i  += p_grf->sprite_insert("back1.spr", MENU_SPRIT_START);
-  sprite::color_key_set(COLOR_KEY_BLACK);
-  i  += p_grf->sprite_insert("back2.spr", MENU_SPRIT_START+1);
-  i  += p_grf->sprite_insert("back3.spr", MENU_SPRIT_START+2);
-  i  += p_grf->sprite_insert("back4.spr", MENU_SPRIT_START+3);
-  
-  sprite::color_key_set(COLOR_KEY_GAME);
-  i  += p_grf->sprite_insert("mask1.spr",  EDITOR_MARK_BLACK);
-  i  += p_grf->sprite_insert("mask2.spr",  EDITOR_MARK_RED);
-  i  += p_grf->sprite_insert("mask3.spr",  EDITOR_MARK_YELLOW);
-  
-  sprite::color_key_set(COLOR_KEY_MENU);
-  
-  int j;
-  for(j = 0; j < FONT_NUM; j++) {
-    if(!p_font->load(j, FIRST_FONT + j*FONT_STEP, FONT_SPRITES))
-      bprintf(_("Unable to load font %d!"),j);
-  }
-
-  if(!i) {
-    berror(_("Unable to load data, exiting..."));    
-  }
-  bprintf(_("%d sprites loaded..."), i);
-
-  if(berusky_config::new_gfx) {
-    graphics_generate();
-  }
-
-  return((bool)i);
-}
-
-void graphics_menu_free(void)
-{
-  p_grf->sprite_delete(MENU_SPRIT_ROCK);
-  p_grf->sprite_delete(MENU_SPRIT_LOGO);
-  p_grf->sprite_delete(MENU_SPRIT_BACK);
-
-  int i;
-  for(i = 0; i < FONT_NUM; i++) {
-    p_font->free(i);
-  }
-}
-
 bool repository_load(ITEM_REPOSITORY *p_repo, DIR_LIST *p_dir)
 {
   bprintf(_("Data dir '%s'"),p_dir->gamedata_get());
@@ -616,152 +395,4 @@ bool repository_load(ITEM_REPOSITORY *p_repo, DIR_LIST *p_dir)
   }
 
   return(TRUE);
-}
-
-int  background_num(DIR_LIST *p_dir)
-{
-  bprintf(_("Graphics dir '%s'"),p_dir->graphics_get());
-  bprintf(_("Checking backgrounds..."));
-
-  int j;
-
-  for(j = 0; j < 100; j++) {
-    char file[MAX_FILENAME];
-    sprintf(file, BACKGROUND_NAME, j+1);
-    if(!file_exists(p_dir->graphics_get(),file))
-      break;
-  }  
-
-  bprintf(_("%d backgrounds..."), j);
-
-  return(j);
-}
-
-/*
-  // ####
-  // ##@@         
-  CHANGE_FLOOR(x,y,0);
-  //   ##        
-  //   @@         
-  CHANGE_FLOOR(x,y,3);
-  //
-  // ##@@         
-  CHANGE_FLOOR(x,y,2);
-  // ##
-  //   @@
-  CHANGE_FLOOR(x,y,1);
-  // 
-  //   @@
-  CHANGE_FLOOR(x,y,4); 
-*/
-// TODO -> randomize the shadow
-void graphics_generate_floor(spr_handle spr, int type)
-{
-  SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
-  tcolor color = p_surf->color_map(30, 30, 30);
-  
-  switch(type) {
-    case 0:
-      {      
-        p_surf->blend(0, 0, 12, p_surf->height_get(), color, BLEND_SUB);
-        p_surf->blend(12, 0, p_surf->width_get()-12, 14, color, BLEND_SUB);
-      }
-      break;
-    case 1:
-      {
-        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
-        p_surf->blend(0, 0, 12, 14, color, BLEND_SUB);
-      }
-      break;
-    case 2:
-      {      
-        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
-        p_surf->blend(0, 0, 12, p_surf->height_get(), color, BLEND_SUB);
-      }
-      break;
-    case 3:
-      {      
-        SURFACE *p_surf = (p_grf->sprite_get(spr))->surf_get();
-        p_surf->blend(0, 0, p_surf->width_get(), 14, color, BLEND_SUB);
-      }
-      break;
-    case 4: // no action
-      break;
-    default:
-      break;  
-  }
-}
-
-// Regenerate rest of graphics
-void graphics_generate(void)
-{
-  // Create black sprite for blending
-  p_grf->sprite_copy(SPRITE_BLACK, FIRST_CLASSIC_LEVEL+57, TRUE);
-  SDL_Surface *p_surf = ((p_grf->sprite_get(SPRITE_BLACK))->surf_get())->surf_get();
-  SDL_SetAlpha(p_surf, SDL_SRCALPHA, 150);
-
-  int i;
-
-  // Generate floor graphics
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_IRON+i, FIRST_FLOOR_IRON, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_IRON+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_IRON, 0);
-
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_IRON+5+i, FIRST_FLOOR_IRON+5, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_IRON+5+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_IRON+5, 0);
-
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_IRON+10+i, FIRST_FLOOR_IRON+10, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_IRON+10+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_IRON+10, 0);
-
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_IRON+15+i, FIRST_FLOOR_IRON+15, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_IRON+15+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_IRON+15, 0);
-
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_IRON+20+i, FIRST_FLOOR_IRON+20, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_IRON+20+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_IRON+20, 0);
-
-  for(i = 1; i < 5; i++) {
-    p_grf->sprite_copy(FIRST_FLOOR_SNOW+i, FIRST_FLOOR_SNOW, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_SNOW+i, i);
-  }
-  graphics_generate_floor(FIRST_FLOOR_SNOW, 0);
-
-  for(i = 0; i < 5; i++) {
-    // 4 sprites
-    p_grf->sprite_copy(FIRST_FLOOR_DANGER+i, FIRST_FLOOR_DANGER_SRC, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_DANGER+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_DANGER+5+i, FIRST_FLOOR_DANGER_SRC+1, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_DANGER+5+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_DANGER+10+i, FIRST_FLOOR_DANGER_SRC+2, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_DANGER+10+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_DANGER+15+i, FIRST_FLOOR_DANGER_SRC+3, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_DANGER+15+i, i);
-  
-    // 3 sprites
-    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+i, FIRST_FLOOR_ELEVATORS_SRC, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+5+i, FIRST_FLOOR_ELEVATORS_SRC+1, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+5+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_ELEVATORS+10+i, FIRST_FLOOR_ELEVATORS_SRC+2, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_ELEVATORS+10+i, i);
-  
-    // 2 sprites
-    p_grf->sprite_copy(FIRST_FLOOR_GRAY+i, FIRST_FLOOR_GRAY_SRC, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_GRAY+i, i);
-    p_grf->sprite_copy(FIRST_FLOOR_GRAY+5+i, FIRST_FLOOR_GRAY_SRC+1, TRUE);
-    graphics_generate_floor(FIRST_FLOOR_GRAY+5+i, i);
-  }
 }

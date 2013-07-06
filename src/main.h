@@ -44,26 +44,11 @@ inline void delay(int msecs)
   SDL_Delay(msecs);
 }
 
-bool  graphics_game_load(DIR_LIST *p_dir);
-void  graphics_game_free(void);
-
-bool  graphics_menu_load(DIR_LIST *p_dir);
-void  graphics_menu_free(void);
-
-bool  graphics_logos_load(DIR_LIST *p_dir);
-void  graphics_logos_free(void);
-
 void  start_logo_draw(GAME_MODE mode);
-
 #define PROGRESS_MOVE (-1)
 void  start_logo_progress(int steps = PROGRESS_MOVE);
-
-bool  repository_load(ITEM_REPOSITORY *p_repo, DIR_LIST *p_dir);
-
 int   background_num(DIR_LIST *p_dir);
-
 const char *config_file(bool configure = FALSE);
-
-void  user_directory_create(void);
+bool  repository_load(ITEM_REPOSITORY *p_repo, DIR_LIST *p_dir);
 
 #endif

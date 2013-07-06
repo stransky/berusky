@@ -80,6 +80,9 @@ public:
   char * credit_text_load(void);
 
   // Run menu (create menu background) in GUI
+  void menu_double_size_question(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_double_size_question_switch(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
+  void menu_double_size_set(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_main(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_new_game(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);
   void menu_profiles(MENU_STATE state, size_ptr data = 0, size_ptr data1 = 0);

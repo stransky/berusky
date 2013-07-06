@@ -445,10 +445,7 @@ typedef class input {
   int               group;           // global group flag
 
   MOUSE_STATE       mstate;          // Last mouse state
-/*
-  MOUSE_EVENT       mevents[MAX_MOUSE_EVENTS]; // Active mouse events
-  int               mevents_num;
-*/
+
   LLIST_HEAD        mevents;
 
   int               flag;            // current input-interface flags

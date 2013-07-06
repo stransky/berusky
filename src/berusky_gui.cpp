@@ -85,6 +85,81 @@ game_gui::~game_gui(void)
   SDL_Quit();
 }
 
+#undef LOGO_START
+#undef MENU_X_START
+#undef MENU_Y_START
+#undef MENU_X_DIFF
+#undef MENU_Y_DIFF
+
+/* Double size start question after start
+*/
+void game_gui::menu_double_size_question(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+  switch(state) {
+    case MENU_RETURN:
+    case MENU_ENTER:
+      {
+        menu_enter((GUI_BASE *)this,(GUI_BASE_FUNC)&game_gui::menu_settings, data, data1);
+    
+        p_grf->fill(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y, 0);
+              
+        p_font->select(FONT_DEFAULT);
+        p_font->alignment_set(MENU_CENTER);
+        p_font->start_set(0, 150);
+        p_font->print(NULL, _("Start in high resolution mode?"));
+      
+        #define MENU_X_START_BACK (GAME_RESOLUTION_X/2)
+        #define MENU_Y_START_BACK (200)
+        #define MENU_X_DIFF       0
+        #define MENU_Y_DIFF       35
+        
+        static char *yes = _("yes");
+        static char *no = _("no");
+                
+        menu_item_set_pos(MENU_X_START_BACK, MENU_Y_START_BACK);
+        menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
+        menu_item_start();
+      
+        menu_item_draw(yes, MENU_LEFT, FALSE, 
+                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, TRUE, TRUE),
+                       LEVEL_EVENT(GC_MENU_START));
+        menu_item_draw(no, MENU_RIGHT, FALSE, 
+                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, FALSE, TRUE),
+                       LEVEL_EVENT(GC_MENU_START));
+
+        #define MENU_X_START (GAME_RESOLUTION_X/2 - 200)
+        #define MENU_Y_START (300)
+      
+        static char *dont_ask = _("Don't ask again");
+      
+        menu_item_set_pos(MENU_X_START, MENU_Y_START);
+        menu_item_draw_checkbox(dont_ask, MENU_LEFT, berusky_config::double_size_question, 0, 0,
+                                LEVEL_EVENT(GC_MENU_DOUBLESIZE_SWITCH));
+
+        p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
+        p_grf->flip();              
+      }
+      break;
+    
+    case MENU_LEAVE:
+      input.mevent_clear();
+      break;
+    default:
+      break;
+  }
+}
+
+void game_gui::menu_double_size_question_switch(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+
+}
+
+void game_gui::menu_double_size_set(MENU_STATE state, size_ptr data, size_ptr data1)
+{
+  DOUBLE_SIZE = (bool)data;
+  berusky_config::game_screen_set();
+}
+
 #define LAST_PLAYER_PROFILE "last_profile"
 
 void game_gui::player_profile_load(void)
@@ -149,7 +224,6 @@ void game_gui::level_select(int level, tpos spr_x, tpos spr_y)
 /*
   - zrusit 
 */
-
 void game_gui::menu_main(MENU_STATE state, size_ptr data, size_ptr data1)
 {
   switch(state) {
@@ -519,6 +593,8 @@ void game_gui::menu_help(MENU_STATE state, size_ptr data, size_ptr data1)
 #undef MENU_Y_START
 #undef MENU_X_DIFF
 #undef MENU_Y_DIFF
+#undef MENU_X_START_BACK
+#undef MENU_Y_START_BACK
 
 /*
   data = bool from_game
@@ -2567,6 +2643,15 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
       /* Start of the game
        * This is the firts event after start
        */
+      case GC_MENU_DOUBLESIZE_QUESTION:
+        menu_double_size_question(MENU_ENTER);
+        break;
+      case GC_MENU_DOUBLESIZE_SWITCH:
+        menu_double_size_question_switch(MENU_ENTER);
+        break;
+      case GC_MENU_DOUBLESIZE_SET:
+        menu_double_size_set(MENU_ENTER);
+        break;
       case GC_MENU_START:
         menu_main(MENU_ENTER);
         break;      
@@ -2665,6 +2750,10 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_in_game(MENU_ENTER);
         break;
 
+      case GC_GAME_DATA_LOAD:
+        p_ber->game_data_load();
+        break;
+      
       case GC_RUN_EDITOR:
         run_editor();
         break;

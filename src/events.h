@@ -232,10 +232,17 @@ typedef enum {
   // load/save level
   // format: [GC_SAVE_LEVEL/GC_LOAD_LEVEL]
   GC_SAVE_LEVEL,
-  GC_LOAD_LEVEL,
-
+  GC_LOAD_LEVEL,  
+  
+  
   // messages in menu
-  // format: [message ID, page]
+  // format: [message ID, page]  
+  GC_MENU_DOUBLESIZE_QUESTION,
+  GC_MENU_DOUBLESIZE_SWITCH,
+  GC_MENU_DOUBLESIZE_SET,
+  
+  // messages in menu
+  // format: [message ID, page]  
   GC_MENU_START,
   GC_MENU_NEW_GAME,
   GC_MENU_PROFILES,
@@ -251,6 +258,13 @@ typedef enum {
   GC_MENU_HELP_CREDIT,
   GC_MENU_IN_GAME,
   GC_MENU_QUIT,
+
+  // ------------------------------------------------------------------------
+  // Game data loading
+  
+  // Loads game data (sprites and so...)
+  // format: [GC_GAME_DATA_LOAD]
+  GC_GAME_DATA_LOAD,
 
   // ------------------------------------------------------------------------
   // Editor events

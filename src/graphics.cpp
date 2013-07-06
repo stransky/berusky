@@ -264,7 +264,7 @@ bool screen_editor::draw(void)
     p_grf->fill(0,0,EDITOR_RESOLUTION_X,EDITOR_RESOLUTION_Y,0);
     clear_screen = FALSE;
   }
-  
+
   if(ch_static.changed() || ch_dynamic.changed()) {
   
     dx = (max_x - min_x)+1;

@@ -32,6 +32,7 @@
 
 #include "berusky.h"
 #include "berusky_gui.h"
+#include "main.h"
 
 /* berusky-config defininitions
 */
@@ -42,7 +43,7 @@ int berusky_config::screen_depth;
 int berusky_config::fullscreen;
 
 int berusky_config::double_size;
-int berusky_config::double_size_gui;
+int berusky_config::double_size_question;
 
 int berusky_config::game_resolution_x;
 int berusky_config::game_resolution_y;
@@ -110,30 +111,54 @@ void berusky_config::double_size_set(void)
 
 void berusky_config::game_config_load(const char *p_ini_file)
 {
-  game_fps = 30;  
+  game_fps = 30;
 
   fullscreen = get_fullscreen(p_ini_file);
   screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
-  double_size_gui = double_size = get_doublesize(p_ini_file);
+  double_size_question = get_doublesize_question(p_ini_file);
 
-  if(DOUBLE_SIZE) {
-    double_size_set();
+  if(double_size_question) {
+    double_size = FALSE;    
   }
   else {
-    original_size_set();
+    double_size = get_doublesize(p_ini_file);
   }
+}
+
+void berusky_config::user_level_config_load(const char *p_ini_file)
+{
+  game_fps = 30;
+
+  fullscreen = get_fullscreen(p_ini_file);
+  screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
+  double_size = get_doublesize(p_ini_file);
 }
 
 void berusky_config::editor_config_load(const char *p_ini_file)
 {
-  game_fps = 30;  
+  game_fps = 30;
 
   fullscreen = get_fullscreen(p_ini_file);
   screen_depth = get_colors(p_ini_file, SCREEN_DEPTH_DEFAULT);
 
   // Runs only in double-size mode
-  double_size_gui = double_size = TRUE;  
+  double_size = TRUE;
   double_size_set();
+}
+
+void berusky_config::game_screen_set(void)
+{
+  if(DOUBLE_SIZE) {
+    original_size_set();
+  }
+  else {
+    double_size_set();
+  }
+
+  graphics_start(GAME_RESOLUTION_X, GAME_RESOLUTION_Y, SCREEN_DEPTH, FULLSCREEN);
+
+  // Save the recent double size state
+  set_doublesize(INI_FILE, DOUBLE_SIZE);
 }
 
 berusky::berusky(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_)
@@ -296,4 +321,13 @@ void berusky::level_save(void)
 bool berusky::level_load(void)
 {
   return(store.level_load());
+}
+
+bool berusky::game_data_load(void)
+{
+  if(!state.game_data_loaded) {
+    graphics_game_load(p_dir); 
+    state.game_data_loaded = TRUE;
+  }
+  return(state.game_data_loaded);
 }

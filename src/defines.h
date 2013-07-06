@@ -37,7 +37,8 @@
 #define SCREEN_DEPTH              (berusky_config::screen_depth)
 #define SCREEN_DEPTH_DEFAULT      32
 
-#define DOUBLE_SIZE               (berusky_config::double_size_gui)
+#define DOUBLE_SIZE               (berusky_config::double_size)
+#define DOUBLE_SIZE_QUESTION      (berusky_config::double_size_question)
 
 #define GAME_RESOLUTION_X         (berusky_config::game_resolution_x)
 #define GAME_RESOLUTION_Y         (berusky_config::game_resolution_y)

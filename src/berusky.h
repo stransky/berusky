@@ -71,7 +71,7 @@ typedef struct berusky_config {
   static int fullscreen;
 
   static int double_size;
-  static int double_size_gui;
+  static int double_size_question;
   static int new_gfx;
 
   static int game_resolution_x;
@@ -96,8 +96,10 @@ public:
 
   static void original_size_set(void);
   static void double_size_set(void);
+  static void game_screen_set(void);
 
   static void game_config_load(const char *p_ini_file);
+  static void user_level_config_load(const char *p_ini_file);
   static void editor_config_load(const char *p_ini_file);
 
 } BERUSKY_CONFIG;
@@ -156,6 +158,8 @@ public:
   int        level_set;
   int        level_num;
   bool       level_custom;
+
+  bool       game_data_loaded;
 
 public:
   
@@ -234,6 +238,8 @@ public:
 
   void   level_save(void);
   bool   level_load(void);
+
+  bool   game_data_load(void);
 
   BERUSKY_STATE status_get(void);  
 
