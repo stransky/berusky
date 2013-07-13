@@ -109,7 +109,7 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
   start_logo_draw(gmode);
   start_logo_progress(4);
 
-  /* Load game data */
+  /* Load menu data */
   graphics_menu_load(p_dir);
   start_logo_progress();
 
@@ -129,11 +129,18 @@ void run_game(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
   switch(gmode) {
     /* Run menu */
     case MENU:
-      main_queue.add(LEVEL_EVENT(DOUBLE_SIZE_QUESTION ? GC_MENU_DOUBLESIZE_QUESTION : GC_MENU_START));
+      if(DOUBLE_SIZE_QUESTION) {
+        main_queue.add(LEVEL_EVENT(GC_MENU_DOUBLESIZE_QUESTION));
+      } else {
+        main_queue.add(LEVEL_EVENT(GC_GAME_DATA_LOAD));
+        main_queue.add(LEVEL_EVENT(GC_MENU_START));
+      }
+      
       break;
     
     /* Run user level */
     case USER_LEVEL:
+      main_queue.add(LEVEL_EVENT(GC_GAME_DATA_LOAD));
       main_queue.add(LEVEL_EVENT(GC_RUN_LEVEL_LINE, p_garg));
       break;
     

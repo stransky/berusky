@@ -120,12 +120,14 @@ void game_gui::menu_double_size_question(MENU_STATE state, size_ptr data, size_p
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         menu_item_start();
       
-        menu_item_draw(yes, MENU_LEFT, FALSE, 
+        menu_item_draw(yes, MENU_LEFT, FALSE,
                        LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, TRUE),
+                       LEVEL_EVENT(GC_GAME_DATA_LOAD),
                        LEVEL_EVENT(GC_MENU_START));
         menu_item_draw(no, MENU_RIGHT, FALSE, 
                        LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, FALSE),
-                       LEVEL_EVENT(GC_MENU_START));
+                       LEVEL_EVENT(GC_GAME_DATA_LOAD),
+                       LEVEL_EVENT(GC_MENU_START));                       
 
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 120)
         #define MENU_Y_START (400)
