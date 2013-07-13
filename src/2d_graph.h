@@ -491,7 +491,6 @@ public:
 
 typedef class graph_2d
 {
-
   int          redraw;
 
   SURFACE     *p_screen_surface;
@@ -505,7 +504,11 @@ typedef class graph_2d
   int          rect_last;
   bool         rect_whole;
 
-  bool         fullscreen;
+  tpos         graphics_width;
+  tpos         graphics_height;
+  int          graphics_bpp;
+  bool         graphics_fullscreen;
+  int          sdl_video_flags;
 
 public:
   
@@ -637,7 +640,7 @@ public:
 
   bool fullscreen_get(void)
   {
-    return(fullscreen);
+    return(graphics_fullscreen);
   }
 
   void fullscreen_toggle(void);
@@ -736,15 +739,18 @@ public:
       }
     }
     return (TRUE);
-  }  
+  }
 
-  void resize_screen(int width, int height);
-
-  SDL_Surface * create_screen(int flag, int width, int height, int bpp, int fullscreen_);
+  void screen_create(int flag, int width, int height, int bpp, int fullscreen);
+  void screen_destroy(void);
+  void screen_resize(int width, int height);
+  bool screen_regenerate(void);
 
   void check(void);
 
-  graph_2d(tpos dx, tpos dy, int depth, bool fullscreen) : store(SURFACES, SPRITES), rect_last(0)
+  graph_2d(tpos dx, tpos dy, int depth, bool fullscreen) 
+    : store(SURFACES, SPRITES), 
+      rect_last(0)
   {
     /* sdl init */
     bprintf("SDL Init...");
@@ -752,7 +758,7 @@ public:
 
      /* Create new screen */
     bprintf("Seting up screen %dx%d, color depth %d bits, fullscreen = %d...",dx, dy, depth, fullscreen);
-    create_screen(0, dx, dy, depth, fullscreen);
+    screen_create(0, dx, dy, depth, fullscreen);
   }
 
   ~graph_2d(void)

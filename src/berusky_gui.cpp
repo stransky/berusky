@@ -121,10 +121,10 @@ void game_gui::menu_double_size_question(MENU_STATE state, size_ptr data, size_p
         menu_item_start();
       
         menu_item_draw(yes, MENU_LEFT, FALSE, 
-                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, TRUE, TRUE),
+                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, TRUE),
                        LEVEL_EVENT(GC_MENU_START));
         menu_item_draw(no, MENU_RIGHT, FALSE, 
-                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, FALSE, TRUE),
+                       LEVEL_EVENT(GC_MENU_DOUBLESIZE_SET, FALSE),
                        LEVEL_EVENT(GC_MENU_START));
 
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 120)
@@ -155,10 +155,12 @@ void game_gui::menu_double_size_question_switch(void)
   set_doublesize_question(INI_FILE, berusky_config::double_size_question);
 }
 
-void game_gui::menu_double_size_set(MENU_STATE state, size_ptr data, size_ptr data1)
+void game_gui::menu_double_size_set(bool double_size)
 {
-  DOUBLE_SIZE = (bool)data;
-  berusky_config::game_screen_set();
+  if(berusky_config::double_size != double_size) {
+    berusky_config::double_size = double_size;
+    berusky_config::game_screen_set();
+  }
 }
 
 #define LAST_PLAYER_PROFILE "last_profile"
@@ -2655,7 +2657,7 @@ bool game_gui::callback(LEVEL_EVENT_QUEUE *p_queue, int frame)
         menu_double_size_question_switch();
         break;
       case GC_MENU_DOUBLESIZE_SET:
-        menu_double_size_set(MENU_ENTER);
+        menu_double_size_set(ev.param_int_get(PARAM_0));
         break;
       case GC_MENU_START:
         menu_main(MENU_ENTER);

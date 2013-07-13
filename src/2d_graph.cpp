@@ -144,7 +144,7 @@ static RGB interpolate(RGB *p_color, int num, int *p_hits)
 {
   int i, hits;
 
-  RGB color = *p_color;  
+  RGB color = *p_color;
 
   for(i = 1, hits = 1; i < num; i++, p_color++) {
     if(p_hits[i]) {
@@ -875,7 +875,7 @@ void sprite_store::sprite_delete(spr_handle handle, int num)
 // -------------------------------------------------------
 //   the graph 2d store class
 // -------------------------------------------------------
-SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, int fullscreen_)
+void graph_2d::screen_create(int flag, int width, int height, int bpp, int fullscreen)
 {
 
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -884,27 +884,65 @@ SDL_Surface * graph_2d::create_screen(int flag, int width, int height, int bpp, 
     exit(0);
   }      
         
-  flag |= SDL_HWSURFACE;
+  sdl_video_flags = flag|SDL_HWSURFACE;
   
-  fullscreen = fullscreen_;
+  graphics_fullscreen = fullscreen;
   if(fullscreen)
-    flag |= SDL_FULLSCREEN;
-    
-  bprintf("Init video surface...\n");
-  SDL_Surface *p_hwscreen = SDL_SetVideoMode(width, height, bpp, flag);
+    sdl_video_flags |= SDL_FULLSCREEN;
+
+  graphics_bpp = bpp;
   
-  if(!p_hwscreen) {      
+  screen_resize(width, height);  
+}
+
+// Obtain the screen from SDL
+// If we have any screen/surface, release them first
+bool graph_2d::screen_regenerate(void)
+{
+  screen_destroy();
+
+  bprintf("Init video surface...\n");
+  SDL_Surface *p_hwscreen = SDL_SetVideoMode(graphics_width, graphics_height, 
+                                             graphics_bpp, sdl_video_flags);
+  
+  if(!p_hwscreen) {
     fprintf (stderr, "Unable to set the video mode: %s", SDL_GetError());
     exit(0);
   }
    
-  p_screen_surface = new SURFACE(p_hwscreen,1);
+  p_screen_surface = new SURFACE(p_hwscreen);
   p_screen = new SPRITE(p_screen_surface, SDL_SPRITE_SEPARATE_SURFACE, NULL);
 
   redraw_reset();
   rect_whole = FALSE;
 
-  return(p_hwscreen);
+  return(TRUE);
+}
+
+void graph_2d::screen_destroy(void)
+{
+  if(p_screen) {
+    delete p_screen;
+    p_screen = NULL;
+  }
+
+  if(p_screen_surface) {
+    delete p_screen_surface;
+    p_screen_surface = NULL;
+  }
+
+  if(p_screen_surface) {
+    delete p_screen_surface;
+    p_screen_surface = NULL;
+  }
+}
+
+void graph_2d::screen_resize(tpos width, tpos height)
+{
+  graphics_width = width;
+  graphics_height = height;
+  
+  screen_regenerate();
 }
 
 void graph_2d::check(void)
@@ -948,14 +986,8 @@ void graph_2d::fullscreen_toggle(void)
     bprintf("SDL_WM_ToggleFullScreen() failed!");
   }
   else {
-    fullscreen = !fullscreen;
+    graphics_fullscreen = !graphics_fullscreen;
   }
-}
-
-void graph_2d::resize_screen(int width, int height)
-{
-
-
 }
 
 // -------------------------------------------------------
@@ -1183,7 +1215,7 @@ void graphics_start(tpos dx, tpos dy, int depth, bool fullscreen)
   if(!p_grf) {
     p_grf = new GRAPH_2D(dx, dy, depth, fullscreen);
   } else {
-    p_grf->resize_screen(dx, dy);
+    p_grf->screen_resize(dx, dy);
   }
 
   if(!p_font) {
