@@ -1911,23 +1911,24 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
     case 5:
       {
         // 32 levels
-/*
-        #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPLPDV06DPDV07DPDV08DPLPLPLPLPUV09UP" \
-                           "UV10UPUV11UPLPUV12UPLPUV13UPUV14UPUV15LPUPUPUV16UPLPLPDPLPDPLPLPDV17DPDV18" \
-                           "DPDV19DPDV20DPLPDPDV21DPDV22LPDPDPDPLPDPDPLPLPLPUPUPUV23UPUV24UPUV25UPLPUV26UPUV" \
-                           "27UPUV28UPUV29UPRPUPV30UPUV31"
-*/
         #undef  LEVEL_LINE
-        #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPRPDV06DPDV07DPDV08DPDPDPDV09LPLP"
+        #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPRPDV06DPDV07DPDV08DPLPLPDV09DPDV10"
         int lev = 0;
       
         lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 2, -1);
       
         #undef  LEVEL_LINE
-        #define LEVEL_LINE "DPDV10"
-        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 11, -1);
-        //assert(lev == 32);
+        #define LEVEL_LINE "DPDV11DPRPRPDV12DPDV13DPDV14DPDV15DPRPDV16DPDV17DPRPDV18"
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 8, -1);
+            
+        #undef  LEVEL_LINE
+        #define LEVEL_LINE "DPDV19DPRPRPDV20DPRPRPDPV21DPLPLPDV22DPRPRPDV23DPLPLPDV24DPRPDV25DPRPRPRPDV26DPDV27DPDV28DPDV29"
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 15, -1);
       
+        #undef  LEVEL_LINE
+        #define LEVEL_LINE "DPDV29DPRPRPDV30DPRPRPDPDPLPLPLPDV31"
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 23, -1);
+              
         if(!DOUBLE_SIZE) {
           #define MENU_X_START_L (GAME_RESOLUTION_X/2 +20 - 17 - 60)
           #define MENU_X_START_R (GAME_RESOLUTION_X/2 +20 + 60)
