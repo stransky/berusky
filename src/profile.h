@@ -28,7 +28,7 @@
 #ifndef __PROFILE_H__
 #define __PROFILE_H__
 
-#define LEVEL_SET_NUM             5
+#define LEVEL_SET_NUM             6
 
 #define PROFILE_NAME              "name"
 #define PROFILE_LAST_TRAINING     "l0"
@@ -36,6 +36,7 @@
 #define PROFILE_LAST_INTERMEDIATE "l2"
 #define PROFILE_LAST_ADVANCED     "l3"
 #define PROFILE_LAST_IMPOSSIBLE   "l4"
+#define PROFILE_LAST_USER         "l5"
 
 typedef struct profile_level_set {
 

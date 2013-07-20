@@ -323,18 +323,19 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2,LOGO_START);
       
         #define MENU_X_START (GAME_RESOLUTION_X/2 - 70)
-        #define MENU_Y_START (GAME_RESOLUTION_Y/2)
+        #define MENU_Y_START (GAME_RESOLUTION_Y/2 - 30)
 
         p_font->select(FONT_DEFAULT);
         p_font->alignment_set(MENU_CENTER);
         p_font->start_set(0, MENU_Y_START - 50);
-        p_font->print(_("select difficulty of the new game:"));
+        p_font->print(_("Choose your level map:"));
       
         static char *training      = _("training");
         static char *easy          = _("easy");
         static char *intermediate  = _("intermediate");
         static char *advanced      = _("advanced");
         static char *impossible    = _("impossible");
+        static char *user_levels   = _("user levels");
         static char *back          = _("back");
       
         menu_item_set_pos(MENU_X_START, MENU_Y_START);
@@ -343,13 +344,13 @@ void game_gui::menu_new_game(MENU_STATE state, size_ptr data, size_ptr data1)
         #define MENU_Y_DIFF  (DOUBLE_SIZE ? 45 : 35)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
         
-        // udelat na to ulozeni tady flag -> prejdi a uloz!! (Zprava -> menu_back_save)
         menu_item_start();
         menu_item_draw(training, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 0));
         menu_item_draw(easy, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 1));
         menu_item_draw(intermediate, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 2));
         menu_item_draw(advanced, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 3));
         menu_item_draw(impossible, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 4));
+        menu_item_draw(user_levels, MENU_LEFT, MENU_SAVE_BACK, LEVEL_EVENT(GC_MENU_RUN_LEVEL, 5));
         menu_item_draw(back, MENU_LEFT, FALSE, LEVEL_EVENT(GI_MENU_BACK_POP));
               
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
@@ -1287,7 +1288,7 @@ void game_gui::menu_level_hint(MENU_STATE state, size_ptr data, size_ptr data1)
 #define PIPE   'P' // Draw pipe
 
 #define MLEFT  'L' // cursor movement
-#define MRIGHT 'R'
+#define MRIGHT 'R' 
 #define MUP    'U'
 #define MDOWN  'D'
 
@@ -1491,11 +1492,6 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
   
   p_grf->draw(DOUBLE_SIZE ? menu_background_get() : MENU_SPRIT_WALL, 0, 0);
 
-/*
-  bprintf("game_gui::menu_level_run_path_draw() - level_set = %d, level_act = %d, level_num = %d, level_last = %d\n",
-          level_set, level_act, level_num, level_last);
-*/
-
   // Levels are drawn as menu
   menu_item_start();
 
@@ -1662,6 +1658,7 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
     case 2:
       {      
         // 35 levels
+        #undef  LEVEL_LINE
         #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPLPDV06DPDV07DPDV08DPLPLPLPLPUV09UP" \
                            "UV10UPUV11UPLPUV12UPLPUV13UPUV14UPUV15LPUPUPUV16UPLPLPDPLPDPLPLPDV17DPDV18" \
                            "DPDV19DPDV20DPLPDPDV21DPDV22LPDPDPDPLPDPDPLPLPLPUPUPUV23UPUV24UPUV25UPLPUV26UPUV" \
@@ -1909,6 +1906,54 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
           #undef MENU_X_DIFF
           #undef MENU_Y_DIFF
         }      
+      }
+      break;
+    case 5:
+      {
+        // 32 levels
+/*
+        #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPLPDV06DPDV07DPDV08DPLPLPLPLPUV09UP" \
+                           "UV10UPUV11UPLPUV12UPLPUV13UPUV14UPUV15LPUPUPUV16UPLPLPDPLPDPLPLPDV17DPDV18" \
+                           "DPDV19DPDV20DPLPDPDV21DPDV22LPDPDPDPLPDPDPLPLPLPUPUPUV23UPUV24UPUV25UPLPUV26UPUV" \
+                           "27UPUV28UPUV29UPRPUPV30UPUV31"
+*/
+        #undef  LEVEL_LINE
+        #define LEVEL_LINE "DPDV00DPDV01DPDV02DPLPDV03DPDV04DPDV05DPRPDV06DPDV07DPDV08DPDPDPDV09LPLP"
+        int lev = 0;
+      
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 2, -1);
+      
+        #undef  LEVEL_LINE
+        #define LEVEL_LINE "DPDV10"
+        lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 11, -1);
+        //assert(lev == 32);
+      
+        if(!DOUBLE_SIZE) {
+          #define MENU_X_START_L (GAME_RESOLUTION_X/2 +20 - 17 - 60)
+          #define MENU_X_START_R (GAME_RESOLUTION_X/2 +20 + 60)
+          #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 130))
+          #define MENU_X_DIFF     0
+          #define MENU_Y_DIFF     30
+        
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
+                         MENU_RIGHT, FALSE, 
+                         LEVEL_EVENT(GC_RUN_LEVEL_SET));
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, level_hint,
+                         MENU_RIGHT, MENU_SAVE_BACK, 
+                         LEVEL_EVENT(GC_MENU_LEVEL_HINT, FALSE));
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+2*MENU_Y_DIFF, select_string,
+                         MENU_RIGHT, FALSE, 
+                         LEVEL_EVENT(GC_RUN_LEVEL_SELECT, level_last, profile.level_spr_x ,profile.level_spr_y));
+          menu_item_draw(MENU_X_START_L, MENU_Y_START+3*MENU_Y_DIFF, back_string,
+                         MENU_LEFT, FALSE, 
+                         LEVEL_EVENT(GI_MENU_BACK_POP));
+        
+          #undef MENU_X_START_L
+          #undef MENU_X_START_R
+          #undef MENU_Y_START
+          #undef MENU_X_DIFF
+          #undef MENU_Y_DIFF
+        }
       }
       break;
     default:

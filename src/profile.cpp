@@ -96,19 +96,21 @@ void berusky_profile::load(const char *p_dir, const char *p_file)
   level_set[2].level_selected = level_set[2].level_last = ini_read_int_file(tmp, PROFILE_LAST_INTERMEDIATE, 0);
   level_set[3].level_selected = level_set[3].level_last = ini_read_int_file(tmp, PROFILE_LAST_ADVANCED, 0);
   level_set[4].level_selected = level_set[4].level_last = ini_read_int_file(tmp, PROFILE_LAST_IMPOSSIBLE, 0);
+  level_set[5].level_selected = level_set[5].level_last = ini_read_int_file(tmp, PROFILE_LAST_USER, 0);
 }
 
 void berusky_profile::save(void)
 { 
   char buffer[1024];
   snprintf(buffer, 1024,
-           "name = %s\nl0 = %d\nl1 = %d\nl2 = %d\nl3 = %d\nl4 = %d\n",
+           "name = %s\nl0 = %d\nl1 = %d\nl2 = %d\nl3 = %d\nl4 = %d\nl5 = %d\n",
            profile_name,
            level_set[0].level_last,
            level_set[1].level_last,
            level_set[2].level_last,
            level_set[3].level_last,
-           level_set[4].level_last);
+           level_set[4].level_last,
+           level_set[5].level_last);
   file_save(INI_USER_PROFILES, filename, (void *)buffer, strlen(buffer), "w");
 }
 

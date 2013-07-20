@@ -78,7 +78,7 @@ public:
   *******************************************************
 */
 #define MAX_LEVELNAME 50
-#define MAX_PASSWORD  10
+#define MAX_PASSWORD  50
 
 typedef struct level_store_item {
 
@@ -103,6 +103,7 @@ typedef class level_store {
 public:
 
   char * is_valid_line(char *p_line);
+  bool   is_subdir(char *p_line, char *p_subdir);
 
   void   alloc(int num);
   void   free(void);

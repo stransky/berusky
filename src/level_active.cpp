@@ -75,6 +75,20 @@ char * level_store::is_valid_line(char *p_line)
   return(*p_line == '\0' || *p_line == '#' ? NULL : p_line);
 }
 
+bool level_store::is_subdir(char *p_line, char *p_subdir)
+{
+  while(*p_line && isspace(*p_line))
+    p_line++;
+  if(p_line[0] == '#' && !strncmp(p_line, "#subdirectory", 13)) {
+    char *p_tmp = is_valid_line(p_line+13);
+    if(p_tmp) {
+      strncpy(p_subdir, p_tmp, PATH_MAX);
+      return(TRUE);
+    }
+  }
+  return(FALSE);
+}
+
 bool level_store::levelset_load(DIR_LIST *p_dir_, char *p_script)
 {
   p_dir = p_dir_;
@@ -82,12 +96,18 @@ bool level_store::levelset_load(DIR_LIST *p_dir_, char *p_script)
   FHANDLE f = file_open(p_dir->gamedata_get(),p_script,"r");
   char *p_start = NULL;
   
-  char tmp[2000];
+  char tmp[PATH_MAX];
+  char subdir[PATH_MAX] = "";
   int  i,max;
   
-  for(i = 0, max = 0; fgets(tmp,sizeof(tmp),f); i++) {    
+  for(i = 0, max = 0; fgets(tmp,sizeof(tmp),f); i++) {
+    if(is_subdir(tmp, subdir)) {
+      fgets_correction(subdir);
+      strcat(subdir,"/");
+      continue;
+    }
     if(is_valid_line(tmp))
-        max++;  
+      max++;
   }
   
   max /= 2;
@@ -103,7 +123,14 @@ bool level_store::levelset_load(DIR_LIST *p_dir_, char *p_script)
       i--;
       break;
     }
-    strncpy(p_list[i].levelname,p_start,sizeof(p_list[i].levelname));
+    if(subdir[0]) {
+      strcpy(p_list[i].levelname,subdir);
+    }
+    else {
+      p_list[i].levelname[0] = '\0';
+    }
+  
+    strncat(p_list[i].levelname,p_start,sizeof(p_list[i].levelname));
     fgets_correction(p_list[i].levelname);
   
     while((fgets(tmp,sizeof(tmp),f)) && !(p_start = is_valid_line(tmp)));
