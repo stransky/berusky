@@ -644,14 +644,15 @@ void game_gui::menu_settings(MENU_STATE state, size_ptr data, size_ptr data1)
         menu_item_set_diff(MENU_X_DIFF, MENU_Y_DIFF);
 
         menu_item_start();
-        menu_item_draw_checkbox(fulscreen, MENU_LEFT, p_grf->fullscreen_get(), 0, 0,
+        menu_item_draw_checkbox(fulscreen, MENU_LEFT,
+                                p_grf->fullscreen_get(), 0, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_FULSCREEN_SWITCH));
-        menu_item_draw_checkbox(double_size, MENU_LEFT, berusky_config::double_size, 0, 0,
+        menu_item_draw_checkbox(double_size, MENU_LEFT,
+                                berusky_config::double_size, 1, 0,
                                 LEVEL_EVENT(GC_MENU_SETTINGS_DOUBLESIZE_SWITCH));
-                                
         menu_item_set_pos(MENU_X_START+35, MENU_Y_START+2*MENU_Y_DIFF);
         menu_item_draw_checkbox(double_size_question, MENU_LEFT,
-                                berusky_config::double_size_question, 0, 0,
+                                berusky_config::double_size_question, 2, 0,
                                 LEVEL_EVENT(GC_MENU_DOUBLESIZE_SWITCH));
 /*
         menu_item_draw_checkbox(sound, MENU_LEFT, p_ber->sound.sound_on, 1,
@@ -693,7 +694,7 @@ void game_gui::menu_settings_doublesize(void)
 
   p_font->select(FONT_DEFAULT);
   p_font->alignment_set(MENU_CENTER);
-  p_font->start_set(0, GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 200 : 150));
+  p_font->start_set(0, GAME_RESOLUTION_Y - 200);
   RECT r;
   p_font->print(&r,_("The game must be restarted\nfor the change to take effect."));
   p_grf->redraw_add(&r);
