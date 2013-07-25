@@ -2342,8 +2342,10 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         static char *back_string = _("back to menu");
       
         menu_item_start();
-      
-        if(p_status->resolved()) {
+
+        if(p_status->resolved() &&
+           profile.selected_level_get() == profile.last_level_get())
+        {
           // Run next level directly
           menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
                          MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET));
