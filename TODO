@@ -1,11 +1,9 @@
 Bugs:
+- User levels in original-size mode
 - Play next level (for already played ones - does not work - only back to menu?)
 - End of user defined levels -> back -> returns to training
-- Remove hints from user levels
-- user levels in original-size mode
 
 - Auto-shading? (for boxes - and when moves)
-- Extra levels
 - Windows version
 
 Editor:

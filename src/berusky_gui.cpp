@@ -1931,19 +1931,19 @@ void game_gui::menu_level_run_path_draw(int level_set, int level_act, int level_
         lev += menu_level_run_path_draw_line(LEVEL_LINE, level_act, level_num, level_last, level_set, 23, -1);
               
         if(!DOUBLE_SIZE) {
-          #define MENU_X_START_L (GAME_RESOLUTION_X/2 +20 - 17 - 60)
-          #define MENU_X_START_R (GAME_RESOLUTION_X/2 +20 + 60)
-          #define MENU_Y_START   (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 180 : 130))
+          #define MENU_X_START_L (GAME_RESOLUTION_X/2 - 17 - 60 - 60)
+          #define MENU_X_START_R (GAME_RESOLUTION_X/2 + 60 - 60)
+          #define MENU_Y_START   (GAME_RESOLUTION_Y - 140)
           #define MENU_X_DIFF     0
           #define MENU_Y_DIFF     30
         
           menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
                          MENU_RIGHT, FALSE, 
                          LEVEL_EVENT(GC_RUN_LEVEL_SET));
-          menu_item_draw(MENU_X_START_R, MENU_Y_START+2*MENU_Y_DIFF, select_string,
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+1*MENU_Y_DIFF, select_string,
                          MENU_RIGHT, FALSE, 
                          LEVEL_EVENT(GC_RUN_LEVEL_SELECT, level_last, profile.level_spr_x ,profile.level_spr_y));
-          menu_item_draw(MENU_X_START_L, MENU_Y_START+3*MENU_Y_DIFF, back_string,
+          menu_item_draw(MENU_X_START_L, MENU_Y_START+2*MENU_Y_DIFF, back_string,
                          MENU_LEFT, FALSE, 
                          LEVEL_EVENT(GI_MENU_BACK_POP));
         
@@ -2045,30 +2045,34 @@ void game_gui::menu_level_name_print(void)
   if(DOUBLE_SIZE) {
     p_font->alignment_set(MENU_CENTER);
     menu_x_start = 20;
-    menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 150));
+    menu_y_start = (GAME_RESOLUTION_Y - 220);
   }
   else {
     switch(level_set) {
       case 0:
         menu_x_start = (GAME_RESOLUTION_X/2 - 70);
-        menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 170));
+        menu_y_start = (GAME_RESOLUTION_Y - 170);
         break;
       case 1:
         menu_x_start = (GAME_RESOLUTION_X/2 - 130);
-        menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 155));
+        menu_y_start = (GAME_RESOLUTION_Y - 155);
         break;
       case 2:
         menu_x_start = 10;
-        menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 25));
+        menu_y_start = (GAME_RESOLUTION_Y - 25);
         break;
       case 3:
         menu_x_start = (GAME_RESOLUTION_X/2 - 17 - 180);
-        menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 160));
+        menu_y_start = (GAME_RESOLUTION_Y - 160);
         break;
       case 4:
         p_font->alignment_set(MENU_CENTER);
         menu_x_start = 20;
-        menu_y_start = (GAME_RESOLUTION_Y - (DOUBLE_SIZE ? 220 : 160));
+        menu_y_start = (GAME_RESOLUTION_Y - 160);
+        break;
+      case 5:
+        menu_x_start = 70;
+        menu_y_start = (GAME_RESOLUTION_Y - 35);
         break;
     }
   }
@@ -2083,6 +2087,10 @@ void game_gui::menu_level_name_print(void)
   #define NAME_MARGIN (DOUBLE_SIZE ? 20 : 10)
   r.x -= NAME_MARGIN;
   r.w += NAME_MARGIN*2;
+
+  if(level_set == 5) {
+    r.w += 100;
+  }
 
   static SURFACE *p_background = NULL;
   static tpos     background_x;
