@@ -1,7 +1,5 @@
 Bugs:
-- User levels in original-size mode
 - Play next level (for already played ones - does not work - only back to menu?)
-- End of user defined levels -> back -> returns to training
 
 - Auto-shading? (for boxes - and when moves)
 - Windows version
@@ -19,6 +17,7 @@ New Items:
 - new ground
 - a hole
 - power pill
+
 
 Game:
 

@@ -2303,11 +2303,15 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
         if(DOUBLE_SIZE) {
           #define LOGO_START (DOUBLE_SIZE ? 60 : 0)
           tpos width = p_grf->sprite_get_width(MENU_SPRIT_LOGO);
-          p_grf->draw(MENU_SPRIT_LOGO,(GAME_RESOLUTION_X-width)/2, LOGO_START);
+          p_grf->draw(MENU_SPRIT_LOGO,
+                      (GAME_RESOLUTION_X-width)/2, 
+                      LOGO_START);
         }
         else {
           #define SMALL_LOGO_START 80
-          p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),SMALL_LOGO_START);
+          p_grf->draw(MENU_SPRIT_LOGO_SMALL_2,
+                      p_grf->sprite_get_width_center(MENU_SPRIT_LOGO_SMALL_2),
+                      SMALL_LOGO_START);
         }
       
         #define END_TEXT_START (DOUBLE_SIZE ? (GAME_RESOLUTION_Y/2-100) : 80)
@@ -2341,10 +2345,11 @@ void game_gui::menu_level_end(MENU_STATE state, size_ptr data, size_ptr data1)
       
         if(p_status->resolved()) {
           // Run next level directly
-          menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string, MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET));
+          menu_item_draw(MENU_X_START_R, MENU_Y_START+0*MENU_Y_DIFF, play_string,
+                         MENU_RIGHT, FALSE, LEVEL_EVENT(GC_RUN_LEVEL_SET));
         }
-        
-        menu_item_draw(MENU_X_START_L, MENU_Y_START+1*MENU_Y_DIFF, back_string, MENU_LEFT, FALSE, LEVEL_EVENT(GC_MENU_RUN_LEVEL));
+        menu_item_draw(MENU_X_START_L, MENU_Y_START+1*MENU_Y_DIFF, back_string,
+                       MENU_LEFT, FALSE, LEVEL_EVENT(GC_MENU_RUN_LEVEL, profile.level_set_get()));
 
         p_grf->redraw_add(0, 0, GAME_RESOLUTION_X, GAME_RESOLUTION_Y);
         p_grf->flip();        
