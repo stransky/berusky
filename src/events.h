@@ -45,6 +45,7 @@
   AN_ - events for animation engine (usually created by game logic or level changer)
   MN_ - events for user interface / menus (usually obtained as user input)
   GC_ - events for game control (start/stop playing, load/save level and so on)
+  SN_ - events for sound engine
   
   ED_ - events from level editor
   
@@ -265,6 +266,18 @@ typedef enum {
   // Loads game data (sprites and so...)
   // format: [GC_GAME_DATA_LOAD]
   GC_GAME_DATA_LOAD,
+
+
+  // ------------------------------------------------------------------------
+  // Sound engine events
+  
+  // Play sample
+  // format: [SN_PLAY_SAMPLE, sample_handle]
+  SN_PLAY_SAMPLE,
+  
+  // Play music
+  // format: [SN_PLAY_MUSIC, track_handle]
+  SN_PLAY_MUSIC,
 
   // ------------------------------------------------------------------------
   // Editor events

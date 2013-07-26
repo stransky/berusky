@@ -90,6 +90,8 @@ const char * level_event::translation_table[] =
   "GC_MENU_IN_GAME",
   "GC_MENU_QUIT",
   "GC_GAME_DATA_LOAD",
+  "SN_PLAY_SAMPLE",
+  "SN_PLAY_MUSIC",
   "ED_LEVEL_NEW",
   "ED_LEVEL_LOAD",
   "ED_LEVEL_SAVE",
