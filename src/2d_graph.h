@@ -749,7 +749,9 @@ public:
   void check(void);
 
   graph_2d(tpos dx, tpos dy, int depth, bool fullscreen) 
-    : store(SURFACES, SPRITES), 
+    : p_screen_surface(NULL),
+      p_screen(NULL),
+      store(SURFACES, SPRITES), 
       rect_last(0)
   {
     /* sdl init */
