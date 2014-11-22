@@ -33,11 +33,13 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <dirent.h>
-#include <fnmatch.h>
 
 #include "portability.h"
 
+#ifdef LINUX
+#include <dirent.h>
+#include <fnmatch.h>
+#endif
 #ifdef WINDOWS
 #include <direct.h>
 #endif
@@ -107,25 +109,35 @@ void dir_list::load(const char *p_ini)
   #define INI_GAME        "game_data"
   #define INI_GRAPHICS    "graphics_data"
   #define INI_LEVEL_USER  "level_data_user"
-  #define INI_TMP         "tmp_data"
+  #define INI_BINARY      "game_binary"
 
   ini_read_string_file(p_ini, INI_LEVEL, levels, sizeof(levels), "./Lihen/Levels");
   ini_read_string_file(p_ini, INI_GAME, gamedata, sizeof(gamedata), "./Lihen/GameData");
   ini_read_string_file(p_ini, INI_GRAPHICS, graphics, sizeof(graphics), "./Lihen/Graphics");
+  ini_read_string_file(p_ini, INI_BINARY, game_binary, sizeof(game_binary), "berusky");
+
+#ifdef LINUX
   ini_read_string_file(p_ini, INI_LEVEL_USER, levels_user, sizeof(levels_user), "./Lihen/User");
+
+  #define INI_TMP         "tmp_data"
   ini_read_string_file(p_ini, INI_TMP, tmp, sizeof(tmp), "/var/tmp");
 
   getcwd(cwd,MAX_FILENAME);
-  
   update_path(levels);
   update_path(gamedata);
   update_path(graphics);  
   update_path(levels_user);
   update_path(tmp);
   chdir(cwd);
+#endif
 
-  #define INI_BINARY      "game_binary"
-  ini_read_string_file(p_ini, INI_BINARY, game_binary, sizeof(game_binary), "berusky");
+#ifdef WINDOWS
+  strcpy(levels_user,DIRECTORY_GET(INI_USER_LEVELS));
+
+  char path[PATH_MAX];
+  strcpy(tmp,tmpfile_get(path));
+  dir_create(tmp);
+#endif
   
   bprintf("level_data: %s",levels);
   bprintf("game_data: %s",gamedata);
@@ -144,7 +156,7 @@ bool get_fullscreen(const char *p_ini_file)
 bool set_fullscreen(const char *p_ini_file, bool state)
 {  
   char tmp[100];
-  return(ini_write_string(p_ini_file, INI_FULLSCREEN, itoa(10, tmp, state ? 1 : 0)));
+  return(ini_write_string(p_ini_file, INI_FULLSCREEN, my_itoa(10, tmp, state ? 1 : 0)));
 }
 
 #define INI_DOUBLESIZE "disable_double_size"
@@ -157,7 +169,7 @@ bool set_doublesize(const char *p_ini_file, bool state)
 {
   char tmp[100];
   // it's reversed - disable_double_size = 0 is the default
-  return(ini_write_string(p_ini_file, INI_DOUBLESIZE, itoa(10, tmp, !state ? 1 : 0)));
+  return(ini_write_string(p_ini_file, INI_DOUBLESIZE, my_itoa(10, tmp, !state ? 1 : 0)));
 }
 
 #define INI_DOUBLESIZE_QUESTION "startup_doublesize_question"
@@ -169,7 +181,7 @@ bool get_doublesize_question(const char *p_ini_file)
 bool set_doublesize_question(const char *p_ini_file, bool state)
 {
   char tmp[100];  
-  return(ini_write_string(p_ini_file, INI_DOUBLESIZE_QUESTION, itoa(10, tmp, state ? 1 : 0)));
+  return(ini_write_string(p_ini_file, INI_DOUBLESIZE_QUESTION, my_itoa(10, tmp, state ? 1 : 0)));
 }
 
 int  get_colors(const char *p_ini_file, int default_color_depth)
@@ -178,8 +190,7 @@ int  get_colors(const char *p_ini_file, int default_color_depth)
   return(ini_read_int_file(p_ini_file, INI_COLOR, default_color_depth));
 }
 
-#ifdef LINUX
-char * itoa(int base, char *buf, int d)
+char * my_itoa(int base, char *buf, int d)
 {
   char *p = buf;
   char *p1, *p2;
@@ -218,7 +229,6 @@ char * itoa(int base, char *buf, int d)
   }
   return(buf);
 }
-#endif // LINUX
 
 /* Create a path */
 char * return_path(const char *p_dir, const char *p_file, char *p_buffer, int max_lenght)
@@ -428,7 +438,7 @@ int file_size_get(const char * p_dir, const char * p_file)
 void print_errno(bool new_line)
 {
   if(new_line) {
-    bprintf("\n%s",strerror(errno));
+    bprintf("\nError: %s",strerror(errno));
   } else {
     bprintf(strerror(errno));
   }  
@@ -452,22 +462,24 @@ char * dir_home_get(char *p_dir, int max)
 bool dir_create(const char *p_dir)
 {
   assert(p_dir);
+  struct stat st;
 
   char tmp_dir[MAX_FILENAME];
+#ifdef WINDOWS
+  strcpy(tmp_dir, p_dir);
+#else
   return_path(p_dir, "", tmp_dir, MAX_FILENAME);
-
-  struct stat st;
+#endif
 
   // Check the dir
   bprintfnl("Checking %s...",tmp_dir);
   if(stat(tmp_dir,&st) == -1 && errno == ENOENT) {
-    bprintfnl("missing, try to create it...");
+    bprintfnl("\nmissing, try to create it...");
     if(mkdirm(tmp_dir) != -1) {
       bprintf("ok");
       return(TRUE);
     } else {
-      print_errno(TRUE);
-      bprintf("failed");
+      print_errno(TRUE);      
       return(FALSE);
     }
   } else {
@@ -510,41 +522,42 @@ int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY **p_lis
 #endif
 
 #ifdef WINDOWS
-int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY *p_list)
-{
-	PLAYER_PROFILE	Profile;
-	FILE *file;
-	long Done, error;
+int file_list_get(const char *p_dir, const char *p_mask, DIRECTORY_ENTRY **p_list)
+{	
+	long ret, handle;
+  char current_dir[MAX_FILENAME];
 	struct _finddata_t	Data;
+  int  size;
 
-	Done = _findfirst(p_mask,&Data);
-	error = Done;
-			
-	while(error != -1)
+  _getcwd(current_dir,MAX_FILENAME);
+  _chdir(p_dir);
+
+  size = 0;
+  handle = ret = _findfirst(p_mask, &Data);
+	while(ret != -1)
 	{
-		if(error != -1)
-		{
-			file = fopen(Data.name, "rb");
-
-			if(file)
-			{
-				fread(&Profile, sizeof(PLAYER_PROFILE), 1, file);
-				fclose(file);
-
-				if(!wcscmp(Profile.cName, wName))
-				{
-					strcpy(cFile, Data.name);
-					_findclose(Done); 
-					return 1;
-				}
-			}
-
-			error = _findnext(Done,&Data);
-		}
+    size++;
+		ret = _findnext(handle, &Data);
 	}
-	_findclose(Done); 
+	_findclose(handle); 
 
-  return 0;
+  // Sorry dude, no files
+  if(size) {
+    *p_list = (DIRECTORY_ENTRY *)mmalloc(sizeof(DIRECTORY_ENTRY)*size);
+  
+    size = 0;
+    handle = ret = _findfirst(p_mask, &Data);	
+    while(ret != -1)
+    {
+      strcpy((*p_list)[size++].name, Data.name);
+      ret = _findnext(handle, &Data);
+    }
+    _findclose(handle); 
+  }
+
+  _chdir(current_dir);
+
+  return size;
 }
 #endif
 
@@ -899,15 +912,24 @@ void graphics_generate(void)
 void user_directory_create(void)
 {
   // Check ~./berusky
-  dir_create(INI_USER_DIRECTORY);
-  dir_create(INI_USER_LEVELS);
-  dir_create(INI_USER_PROFILES);
+#ifdef WINDOWS
+  dir_create(DIRECTORY_GET(INI_ANAKREON_DIR));
+  dir_create(DIRECTORY_GET(INI_BERUSKY_DIR));
+#endif
+
+  dir_create(DIRECTORY_GET(INI_USER_DIRECTORY));
+  dir_create(DIRECTORY_GET(INI_USER_LEVELS));
+  dir_create(DIRECTORY_GET(INI_USER_PROFILES));
 
   // Check ~./berusky/berusky.ini
-  bprintfnl(_("Checking %s/%s..."),INI_USER_DIRECTORY,INI_FILE_NAME);
-  if(!file_exists(INI_USER_DIRECTORY,INI_FILE_NAME)) {
-    bprintfnl(_("missing, try to copy it from %s..."),INI_FILE_GLOBAL);
-    bool ret = file_copy(INI_FILE_GLOBAL, NULL, INI_FILE_NAME, INI_USER_DIRECTORY,FALSE);
+  bprintfnl(_("Checking %s/%s..."),DIRECTORY_GET(INI_USER_DIRECTORY),INI_FILE_NAME);
+  if(!file_exists(DIRECTORY_GET(INI_USER_DIRECTORY),INI_FILE_NAME)) {
+    bprintfnl(_("missing, try to copy it from %s..."),FILE_GET(INI_FILE_GLOBAL));
+    bool ret = file_copy(FILE_GET(INI_FILE_GLOBAL),
+                         NULL,
+                         INI_FILE_NAME, 
+                         DIRECTORY_GET(INI_USER_DIRECTORY),
+                         FALSE);
     if(ret) {
       bprintf(_("ok"));
     } else {
@@ -919,3 +941,4 @@ void user_directory_create(void)
   }
   bprintf(" ");
 }
+

@@ -465,15 +465,17 @@ editor_gui::editor_gui(ITEM_REPOSITORY *p_repo_, DIR_LIST *p_dir_):
   gui_base(), 
   p_dir(p_dir_),
   p_repo(p_repo_),
-  level(p_repo_), 
+  level(p_repo_),
   console(&input,CONSOLE_X,CONSOLE_Y,CONSOLE_DX,CONSOLE_LINES),
+  console_callback(NULL),
+  console_callback_id(0),
+  p_side_event_first(NULL),
   panel_items(ITEMS_IN_PANEL, VERTICAL, 0, 0, PANEL_HANDLE_ITEMS, &panel_variants),
   panel_variants(ITEMS_IN_PANEL+2, HORIZONTAL, EDITOR_ITEM_SIZE_X, 0, PANEL_HANDLE_VARIANTS)
 {
   editor_panel::set_up(p_repo_);
   editor_panel_slot::set_up(p_repo_);
-
-
+    
   input.mevent_clear();
   input.events_wait(TRUE);
 
@@ -1000,7 +1002,15 @@ void editor_gui::level_new(bool force)
     undo_store();
     console.print("new level");
     level.level_new();
-    strcpy(level_name,DEFAULT_LEVEL_NAME);
+
+    level_name[0] = '\0';
+#ifdef WINDOWS
+    // Windows usualy don't allow to write to current working directory
+    // it may be in C:\\Program Files or so...
+    strcpy(level_name,p_dir->levels_user_get());
+#endif
+    strcat(level_name,DEFAULT_LEVEL_NAME);
+
     level_edited_set();
     level_edited_clear();
   }
@@ -1582,8 +1592,17 @@ void editor_gui::editor_run_level(void)
     bprintf("Saved as %s",filename);
     char level_name[MAX_FILENAME];
     return_path(p_dir->tmp_get(), TMP_LEVEL, level_name, MAX_FILENAME);
-    bprintf("%s -u %s",p_dir->game_binary_get(),level_name);    
-    int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(),p_dir->game_binary_get(),"-u",level_name,NULL);
+    bprintf("%s -u %s",p_dir->game_binary_get(),level_name);
+
+    char game_path[PATH_MAX] = "\"";
+    strcat(game_path, p_dir->game_binary_get());
+    strcat(game_path, "\"");
+
+    char level_path[PATH_MAX] = "\"";
+    strcat(level_path, level_name);
+    strcat(level_path, "\"");
+
+    int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(),game_path,"-u",level_path,NULL);
     if(ret == -1) {
       bprintf("Error: %s",strerror(errno));
     }
@@ -1913,7 +1932,7 @@ void editor_gui::input_start(EDITOR_CONSOLE_CALLBACK callback, int callback_id, 
 
 /* An editor interface to console
 */
-void editor_gui::console_input(MENU_STATE state, int data, int data1)
+void editor_gui::console_input(MENU_STATE state, size_ptr data, size_ptr data1)
 { 
   switch(data) {
     case K_ENTER:      
@@ -1948,14 +1967,10 @@ void editor_gui::input_stop(bool success)
 
 /* Wait for a key
 */
-void editor_gui::console_wait(MENU_STATE state, int data, int data1)
+void editor_gui::console_wait(MENU_STATE state, size_ptr data, size_ptr data1)
 { 
-  switch(data) {
-    default:
-      help_quit();
-      input_stop(TRUE);
-      break;
-  }
+  help_quit();
+  input_stop(TRUE);
 }
 
 // ----------------------------------------------------------------------

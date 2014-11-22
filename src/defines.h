@@ -254,8 +254,6 @@
 #define ROTATION_MIN              0
 #define ROTATION_MAX              3
 
-#define BOOL_UNDEFINED            (-1)
-#define ERROR                     (-1)
 
 #define DEFAULT_LEVEL_NAME        "a.lv3"
 
@@ -450,13 +448,24 @@ typedef int anim_handle;
 #define INI_FILE_GLOBAL    "/var/games/berusky/"INI_FILE_NAME
 #define INI_FILE_USER      "~/.berusky/"INI_FILE_NAME
 #define INI_FILE_LOCAL     "./"INI_FILE_NAME
+#define DIRECTORY_GET(d)   (d)
+#define FILE_GET(d)        (d)
 #elif WINDOWS
-#define INI_USER_DIRECTORY "./"
-#define INI_USER_LEVELS    "./"
-#define INI_FILE_GLOBAL    INI_FILE_NAME
-#define INI_FILE_USER      INI_FILE_NAME
-#define INI_FILE_LOCAL     INI_FILE_NAME
+#define INI_ANAKREON_DIR   0
+#define INI_BERUSKY_DIR    1
+
+#define INI_USER_DIRECTORY 10
+#define INI_USER_LEVELS    11
+#define INI_USER_PROFILES  12
+
+#define INI_FILE_GLOBAL    20
+#define INI_FILE_USER      21
+#define INI_FILE_LOCAL     22
+
+#define DIRECTORY_GET(d)   (windows_dir_get(d))
+#define FILE_GET(d)        (windows_file_get(d))
 #endif
+
 
 #define INI_FILE          (config_file())
 

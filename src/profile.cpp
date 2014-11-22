@@ -111,7 +111,7 @@ void berusky_profile::save(void)
            level_set[3].level_last,
            level_set[4].level_last,
            level_set[5].level_last);
-  file_save(INI_USER_PROFILES, filename, (void *)buffer, strlen(buffer), "w");
+  file_save(DIRECTORY_GET(INI_USER_PROFILES), filename, (void *)buffer, strlen(buffer), "w");
 }
 
 void berusky_profile::create(const char *p_name)
@@ -132,13 +132,13 @@ bool profiles_load(BERUSKY_PROFILE **p_profiles, int *p_num)
   *p_profiles = NULL;
   *p_num = 0;
 
-  int files = file_list_get(INI_USER_PROFILES, PROFILE_FILE_MASK, &p_profile_names);
+  int files = file_list_get(DIRECTORY_GET(INI_USER_PROFILES), PROFILE_FILE_MASK, &p_profile_names);
   if(!files)
     return(FALSE);
 
   BERUSKY_PROFILE *p_list = new BERUSKY_PROFILE[files];
   for(int i = 0; i < files; i++) {
-    p_list[i].load(INI_USER_PROFILES, p_profile_names[i].name);
+    p_list[i].load(DIRECTORY_GET(INI_USER_PROFILES), p_profile_names[i].name);
   }
   ffree(p_profile_names);
   

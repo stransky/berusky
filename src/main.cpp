@@ -247,7 +247,10 @@ void run_editor(GAME_MODE gmode, char *p_garg, DIR_LIST *p_dir)
  */
 const char * config_file(bool configure)
 {
-  static const char *files[] = { INI_FILE_LOCAL, INI_FILE_USER, INI_FILE_GLOBAL };
+  static const char *files[] = { FILE_GET(INI_FILE_LOCAL),
+                                 FILE_GET(INI_FILE_USER),
+                                 FILE_GET(INI_FILE_GLOBAL) 
+                               };
   static const char *ini_file = NULL;
 
   if(configure) {
@@ -287,7 +290,11 @@ int main(int argc, char *argv[])
 #endif
 
   banner();
-  
+
+  int i;
+  for(i = 0; i < argc; i++)
+    bprintf("argv[%d] = %s\n",i,argv[i]);
+
   /* Run help */
   if((argc > 3) || (argc > 1 && (argv[1][0] != '-' || argv[1][1] == '?' || argv[1][1] == 'h')))
   {

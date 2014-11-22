@@ -2687,8 +2687,13 @@ void game_gui::run_editor(void)
     bprintf("Pid %d done",pid);
   }
 #elif WINDOWS
-  bprintf("%s -e",p_dir->game_binary_get());  
-  int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(),p_dir->game_binary_get(),"-e",NULL);
+  bprintf("%s -e",p_dir->game_binary_get());
+
+  char tmp[PATH_MAX] = "\"";
+  strcat(tmp, p_dir->game_binary_get());
+  strcat(tmp, "\"");
+  
+  int ret = _spawnl( _P_WAIT, p_dir->game_binary_get(), tmp,"-e",NULL);
   if(ret == -1) {
     bprintf("Error: %s",strerror(errno));
   }

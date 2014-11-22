@@ -77,7 +77,7 @@ public:
    Level Store
   *******************************************************
 */
-#define MAX_LEVELNAME 50
+#define MAX_LEVELNAME PATH_MAX
 #define MAX_PASSWORD  50
 
 typedef struct level_store_item {

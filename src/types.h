@@ -33,6 +33,6 @@
 typedef unsigned int   dword;
 typedef unsigned short word;
 typedef unsigned char  byte;
-typedef size_t size_ptr;
+typedef size_t         size_ptr;
 
 #endif // __TYPES_H__

@@ -608,7 +608,7 @@ void game_logic::player_move_check(LEVEL_EVENT_QUEUE *p_queue, LEVEL_EVENT *p_in
       // closed -> no way
       break;
     
-    // Opened color-key doors
+    // Some strange door?
     case P_DV_H:
       if(dx && itm_player == NO_ITEM) {
         event_num += player_move(events+event_num,player,px,py,dx,dy,fast_movement,event_num);

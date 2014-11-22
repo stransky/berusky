@@ -542,8 +542,8 @@ public:
   #define HANDLE_4        (NO_HANDLE+4)
 
   void  input_start(EDITOR_CONSOLE_CALLBACK callback,  int callback_id, INPUT_TYPE type, char *p_text,...);
-  void  console_input(MENU_STATE state, int data, int data1);  
-  void  console_wait(MENU_STATE state, int data, int data1);
+  void  console_input(MENU_STATE state, size_ptr data, size_ptr data1);  
+  void  console_wait(MENU_STATE state, size_ptr data, size_ptr data1);
   void  input_stop(bool success);  
 
   void  console_draw(bool draw)

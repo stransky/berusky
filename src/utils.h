@@ -71,6 +71,9 @@
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #endif
 
+#define BOOL_UNDEFINED            (-1)
+#define ERROR                     (-1)
+
 #define POINTER_TO_INT(pointer) (*((int*)&(pointer)))
 #define INT_TO_POINTER(integer) (reinterpret_cast<void *>(integer))
 
@@ -396,9 +399,7 @@ inline char * change_tail(char * p_str, const char * p_end)
   return (p_end ? (char *) strcat(p_str, p_end) : p_str);
 }
 
-#ifdef LINUX
-char * itoa(int base, char *buf, int d);
-#endif
+char * my_itoa(int base, char *buf, int d);
 
 typedef struct _DIRECTORY_ENTRY {
 

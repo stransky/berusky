@@ -280,8 +280,12 @@ bool ini_write_string(const char *p_file,
   FHANDLE f_orig = file_open(NULL, p_file, "r", FALSE);
   if (!f_orig)
     return(FALSE);
-
+  
+#ifdef WINDOWS  
+  FHANDLE f_new(tmpfile_get());
+#else
   FHANDLE f_new(tmpfile());
+#endif
   if (!f_new)
     return(FALSE);
 

@@ -389,7 +389,7 @@ void surface::blend(tpos sx, tpos sy, tpos dx, tpos dy, tcolor color, BLEND_OP o
             pixel.g -= color_rgb.g;
             pixel.b -= color_rgb.b;
 
-            int rn = floor(((float)rand()/RAND_MAX)*10);
+            int rn = (int)floor(((float)rand()/RAND_MAX)*10);
             pixel.r -= rn;
             pixel.g -= rn;
             pixel.b -= rn;          
@@ -981,13 +981,13 @@ void graph_2d::check(void)
 
 void graph_2d::fullscreen_toggle(void)
 {
-
+#ifdef LINUX
   if(!SDL_WM_ToggleFullScreen(p_screen_surface->surf_get())) {
     bprintf("SDL_WM_ToggleFullScreen() failed!");
+    return;
   }
-  else {
-    graphics_fullscreen = !graphics_fullscreen;
-  }
+#endif  
+  graphics_fullscreen = !graphics_fullscreen;  
 }
 
 // -------------------------------------------------------

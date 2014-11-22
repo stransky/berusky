@@ -39,12 +39,18 @@
 
 #define WINDOWS   1
 #undef  LINUX
- 
+
+#include <io.h>
+#include "window.h"
+
+#define VERSION           "1.7"
 #define PATH_MAX          128
 
 #define random()          rand()
 #define snprintf          _snprintf
 #define mkdirm            _mkdir
+#define mktemp            _mktemp
+#define stat              _stat
 
 // Stupid VC2010
 #pragma warning(disable: 4996 4800)
