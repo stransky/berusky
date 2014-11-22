@@ -43,7 +43,7 @@
 #include <io.h>
 #include "window.h"
 
-#define VERSION           "1.7"
+#define VERSION           "1.7.1"
 #define PATH_MAX          128
 
 #define random()          rand()
