@@ -159,7 +159,7 @@ public:
 // Run-time animation
 // -------------------------------------------------------
 
-#define MAX_POST_EVENTS  10
+#define MAX_POST_EVENTS  20
 
 typedef class animation {
 
